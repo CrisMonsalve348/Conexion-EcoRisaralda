@@ -1,0 +1,435 @@
+*{
+    font-family: 'Albert sans', sans-serif;
+}
+
+body{
+    margin: 0;
+    padding: 0;
+    
+
+}
+.principal{
+display: flex;
+flex-direction: row;
+
+}
+
+#panelizquierdo{
+    width: 57vw;
+    height: 100vh;
+    background-image:linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),  url(../img/inicio_sesion/photo-1532185922611-3410b1898a1c.jpg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    
+    
+    
+    
+}
+
+
+@import url('https://fonts.googleapis.com/css2?family=Albert+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+
+.bienvenido{
+    display: flex;
+    align-self: center;
+    justify-self: center;
+    margin: 0;
+    text-align: center;
+    font-family: 'Albert sans', sans-serif;
+    font-size: 96px;
+    font-weight:100;
+    font-style: italic;
+    line-height: 100px;
+    letter-spacing: 0%;
+    vertical-align: middle;
+    
+    
+    
+    
+}
+h3{
+    margin: 0;
+}
+h3 b{
+    font-size: 30px;
+}
+
+#logo-container{
+    display: flex;
+    align-items: end;
+    font-weight: bolder; 
+    margin: 0;
+    align-self: center;
+    justify-self: flex-end;
+    position: absolute;
+    bottom: 0; 
+   
+    
+}
+#logo-container p{
+    font-size: 20px;
+    font-weight: lighter;
+    display: flex;
+    justify-self: center;
+    margin: 0;
+}
+
+#logo{
+    display: flex;
+    
+    margin: 0;
+    width: 200px;
+    height: 100px;
+   
+    justify-self: center;
+    align-self: center;
+    
+}
+
+#panelderecho{
+    width: 44vw;
+    height: 100vh;
+    background-color: rgb(252, 252, 252);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.conteiner{
+    
+    display: flex;
+    justify-self: center;
+    flex-direction: column;
+    align-self: center;
+    gap: 25px;
+    margin-top: 15vh;
+}
+
+.iniciar{
+    font-family: 'Albert sans', sans-serif;
+    font-weight: 700;
+    color: #267E1B;
+    font-size: 40px;
+    line-height: 100%;
+    letter-spacing: -2%;
+    display: flex;
+   justify-self: center;
+   align-self: center;
+    
+    
+
+}
+
+.input_label{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+    font-family: 'Albert sans', sans-serif;
+    
+    
+    
+}
+label{
+    font-size: 0.8rem;
+  color: #444444;
+  margin-bottom: 4px;
+  display: flex;
+  
+}
+
+#correo{
+    width: 40vw;
+    height: 40px;
+    display: flex;
+    align-self: center;
+    color: #444444;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+}
+#ojoycont{
+    display: flex;
+    gap: 34vw;
+}
+#contraseña{
+    width: 40vw;
+    height: 40px;
+    display: flex;
+    align-self: center;
+    color: #444444;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  outline: none;
+}
+a{
+    
+    font-size: 0.6rem;
+    color: #444444;
+    text-decoration: none;
+    cursor: pointer;
+   
+    font-family:'Albert sans', sans-serif;
+    font-weight: 700;
+}
+
+#ojo{
+    width: 20px;
+  height: 20px;
+  transition: ease-in-out 0.3s;
+}
+#ojo:hover{
+    cursor: pointer;
+    
+}
+#align_button{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0 auto;
+
+}
+
+#ingresar{
+    width: 40vw;
+    height: 40px;
+    display: flex;
+    align-self: center;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+    border-radius: 10px;
+    border: none;
+    background-color:#267E1B;
+    color: white;
+    font-family:'Albert sans', sans-serif;
+    transition: ease-in-out 0.3s;
+}
+#ingresar:hover{
+    background-color: rgb(255, 255, 255);
+    cursor: pointer;
+    color: #267E1B;
+    border: 2px solid #267E1B;
+    
+}
+#a_ingresar{
+    display: flex;
+    justify-self: center;
+    align-self: center;
+    
+}
+
+#terminos{
+
+    display: flex;
+   text-indent: 3px;
+    color: #666;
+    font-family: 'Albert sans', sans-serif;
+    font-size: 0.6rem;
+    text-align: center;
+    justify-self: center;
+    align-self: center;
+}
+
+#terminos {
+    font-weight: 100;
+}
+
+@media(max-width:1286px){
+    #ojoycont{
+        gap: 33vw;
+    }
+}
+@media(max-width:1100px){
+    #ojoycont{
+        gap: 32.7vw;
+    }
+}
+@media(max-width:1000px){
+    #ojoycont{
+        gap: 32vw;
+    }
+}
+@media(max-width:906px){
+    #ojoycont{
+        gap: 30vw;
+    }
+}
+@media(max-width:905px){
+    #terminos{
+        font-size: 0.5rem;
+    }
+    #terminos a{
+        font-size: 0.5rem;
+    }
+}
+@media(max-width:874px){
+    #terminos{
+        font-size: 0.5rem;
+    }
+    #terminos a{
+        font-size: 0.5rem;
+    }
+    .bienvenido{
+        font-size: 85px;
+    }
+}
+@media(max-width:874px){
+    #terminos{
+        font-size: 0.4rem;
+    }
+    #terminos a{
+        font-size: 0.4rem;
+    }
+    .bienvenido{
+        font-size: 85px;
+    }
+    #ojoycont{
+        gap: 29vw;
+    }
+}
+@media(max-width:768px){
+    #terminos{
+        font-size: 0.4rem;
+    }
+    #terminos a{
+        font-size: 0.4rem;
+    }
+    .bienvenido{
+        font-size: 75px;
+    }
+    #ojoycont{
+        gap: 29vw;
+    }
+}
+
+@media(max-width:676px){
+    #terminos{
+        font-size: 0.4rem;
+    }
+    #terminos a{
+        font-size: 0.4rem;
+    }
+    .bienvenido{
+        font-size: 55px;
+    }
+    #ojoycont{
+        gap: 29vw;
+    }
+}
+@media(max-width:642px){
+    #terminos{
+        font-size: 0.35rem;
+    }
+    #terminos a{
+        font-size: 0.35rem;
+    }
+    .bienvenido{
+        font-size: 55px;
+    }
+    #ojoycont{
+        gap: 27vw;
+    }
+}
+@media(max-width:621px){
+    #panelizquierdo{
+        width: 50vw;
+    }
+    #panelderecho{
+        width: 50vw;
+    }
+    #terminos{
+        font-size: 0.35rem;
+    }
+    #terminos a{
+        font-size: 0.35rem;
+    }
+    .bienvenido{
+        font-size: 55px;
+    }
+    #ojoycont{
+        gap: 27vw;
+    }
+}
+
+
+@media(max-width:600px){
+    .bienvenido{
+        font-size: 45px;
+    }
+    label{
+        font-size: 0.6rem;
+        margin-bottom: 1px;
+    }
+    .input_label a{
+        font-size: 0.5rem;
+    }
+    .iniciar{
+        font-size: 20px;
+    }
+}
+
+@media(max-width:560px){
+    #ojoycont{
+        gap: 30vw;
+    }
+}
+@media(max-width:522px){
+    #ojoycont{
+        gap: 28vw;
+        
+    }
+    label{
+        margin-left: 12px;
+    }
+    .olvidar{
+        margin-left: 10px;
+    }
+    
+}
+@media(max-width:475px){
+    .bienvenido{
+        font-size: 30px;
+    }
+    #terminos{font-size: 0.3rem;
+    width: 100%;
+    }
+    #terminos a{
+        font-size: 0.3rem;
+    }
+
+}
+@media(max-width:412px){
+    .bienvenido{
+        font-size: 25px;
+    }
+    #terminos{font-size: 0.2rem;
+    width: 100%;
+    margin-left: 40px;
+    }
+    #terminos a{
+        font-size: 0.2rem;
+    }
+    #ojoycont{
+        gap: 22vw;
+    }
+  #contraseña{
+    font-size: 0.7rem;
+  }
+  #correo{
+    font-size: 0.7rem;
+    
+  }
+  
+
+}
