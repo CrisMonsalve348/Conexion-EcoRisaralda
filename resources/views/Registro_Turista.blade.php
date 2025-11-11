@@ -42,24 +42,14 @@
     <p id="indicador">Paso 1 de 2</p>
     <h1>Crea tu cuenta</h1>
  </div>
- <div class="input_align">
-    <label for="email"  class="textosuperior" >Correo Eletrónico</label>
-    <input type="email" placeholder="Ingrese su correo" class="inputs">
- </div>
- <div class="input_align">
-    <div id="ojoycont1"> 
-        <label  for="password" class="textosuperior" >Contraseña</label>
-        <img class="ojo" src="./img/register_turista/view-svgrepo-com.png" alt="Ojo de demostramiento">
-    </div>
-    <input id="contraseña" type="password" placeholder="Ingrese su contraseña" class="inputs">
- </div>
- <div class="input_align">
-    <div id="ojoycont2"> 
-        <label  for="password" class="textosuperior">Confirme su contraseña</label>
-        <img class="ojo" src="./img/register_turista/view-svgrepo-com.png" alt="Ojo de demostramiento">
-    </div>
-    <input id="contraseña" type="password" placeholder="Vuelva a ingresar su contraseña" class="inputs">
- </div>
+ <form action="">
+    <label for="Nombre">Nombre de usuario</label>
+    <input type="text" placeholder="Ingresa tu nombre de usuario" name="Nombre">
+
+
+
+ </form>
+   
  <div id="align_indicaciones">
     <p>Tu contraseña debe incluir</p>
     <ul>
@@ -69,7 +59,7 @@
         <li>Opcional: Caracteres especiales como  @ ? # $ % ( ) _ = * \ : ; ' . / + < > & ¿ ,[</li>
     </ul>
  </div>
- <a href="Registro2_Turista.html"> <button id="Siguiene"> Siguiente  </button></a>
+ <a href="/register2"> <button id="Siguiene"> Siguiente  </button></a>
  
 
       </main>
