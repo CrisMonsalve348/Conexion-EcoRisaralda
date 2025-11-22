@@ -6,7 +6,8 @@
     <link rel="icon" type="img/svg" href="./img/inicio_sesion/nature-svgrepo-com.svg">
     <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <title>Conexión EcoRisaralda</title>
-    <link rel="stylesheet" href="./css/style_Preferencias.css">
+    @vite('resources/css/style_Preferencias.css')
+    
 </head>
 <body>
     <header>

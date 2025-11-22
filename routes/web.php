@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-
+//Laravel default web routes file
 Route::get('/', function () {
     return view('welcome');
 });
@@ -17,4 +17,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+
+//preferences routes
+Route::get('/preferencias', function (){
+    return view('preferencias');
+});
 require __DIR__.'/auth.php';
