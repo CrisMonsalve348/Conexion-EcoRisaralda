@@ -21,5 +21,5 @@ Route::middleware('auth')->group(function () {
 //preferences routes
 Route::get('/preferencias', function (){
     return view('preferencias');
-});
+})->middleware(['auth', 'verified'])->name('preferencias');
 require __DIR__.'/auth.php';
