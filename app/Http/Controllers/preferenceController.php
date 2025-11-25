@@ -10,5 +10,20 @@ class preferenceController extends Controller
         $preferences = \App\Models\preferences::all();
         return view('preferencias', compact('preferences'));
     }
+
+    public function validarpreferencias(Request $request){
+        $request->validate([
+            'preferences' => 'required|array|min:1'
+        ],[
+            'preferences.required' => 'Debes seleccionar al menos una preferencia.',
+    'preferences.min' => 'Selecciona al menos una preferencia.',
+
+
+        ]
+    
+    
+    
+    );
+    }
 }
  

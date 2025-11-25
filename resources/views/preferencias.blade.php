@@ -11,10 +11,13 @@
 </head>
 <body>
     <header>
+        @if ($errors->has('preferences'))
+    <p class="error-message">{{ $errors->first('preferences') }}</p>
+@endif
         <h1>Tú decides el camino, elige una opción</h1>
     </header>
     <main id="main_container">
-     <form action="/guardar-preferencias" method="POST">
+     <form action="/preferencias" method="POST">
          @csrf 
          <div class="preferences-grid"> @foreach ($preferences as $preference) 
         <label class="preference-card"> 
@@ -25,13 +28,13 @@
 </label>
  @endforeach 
 </div> 
-  <input type="submit" value="Enviar" name="enviar">
-<a href="modulos_loguin/Usuario/pagina_inicio_loguin.html"><button id="omitir">Omitir ></button></a>
+    <div id="botones">
+       <input type="submit" value="Enviar" name="enviar">
+<a href=""><button id="omitir">Omitir ></button></a>
+    </div>
 </form>
     </main>
-    <div id="botones">
-      
-    </div>
+ 
 
 </body>
 </html>
