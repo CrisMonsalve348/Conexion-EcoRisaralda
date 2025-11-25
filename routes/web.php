@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\preferenceController;
 use Illuminate\Support\Facades\Route;
 //Laravel default web routes file
 Route::get('/', function () {
@@ -19,7 +20,10 @@ Route::middleware('auth')->group(function () {
 
 
 //preferences routes
-Route::get('/preferencias', function (){
-    return view('preferencias');
-})->middleware(['auth', 'verified'])->name('preferencias');
+
+
+Route::get('/preferencias', [preferenceController::class, 'mostrardatosdepreferencias'])
+    ->middleware(['auth', 'verified'])
+    ->name('preferencias');
+
 require __DIR__.'/auth.php';

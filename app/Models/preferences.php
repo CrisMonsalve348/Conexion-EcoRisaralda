@@ -8,6 +8,8 @@ class preferences extends Model
 {
        protected $fillable = [
         'name'
+        
+        
       
     ];
 }
