@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\preferences;
+use App\Models\preference;
 
 class preferenceSeeder extends Seeder
 {
@@ -56,7 +56,7 @@ class preferenceSeeder extends Seeder
         ];
 
         foreach($preferences as $preference){
-            preferences::firstOrCreate(
+            preference::firstOrCreate(
                 ['name' => $preference['name']],
                 [
                     'image' => $preference['image'],

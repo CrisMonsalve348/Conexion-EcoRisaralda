@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class preferences extends Model
+class preference extends Model
 {
        protected $fillable = [
         'name','image','color'

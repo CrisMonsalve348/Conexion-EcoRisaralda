@@ -20,7 +20,7 @@ return new class extends Migration
                   ->onDelete('cascade');
 
             $table->foreignId('user_id')
-                  ->constrained('user')
+                  ->constrained('users')
                   ->onDelete('cascade');
 
             $table->timestamps();

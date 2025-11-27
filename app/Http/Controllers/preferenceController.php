@@ -1,4 +1,3 @@
-
 <?php
 
 namespace App\Http\Controllers;
@@ -9,7 +8,7 @@ use App\Models\User;
 class preferenceController extends Controller
 {
     public function mostrardatosdepreferencias(){
-        $preferences = \App\Models\preferences::all();
+        $preferences = \App\Models\preference::all();
         return view('preferencias', compact('preferences'));
     }
 
