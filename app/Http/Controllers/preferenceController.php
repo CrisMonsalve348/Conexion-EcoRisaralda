@@ -1,8 +1,10 @@
+
 <?php
 
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 
 class preferenceController extends Controller
 {
@@ -21,9 +23,12 @@ class preferenceController extends Controller
 
         ]
     
-    
-    
+        
     );
+$user = auth()->user();
+
+$user->preferences()->sync($request->preferences);
+
     }
 }
  

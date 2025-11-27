@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Database\Migrations\Migration;
@@ -19,7 +20,7 @@ return new class extends Migration
                   ->onDelete('cascade');
 
             $table->foreignId('user_id')
-                  ->constrained('users')
+                  ->constrained('user')
                   ->onDelete('cascade');
 
             $table->timestamps();

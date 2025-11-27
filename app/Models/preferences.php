@@ -7,9 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 class preferences extends Model
 {
        protected $fillable = [
-        'name'
+        'name','image','color'
         
         
       
     ];
+
+    public function users()
+{
+    return $this->belongsToMany(user::class);
+}
+
 }
