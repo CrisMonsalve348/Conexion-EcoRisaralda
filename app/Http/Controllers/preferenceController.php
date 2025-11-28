@@ -27,6 +27,7 @@ class preferenceController extends Controller
 $user = auth()->user();
 
 $user->preferences()->sync($request->preferences);
+return redirect()->route('dashboard');
 
     }
 }
