@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\preferenceController;
+use App\Http\Controllers\TuristicPlaceController;
 use Illuminate\Support\Facades\Route;
 //Laravel default web routes file
 Route::get('/', function () {
@@ -28,5 +29,14 @@ Route::get('/preferencias', [preferenceController::class, 'mostrardatosdeprefere
 Route::post('/preferencias', [preferenceController::class, 'validarpreferencias'])
     ->middleware(['auth', 'verified'])
     ->name('preferencias');
+
+//crear sitio ecoturistico
+Route::get('/Crear_sitio', [TuristicPlaceController::class, 'crear'])
+    ->middleware(['auth', 'verified'])
+    ->name('crear_sitio');
+
+Route::post('/Crear_sitio', [TuristicPlaceController::class, 'validarsitio'])
+    ->middleware(['auth', 'verified'])
+    ->name('guardar_sitio');
 
 require __DIR__.'/auth.php';

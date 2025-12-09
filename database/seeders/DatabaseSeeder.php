@@ -27,8 +27,12 @@ class DatabaseSeeder extends Seeder
            'date_of_birth'=>'2025-10-02',
            'email_verified_at'=>now(),
             'password' => Hash::make('password123'),
+            'role'=>'operator',
             'email' => 'test@example.com',
 
-        ]);
+        ]
+    
+    
+    );
     }
 }
