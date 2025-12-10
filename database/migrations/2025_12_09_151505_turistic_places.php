@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-          Schema::create('turistic_place', function (Blueprint $table) {
+          Schema::create('turistic_places', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('slogan');
@@ -25,6 +25,10 @@ return new class extends Migration
             $table->string('estructure');
             $table->string('estructure_img');
             $table->string('tips');
+            $table->boolean('terminos')->default(false);
+            $table->boolean('politicas')->default(false);
+            
+
             $table->foreignId('user_id')
                   ->constrained('users')
                   ->onDelete('cascade');

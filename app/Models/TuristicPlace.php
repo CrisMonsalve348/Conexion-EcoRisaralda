@@ -9,8 +9,7 @@ class TuristicPlace extends Model
 {
     use HasFactory;
 
-    // Nombre de la tabla (porque no es plural como Laravel espera)
-    protected $table = 'turistic_place';
+   
 
     // Campos que se pueden asignar masivamente (fillable)
     protected $fillable = [
@@ -26,7 +25,9 @@ class TuristicPlace extends Model
         'estructure',
         'estructure_img',
         'tips',
-        'user_id'
+        'user_id',
+        'terminos',
+        'politicas',
     ];
 
     // Relación con usuario

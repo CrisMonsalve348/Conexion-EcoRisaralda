@@ -3,69 +3,85 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\TuristicPlace;
 
 class TuristicPlaceController extends Controller
 {
-    //mostrar la vista
-       public function crear()
+    public function crear()
     {
         return view('sitios_ecoturisticos.Crear_sitio');
     }
-    //validar los datos mandados
+
     public function validarsitio(Request $request)
     {
-        $request->validate(
-            [
-                // Campos básicos
-                'name'          => 'required|min:1|max:255',
-                'slogan'        => 'required|min:1|max:255',
+        $request->validate([
+            'nombre'               => 'required|string|max:255',
+            'slogan'               => 'required|string|max:255',
+            'descripcion'          => 'required|string|min:10',
+            'localizacion'         => 'required|string|min:10',
+            'clima'                => 'required|string|min:10',
+            'caracteristicas'      => 'required|string|min:10',
+            'flora'                => 'required|string|min:10',
+            'infraestructura'      => 'required|string|min:10',
+            'recomendacion'        => 'required|string|min:10',
 
-                // Descripciones largas
-                'description'   => 'required|min:10|max:5000',
-                'localization'  => 'required|min:10|max:3000',
-                'Weather'       => 'required|min:10|max:2000',
-                'flora'         => 'required|min:10|max:2000',
-                'estructure'    => 'required|min:10|max:3000',
-                'tips'          => 'required|min:10|max:2000',
+            // imágenes
+            'portada'              => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'clima_img'            => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'caracteristicas_img'  => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'flora_img'            => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'infraestructura_img'  => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
 
-                // Imágenes
-                'cover'         => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
-                'Weather_img'   => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
-                'flora_img'     => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
-                'estructure_img'=> 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
-            ],
+            // términos y políticas
+            'terminos'             => 'accepted',
+            'politicas'            => 'accepted',
 
-            [
-                // NAME
-                'name.required' => 'Debe poner el nombre del sitio.',
-                'name.max'      => 'El nombre no puede superar 255 caracteres.',
+        ], [
+            'nombre.required'   => 'Debe ingresar el nombre del sitio.',
+            'slogan.required'   => 'Debe ingresar el slogan.',
+            'descripcion.required' => 'Debe ingresar la descripción.',
+            'localizacion.required' => 'Debe ingresar la localización.',
+            'clima.required' => 'Debe ingresar el clima.',
+            'caracteristicas.required' => 'Debe ingresar las características.',
+            'flora.required' => 'Debe ingresar la flora y fauna.',
+            'infraestructura.required' => 'Debe ingresar la infraestructura.',
+            'recomendacion.required' => 'Debe ingresar recomendaciones.',
 
-                // SLOGAN
-                'slogan.required' => 'Debe poner el slogan del sitio.',
-                'slogan.max'      => 'El slogan no puede superar 255 caracteres.',
+            'terminos.accepted' => 'Debe aceptar los términos.',
+            'politicas.accepted' => 'Debe aceptar las políticas.',
+        ]);
 
-                // DESCRIPCIONES
-                'description.required' => 'Debe ingresar una descripción del sitio.',
-                'localization.required' => 'Debe ingresar la localización del sitio.',
-                'Weather.required' => 'Debe describir el clima del sitio.',
-                'flora.required' => 'Debe describir la flora del sitio.',
-                'estructure.required' => 'Debe describir la estructura del sitio.',
-                'tips.required' => 'Debe ingresar recomendaciones del sitio.',
+        // Guardar imágenes
+        $portada_path = $request->file('portada')->store('portadas', 'public');
+        $clima_path = $request->file('clima_img')->store('clima', 'public');
+        $caracteristicas_path = $request->file('caracteristicas_img')->store('caracteristicas', 'public');
+        $flora_path = $request->file('flora_img')->store('flora', 'public');
+        $infraestructura_path = $request->file('infraestructura_img')->store('infraestructura', 'public');
 
-                // IMÁGENES
-                'cover.required' => 'Debe subir una imagen de portada.',
-                'cover.image'    => 'La portada debe ser una imagen.',
-                'cover.mimes'    => 'La portada solo acepta formatos: jpg, jpeg, png, webp.',
-                'cover.max'      => 'La imagen de portada no puede superar 4 MB.',
+        // Guardado en DB
+        TuristicPlace::create([
+            'user_id'             => auth()->id(),
 
-                'Weather_img.required' => 'Debe subir una imagen relacionada con el clima.',
-                'Weather_img.image'    => 'La imagen de clima debe ser un archivo válido.',
-                'Weather_img.mimes'    => 'Formatos permitidos: jpg, jpeg, png, webp.',
-                'Weather_img.max'      => 'Esta imagen no puede superar 4 MB.',
+            'name'              => $request->nombre,
+            'slogan'              => $request->slogan,
+            'description'         => $request->descripcion,
+            'localization'        => $request->localizacion,
+            'Weather'               => $request->clima,
+            'caracteristicas'     => $request->caracteristicas,
+            'flora'               => $request->flora,
+            'estructure'     => $request->infraestructura,
+            'tips'       => $request->recomendacion,
 
-                'flora_img.required' => 'Debe subir una imagen relacionada con la flora.',
-                'estructure_img.required' => 'Debe subir una imagen de la infraestructura.',
-            ]
-        );
+            'cover'             => $portada_path,
+            'Weather_img'           => $clima_path,
+            'caracteristicas_img' => $caracteristicas_path,
+            'flora_img'           => $flora_path,
+            'estructure_img' => $infraestructura_path,
+
+            'terminos'            => true,
+            'politicas'           => true,
+        ]);
+
+        return redirect()->route('dashboard')->with('success', 'Sitio creado correctamente.');
     }
 }
