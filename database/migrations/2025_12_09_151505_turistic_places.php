@@ -18,8 +18,12 @@ return new class extends Migration
             $table->string('cover');
             $table->string('description');
             $table->string('localization');
+            $table->string('lat');
+            $table->string('lng');
             $table->string('Weather');
             $table->string('Weather_img');
+            $table->string('features');
+            $table->string('features_img');
             $table->string('flora');
             $table->string('flora_img');
             $table->string('estructure');

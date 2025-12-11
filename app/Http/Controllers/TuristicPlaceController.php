@@ -67,14 +67,14 @@ class TuristicPlaceController extends Controller
             'description'         => $request->descripcion,
             'localization'        => $request->localizacion,
             'Weather'               => $request->clima,
-            'caracteristicas'     => $request->caracteristicas,
+            'features'     => $request->caracteristicas,
             'flora'               => $request->flora,
             'estructure'     => $request->infraestructura,
             'tips'       => $request->recomendacion,
 
             'cover'             => $portada_path,
             'Weather_img'           => $clima_path,
-            'caracteristicas_img' => $caracteristicas_path,
+            'features_img' => $caracteristicas_path,
             'flora_img'           => $flora_path,
             'estructure_img' => $infraestructura_path,
 

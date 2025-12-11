@@ -20,6 +20,8 @@ class TuristicPlace extends Model
         'localization',
         'Weather',
         'Weather_img',
+        'features',
+        'features_img',
         'flora',
         'flora_img',
         'estructure',
