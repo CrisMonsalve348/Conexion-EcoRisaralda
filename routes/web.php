@@ -32,11 +32,11 @@ Route::post('/preferencias', [preferenceController::class, 'validarpreferencias'
 
 //crear sitio ecoturistico
 Route::get('/Crear_sitio', [TuristicPlaceController::class, 'crear'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'role:operator,admin'])
     ->name('crear_sitio');
 
 Route::post('/Crear_sitio', [TuristicPlaceController::class, 'validarsitio'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'role:operator,admin'])
     ->name('guardar_sitio');
 
 require __DIR__.'/auth.php';

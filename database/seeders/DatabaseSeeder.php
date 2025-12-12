@@ -34,5 +34,21 @@ class DatabaseSeeder extends Seeder
     
     
     );
+
+
+     User::factory()->create([
+           'name' => 'Test User2',
+           'last_name'=>'apellido2',
+           'Country'=>'Colombia',
+           'date_of_birth'=>'2025-10-02',
+           'email_verified_at'=>now(),
+            'password' => Hash::make('password123'),
+            'role'=>'user',
+            'email' => 'test2@example.com',
+
+        ]
+    
+    
+    );
     }
 }
