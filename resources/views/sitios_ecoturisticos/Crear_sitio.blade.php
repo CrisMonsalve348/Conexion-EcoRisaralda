@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @vite(['resources/js/Modulos/Operador/js/marcador.js'])
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  integrity="sha256-sA+4d3f08sYQK4Gg6k1Xy2b2uZ6w5M7H0G2P0L1Yk0g=" crossorigin=""/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-  integrity="sha256-o9N1jA5wGk2q9o6u6w3eD0u5Q5jQh3w3z3b4g7zQm0Y=" crossorigin=""></script>
+   @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+
+   
 
     <title>Crear sitio</title>
 </head>
@@ -20,7 +18,7 @@
 
         <div>
             <label for="nombre">Nombre del sitio</label>
-            <input type="text" name="nombre" id="nombre" value="{{ old('nombre') }}">
+            <input  type="text" name="nombre" id="nombre" value="{{ old('nombre') }}">
             @error('nombre')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
@@ -54,22 +52,16 @@
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
 
-            <div style="display:flex; gap:1rem; align-items:flex-start;">
-    <div style="flex:1;">
-        <div id="map" style="height:300px; border-radius:8px;"></div>
-    </div>
-
-    <div style="width:300px;">
-        <p class="text-sm mb-2">Coordenadas seleccionadas:</p>
-        <label>Latitud</label>
-        <input type="text" id="lat" name="lat" value="{{ old('lat', $turisticPlace->lat ?? '') }}" readonly>
-        <label>Longitud</label>
-        <input type="text" id="lng" name="lng" value="{{ old('lng', $turisticPlace->lng ?? '') }}" readonly>
-
-        <button type="button" id="btn-geolocate">Usar mi ubicación</button>
-        <p class="text-xs text-gray-500 mt-2">Mueve el marcador o haz clic en el mapa para elegir la posición.</p>
-    </div>
-</div>
+          <div id="map" class="w-80 h-80"></div>
+          <input type="hidden" name="lat" id="lat">
+          <input type="hidden" name="lng" id="lng">
+           @error('lat')
+                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+        @enderror
+          @error('lng')
+                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+        @enderror
+    
         </div>
 
 
@@ -158,6 +150,6 @@
         <button type="submit">Finalizar</button>
     </form>
 </main>
-<script src=""></script>
+
 </body>
 </html>

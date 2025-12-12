@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('cover');
             $table->string('description');
             $table->string('localization');
-            $table->string('lat');
-            $table->string('lng');
+            $table->decimal('lat', 10, 8); 
+            $table->decimal('lng', 11, 8); 
             $table->string('Weather');
             $table->string('Weather_img');
             $table->string('features');

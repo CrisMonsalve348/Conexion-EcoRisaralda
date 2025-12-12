@@ -1,7 +1,14 @@
 import './bootstrap';
-
+import 'leaflet/dist/leaflet.css';
 import Alpine from 'alpinejs';
+import loadMap from './mapa.js';
 
 window.Alpine = Alpine;
-
 Alpine.start();
+
+// Ejecutar el mapa automáticamente cuando cargue el DOM
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById('map')) {
+        loadMap();
+    }
+});

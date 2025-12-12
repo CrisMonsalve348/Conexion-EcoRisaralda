@@ -18,6 +18,8 @@ class TuristicPlace extends Model
         'cover',
         'description',
         'localization',
+        'lat',
+        'lng',
         'Weather',
         'Weather_img',
         'features',
