@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\TuristicPlace;
+use Illuminate\Support\Facades\Storage;
+
 
 class TuristicPlaceController extends Controller
 {
@@ -88,6 +90,29 @@ class TuristicPlaceController extends Controller
             'politicas'           => true,
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Sitio creado correctamente.');
+        return redirect()->route('gestionar_sitios')->with('success', 'Sitio creado correctamente.');
     }
+     public function gestionsitios()
+
+    {
+        $user=auth()->user();
+        $places=TuristicPlace::where('user_id',$user->id)->get(); 
+        
+        return view('sitios_ecoturisticos.Gestion_sitio', compact('user','places'));
+    }
+
+    public function destroy($id)
+{
+    $place = TuristicPlace::findOrFail($id);
+    
+    // Eliminar la imagen del storage
+    if ($place->cover) {
+        Storage::disk('public')->delete($place->cover);
+    }
+    
+    $place->delete();
+    
+    return redirect()->route('gestionar_sitios')->with('success', 'Sitio eliminado correctamente');
+}
+
 }
