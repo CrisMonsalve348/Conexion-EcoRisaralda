@@ -39,12 +39,16 @@ Route::post('/Crear_sitio', [TuristicPlaceController::class, 'validarsitio'])
     ->middleware(['auth', 'role:operator,admin'])
     ->name('guardar_sitio');
 
-//gestio d sitios de operador y admin
+//gestion y eliminar  sitios de operador y admin
 Route::get('/Gestion_sitio', [TuristicPlaceController::class, 'gestionsitios'])
     ->middleware(['auth', 'role:operator,admin'])
     ->name('gestionar_sitios');
 Route::delete('/Gestion_sitio/{id}', [TuristicPlaceController::class, 'destroy'])
     ->middleware(['auth', 'role:operator,admin'])
     ->name('eliminar_sitio');
+//editar sitios de oprador y admin
+Route::get('/Editar_sitio/{id}', [TuristicPlaceController::class, 'editar'])
+    ->middleware(['auth', 'role:operator,admin'])
+    ->name('Modificar_sitio');
 
 require __DIR__.'/auth.php';

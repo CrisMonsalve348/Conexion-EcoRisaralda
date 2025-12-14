@@ -92,14 +92,21 @@ class TuristicPlaceController extends Controller
 
         return redirect()->route('gestionar_sitios')->with('success', 'Sitio creado correctamente.');
     }
-     public function gestionsitios()
-
-    {
-        $user=auth()->user();
-        $places=TuristicPlace::where('user_id',$user->id)->get(); 
-        
-        return view('sitios_ecoturisticos.Gestion_sitio', compact('user','places'));
+  public function gestionsitios()
+{
+    $user = auth()->user();
+    
+    if ($user->role == 'operator') {
+        $places = TuristicPlace::where('user_id', $user->id)->get();
+    } elseif ($user->role == 'admin') {
+        $places = TuristicPlace::all();
+    } else {
+      
+        abort(403, 'No tienes permisos para acceder a esta página');
     }
+    
+    return view('sitios_ecoturisticos.Gestion_sitio', compact('user', 'places'));
+}
 
     public function destroy($id)
 {
@@ -114,5 +121,11 @@ class TuristicPlaceController extends Controller
     
     return redirect()->route('gestionar_sitios')->with('success', 'Sitio eliminado correctamente');
 }
+
+    public function editar($id)
+    {
+        $place = TuristicPlace::findOrFail($id);
+        return view('sitios_ecoturisticos.Editar_sitio', compact('place'));
+    }
 
 }
