@@ -4,9 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="img/svg" href="./img/inicio_sesion/nature-svgrepo-com.svg">
-  @vite
-  <title> Sitios </title>
+  <link rel="icon" type="image/svg+xml" href="{{ asset('img/inicio_sesion/nature-svgrepo-com.svg') }}">
+  
+  @vite(['resources/css/app.css', 'resources/js/app.js'])
+  <link rel="stylesheet" href="{{ asset('css/style_Sitio.css') }}">
+  
+  <title>Sitios</title>
 </head>
 <body>
     <!-- Navbar -->

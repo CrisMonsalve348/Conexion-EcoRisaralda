@@ -13,8 +13,9 @@
 <body>
 
 <main>
-    <form action="" method="POST" enctype="multipart/form-data">
+    <form action="/Editar_sitio/{{ $place->id }}" method="POST" enctype="multipart/form-data">
         @csrf
+        @method('PUT') 
 
         <div>
             <label for="nombre">Nuevo nombre del sitio</label>
@@ -134,14 +135,14 @@
         @endif
         
         <!-- Input para nueva imagen (opcional) -->
-        <input type="file" name="caracteristicas_img" id="portada">
+        <input type="file" name="flora_img" id="portada">
         <p class="text-sm text-gray-500">Deja vacío si no quieres cambiar la imagen</p>
             @error('flora_img')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
 
             <label for="flora">Flora y fauna</label>
-            <textarea name="flora" id="flora">{{ old('flora') }}</textarea>
+            <textarea name="flora" id="flora">{{ $place->flora }}</textarea>
             @error('flora')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
@@ -149,14 +150,19 @@
 
 
         <div>
-            <label for="infraestructura_img">Imagen de infraestructura</label>
-            <input type="file" name="infraestructura_img">
-            @error('infraestructura_img')
-                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-            @enderror
+          @if($place->estructure_img)
+            <div class="mb-2">
+                <p class="text-sm text-gray-600">Imagen actual:</p>
+                <img src="{{ asset('storage/' . $place->estructure_img) }}" alt="caracteristicas_img" class="w-32 h-32 object-cover rounded">
+            </div>
+        @endif
+        
+        <!-- Input para nueva imagen (opcional) -->
+        <input type="file" name="infraestructura_img" id="portada">
+        <p class="text-sm text-gray-500">Deja vacío si no quieres cambiar la imagen</p>
 
             <label for="infraestructura">Infraestructura</label>
-            <textarea name="infraestructura" id="infraestructura">{{ old('infraestructura') }}</textarea>
+            <textarea name="infraestructura" id="infraestructura">{{ $place->estructure }}</textarea>
             @error('infraestructura')
                 <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
             @enderror
@@ -164,29 +170,13 @@
 
 
         <label for="recomendacion">Recomendaciones</label>
-        <textarea name="recomendacion" id="recomendacion">{{ old('recomendacion') }}</textarea>
+        <textarea name="recomendacion" id="recomendacion">{{ $place->tips }}</textarea>
         @error('recomendacion')
             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
         @enderror
 
 
-        <div>
-            <label>
-                <input type="checkbox" name="terminos">
-                Acepto términos
-                  @error('terminos')
-            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-        @enderror
-            </label>
-
-            <label>
-                <input type="checkbox" name="politicas" >
-                Acepto políticas
-                  @error('politicas')
-            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-        @enderror
-            </label>
-        </div>
+ 
 
         <button type="submit">Finalizar</button>
     </form>

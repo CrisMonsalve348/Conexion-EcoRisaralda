@@ -50,5 +50,11 @@ Route::delete('/Gestion_sitio/{id}', [TuristicPlaceController::class, 'destroy']
 Route::get('/Editar_sitio/{id}', [TuristicPlaceController::class, 'editar'])
     ->middleware(['auth', 'role:operator,admin'])
     ->name('Modificar_sitio');
+Route::put('/Editar_sitio/{id}', [TuristicPlaceController::class, 'sitioactualizado'])
+    ->middleware(['auth', 'role:operator,admin'])
+    ->name('sitio_actualizado');
+
+//visualizar sitio ecoturistico
+Route::get('/Sitio', [TuristicPlaceController::class, 'ver'])->name('sitio_ecoturistico');
 
 require __DIR__.'/auth.php';
