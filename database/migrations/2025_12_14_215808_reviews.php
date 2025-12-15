@@ -25,7 +25,7 @@ return new class extends Migration
          
 
             $table->timestamps();
-            $table->unique(['user_id', 'place_id']); 
+            
          
             
         });

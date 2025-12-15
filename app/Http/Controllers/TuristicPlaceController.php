@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TuristicPlace;
 use App\Models\reviews;
+use App\Models\rate;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -227,14 +228,16 @@ class TuristicPlaceController extends Controller
     return redirect()->route('gestionar_sitios')->with('success', 'Sitio actualizado correctamente');
 }
     public function ver($id){
+
         $place = TuristicPlace::findOrFail($id);
          $user = auth()->user();
             $reviews = reviews::where('place_id', $id)
                      ->with('user') 
                      ->orderBy('created_at', 'desc')
                      ->get();
+            $rate= rate::where('place_id',$id)->first();
         
-        return view('sitios_ecoturisticos.Sitio', compact('user', 'place', 'reviews'));
+        return view('sitios_ecoturisticos.Sitio', compact('user', 'place', 'reviews', 'rate'));
         
       
     }

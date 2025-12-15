@@ -7,16 +7,16 @@ use App\Models\Rate;
 use App\Models\reviews;
 
 
+
 class RateController extends Controller
 {
     public function promedio($id){
 
-        $placeRates = Rate::where('place_id', $id)->get();
-        if ($placeRates->isEmpty()) {
-            return 0;
-        }
-        $average = $placeRates->avg('rating');
-        return round($average, 2);
+         $average = reviews::where('place_id', $id)->avg('rating');
 
+         Rate::updateOrCreate(
+            ['place_id' => $id],
+            ['rating' => round($average, 2)]
+         );
     }
 }

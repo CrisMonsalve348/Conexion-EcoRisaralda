@@ -179,8 +179,10 @@
 
 
     <section>
+        <h1> Calificación promedio: {{ $rate ? $rate->rating : 'Sin calificaciones aún' }} </h1>
         @if($user)
         <button>
+
         Añadir una reseña
         </button>
       

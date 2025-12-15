@@ -27,6 +27,8 @@ class ReviewsController extends Controller
              'place_id' => $id,
             'user_id' => auth()->id(),
         ]);
+        app(\App\Http\Controllers\RateController::class)
+            ->promedio($id);
         return redirect()->back()->with('success', 'Reseña publicada correctamente.');
       
 

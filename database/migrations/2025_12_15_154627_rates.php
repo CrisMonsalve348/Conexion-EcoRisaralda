@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('reviews', function (Blueprint $table) {
+        Schema::create('rates', function (Blueprint $table) {
             $table->id();
             $table->unsignedTinyInteger('rating');
            
@@ -23,6 +23,7 @@ return new class extends Migration
          
 
             $table->timestamps();
+            $table->unique(['place_id']); 
    
          
             
