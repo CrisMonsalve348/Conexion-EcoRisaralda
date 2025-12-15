@@ -11,7 +11,22 @@ return new class extends Migration
      */
     public function up(): void
     {
-        //
+        Schema::create('reviews', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedTinyInteger('rating');
+           
+            $table->foreignId('place_id')
+                  ->constrained('turistic_places')
+                  ->onDelete('cascade')
+                  ->unique();
+           
+         
+
+            $table->timestamps();
+   
+         
+            
+        });
     }
 
     /**
