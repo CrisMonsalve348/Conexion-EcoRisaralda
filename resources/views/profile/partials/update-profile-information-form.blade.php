@@ -9,13 +9,31 @@
         </p>
     </header>
 
-    <form id="send-verification" method="post" action="{{ route('verification.send') }}">
+    <form id="send-verification" method="post" action="{{ route('verification.send') }}" >
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
         @csrf
         @method('patch')
+        
+        <div class="border border-gray-600 rounded-full w-40 h-40 ">
+        @if($user->image == 'null' || $user->image == null || !$user->image)
+    <img src="{{ asset('assets/profile-svgrepo-com.svg') }}" 
+         alt="Avatar por defecto" 
+         class="w-32 h-32 rounded-full object-cover">
+         @else
+         <img src="{{ asset('storage/' . $user->image) }}" 
+         alt="Avatar por defecto" 
+         class="w-full h-full rounded-full object-cover">
+    @endif
+        
+        </div>
+            <input type="file" name="image" id="foto">
+            @error('image')
+            <p>{{$message}}</p>
+            @enderror
+        
 
         <div>
             <x-input-label for="name" :value="__('Name')" />
