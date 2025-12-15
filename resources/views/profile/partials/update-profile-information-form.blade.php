@@ -19,7 +19,7 @@
         
         <div class="border border-gray-600 rounded-full w-40 h-40 ">
         @if($user->image == 'null' || $user->image == null || !$user->image)
-    <img src="{{ asset('assets/profile-svgrepo-com.svg') }}" 
+    <img src="{{ asset(' assets/profile-svgrepo-com.svg') }}" 
          alt="Avatar por defecto" 
          class="w-32 h-32 rounded-full object-cover">
          @else

@@ -50,5 +50,33 @@ class DatabaseSeeder extends Seeder
     
     
     );
+    User::factory()->create([
+           'name' => 'Test User3',
+           'last_name'=>'apellido3',
+           'Country'=>'Colombia',
+           'date_of_birth'=>'2025-10-02',
+           'email_verified_at'=>now(),
+            'password' => Hash::make('password123'),
+            'role'=>'user',
+            'email' => 'test3@example.com',
+
+        ]
+    
+    
+    );
+     User::factory()->create([
+           'name' => 'Test User4',
+           'last_name'=>'apellido4',
+           'Country'=>'Colombia',
+           'date_of_birth'=>'2025-10-02',
+           'email_verified_at'=>now(),
+            'password' => Hash::make('password123'),
+            'role'=>'admin',
+            'email' => 'test4@example.com',
+
+        ]
+    
+    
+    );
     }
 }

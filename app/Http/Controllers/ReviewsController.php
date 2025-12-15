@@ -13,13 +13,16 @@ class ReviewsController extends Controller
 
         $request->validate([
             'review' => 'required|string|max:1000',
+            'rating' => 'required|integer|between:1,5',
             
         ],[
             'review.required' => 'No puede enviar una reseña vacia.',
+            'rating.required'=>'Envie una calificación del sitio'
 
         ]);
 
         reviews::create([
+            'rating'=>$request->input('rating'),
             'comment' => $request->input('review'),
              'place_id' => $id,
             'user_id' => auth()->id(),

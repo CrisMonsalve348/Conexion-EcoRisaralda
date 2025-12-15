@@ -55,8 +55,8 @@
     <!-- Contenedor 1 -->
     <section class="vista">
         <div class="vista_contenido">
-            <h1> Reserva natural parque la Nona </h1>
-            <p> ¡Conéctate con la naturaleza y descubre la magia de La Virginia, Risaralda — un paraíso ecoturístico por explorar! </p>
+            <h1> {{$place->name}}</h1>
+            <p> {{$place->slogan}} </p>
             <a href="sitio.html" class="btn conocer"> Conoce más </a>
         </div>
     </section>
@@ -66,11 +66,7 @@
     <section class="descripcion">
         <div class="descripcion_contenedor">
             <p>
-                La Reserva Natural Parque La Nona es un destino ideal para los amantes del ecoturismo.
-                Rodeada de exuberante vegetación y rica biodiversidad, esta reserva ofrece una experiencia
-                única de conexión con la naturaleza. Los visitantes pueden disfrutar de caminatas ecológicas,
-                avistamiento de aves, y recorridos interpretativos que promueven la conservación del medio ambiente.
-                Es un espacio perfecto para quienes buscan tranquilidad, aire puro y un contacto respetuoso con los ecosistemas locales.
+               {{$place->description}}
             </p>
         </div>
     </section>
@@ -82,13 +78,12 @@
             <div class="info-text">
                 <h2 class="green-title"> Localización </h2>
                 <p>
-                    La Reserva Natural Parque La Nona se encuentra en el municipio de Marsella, en el departamento de Risaralda, Colombia.
-                    Está ubicada a aproximadamente 7 kilómetros del casco urbano de Marsella.
+                  {{$place->localization}}
                 </p>
             </div>
 
             <div class="info-img">
-                <img src="./img/sitios/Captura de pantalla 2025-04-09 235939.png" alt="Mapa de localización">
+                   <div id="map" class="w-80 h-80"></div>
             </div>
         </div>
     </section>
@@ -98,7 +93,7 @@
     <section class="info-section">
         <div class="container info-grid reverse">
             <div class="info-img">
-                <img src="./img/sitios/LA-VIRGINIA-540X370.jpg" alt="Vegetación y clima">
+                <img src="" alt="Vegetación y clima">
             </div>
 
             <div class="info-text">
@@ -188,10 +183,20 @@
         <button>
         Añadir una reseña
         </button>
+      
 
         <form action="/Sitio/{{$place->id}}" method="POST">
             @csrf
+            <label for="">Calificanos</label>
+            <label><input type="radio" name="rating" value="1"> 1</label>
+            <label><input type="radio" name="rating" value="2"> 2</label>
+            <label><input type="radio" name="rating" value="3"> 3</label>
+            <label><input type="radio" name="rating" value="4"> 4</label>
+            <label><input type="radio" name="rating" value="5"> 5</label>
             <label for="review">Escribe tu reseña</label>
+            @error('rating')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
             <textarea name="review" id="review"></textarea>
             <button>Enviar</button>
             @error('review')
@@ -206,6 +211,7 @@
         <h2> Reseñas </h2>
         @foreach($reviews as $review)
             <div class="review">
+                <div>{{$review->rating}}</div>
                 <h3> {{ $review->user->name }} </h3>
                 <p> {{ $review->comment }} </p>
                 <span> {{ $review->created_at->format('d M Y H:i') }} </span>

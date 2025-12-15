@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
+            $table->unsignedTinyInteger('rating'); // 1 a 5
             $table->string('comment');
             $table->foreignId('place_id')
                   ->constrained('turistic_places')
@@ -24,6 +25,7 @@ return new class extends Migration
          
 
             $table->timestamps();
+            $table->unique(['user_id', 'place_id']); 
          
             
         });
