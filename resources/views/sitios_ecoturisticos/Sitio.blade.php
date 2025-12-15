@@ -4,9 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="img/svg" href="./img/inicio_sesion/nature-svgrepo-com.svg">
-  <link rel="stylesheet" href="./css/style_Sitio.css">
-  <title> Sitios </title>
+  <link rel="icon" type="image/svg+xml" href="{{ asset('img/inicio_sesion/nature-svgrepo-com.svg') }}">
+  
+  @vite(['resources/css/app.css', 'resources/css/style_Sitio.css', 'resources/js/app.js'])
+  <link rel="stylesheet" href="{{ asset('css/style_Sitio.css') }}">
+  
+  <title>Sitios</title>
 </head>
 <body>
     <!-- Navbar -->
@@ -180,6 +183,44 @@
     </section>
 
 
+    <section>
+        @if($user)
+        <button>
+        Añadir una reseña
+        </button>
+
+        <form action="/Sitio/{{$place->id}}" method="POST">
+            @csrf
+            <label for="review">Escribe tu reseña</label>
+            <textarea name="review" id="review"></textarea>
+            <button>Enviar</button>
+            @error('review')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </form>
+        @else
+        <p> Inicia sesión para añadir una reseña </p>
+        @endif
+    </section>
+    <section>
+        <h2> Reseñas </h2>
+        @foreach($reviews as $review)
+            <div class="review">
+                <h3> {{ $review->user->name }} </h3>
+                <p> {{ $review->comment }} </p>
+                <span> {{ $review->created_at->format('d M Y H:i') }} </span>
+            </div>
+            @if($user && $user->id === $review->user_id)
+            <form action="/Sitio/{{$place->id}}" method="POST">
+            @csrf
+            @method('DELETE')
+            <button type="submit">Eliminar reseña</button>
+            </form>
+            @endif
+        @endforeach
+        
+    </section>
+
     <!-- footer -->
     <footer class="footer">
         <!-- contenedor de footer -->
@@ -246,6 +287,6 @@
           <p>© 2025 Conexión EcoRisaralda – Todos los derechos reservados.</p>
         </div>
       </footer>
-      <script type="text/javascript" src="js/main_Sitio.js"></script>
+     
 </body>
 </html>

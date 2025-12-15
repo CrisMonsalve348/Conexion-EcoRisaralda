@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\preferenceController;
 use App\Http\Controllers\TuristicPlaceController;
+use App\Http\Controllers\ReviewsController;
+
 use Illuminate\Support\Facades\Route;
 //Laravel default web routes file
 Route::get('/', function () {
@@ -40,4 +42,25 @@ Route::post('/Crear_sitio', [TuristicPlaceController::class, 'validarsitio'])
     ->middleware(['auth', 'role:operator,admin'])
     ->name('guardar_sitio');
 
+//gestion y eliminar  sitios de operador y admin
+Route::get('/Gestion_sitio', [TuristicPlaceController::class, 'gestionsitios'])
+    ->middleware(['auth', 'role:operator,admin'])
+    ->name('gestionar_sitios');
+Route::delete('/Gestion_sitio/{id}', [TuristicPlaceController::class, 'destroy'])
+    ->middleware(['auth', 'role:operator,admin'])
+    ->name('eliminar_sitio');
+//editar sitios de oprador y admin
+Route::get('/Editar_sitio/{id}', [TuristicPlaceController::class, 'editar'])
+    ->middleware(['auth', 'role:operator,admin'])
+    ->name('Modificar_sitio');
+Route::put('/Editar_sitio/{id}', [TuristicPlaceController::class, 'sitioactualizado'])
+    ->middleware(['auth', 'role:operator,admin'])
+    ->name('sitio_actualizado');
+
+//visualizar sitio ecoturistico
+Route::get('/Sitio/{id}', [TuristicPlaceController::class, 'ver'])->name('sitio_ecoturistico');
+//publicar comentario o reseña
+Route::post('/Sitio/{id}', [ReviewsController::class, 'publicarreseña'])->name('sitio_ecoturistico');
 require __DIR__.'/auth.php';
+//eliminar reseña
+Route::delete('/Sitio/{id}', [ReviewsController::class, 'eliminarreseña'])->name('eliminar_reseña');

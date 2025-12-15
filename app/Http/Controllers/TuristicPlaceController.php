@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\TuristicPlace;
+use App\Models\reviews;
+
+use Illuminate\Support\Facades\Storage;
+
 
 class TuristicPlaceController extends Controller
 {
@@ -88,6 +92,150 @@ class TuristicPlaceController extends Controller
             'politicas'           => true,
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Sitio creado correctamente.');
+        return redirect()->route('gestionar_sitios')->with('success', 'Sitio creado correctamente.');
+    }
+  public function gestionsitios()
+{
+    $user = auth()->user();
+    
+    if ($user->role == 'operator') {
+        $places = TuristicPlace::where('user_id', $user->id)->get();
+    } elseif ($user->role == 'admin') {
+        $places = TuristicPlace::all();
+    } else {
+      
+        abort(403, 'No tienes permisos para acceder a esta página');
+    }
+    
+    return view('sitios_ecoturisticos.Gestion_sitio', compact('user', 'places'));
+}
+
+    public function destroy($id)
+{
+    $place = TuristicPlace::findOrFail($id);
+    
+    // Eliminar la imagen del storage
+    if ($place->cover) {
+        Storage::disk('public')->delete($place->cover);
+    }
+    
+    $place->delete();
+    
+    return redirect()->route('gestionar_sitios')->with('success', 'Sitio eliminado correctamente');
+}
+
+    public function editar($id)
+    {
+        $place = TuristicPlace::findOrFail($id);
+        return view('sitios_ecoturisticos.Editar_sitio', compact('place'));
+    }
+    public function sitioactualizado(Request $request, $id)
+{
+    $place = TuristicPlace::findOrFail($id);
+    
+    // Validación
+    $request->validate([
+        'nombre'               => 'required|string|max:255',
+        'slogan'               => 'required|string|max:255',
+        'descripcion'          => 'required|string|min:10',
+        'localizacion'         => 'required|string|min:10',
+        'lat'                  => 'required',
+        'lng'                  => 'required',
+        'clima'                => 'required|string|min:10',
+        'caracteristicas'      => 'required|string|min:10',
+        'flora'                => 'required|string|min:10',
+        'infraestructura'      => 'required|string|min:10',
+        'recomendacion'        => 'required|string|min:10',
+
+        // Imágenes opcionales
+        'portada'              => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+        'clima_img'            => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+        'caracteristicas_img'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+        'flora_img'            => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+        'infraestructura_img'  => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+    ], [
+        'nombre.required'   => 'Debe ingresar el nombre del sitio.',
+        'slogan.required'   => 'Debe ingresar el slogan.',
+        'descripcion.required' => 'Debe ingresar la descripción.',
+        'localizacion.required' => 'Debe ingresar la localización.',
+        'lat.required'          => 'Debe ubicar la latitud',
+        'lng.required'          => 'Debe ubicar la longitud',
+        'clima.required' => 'Debe ingresar el clima.',
+        'caracteristicas.required' => 'Debe ingresar las características.',
+        'flora.required' => 'Debe ingresar la flora y fauna.',
+        'infraestructura.required' => 'Debe ingresar la infraestructura.',
+        'recomendacion.required' => 'Debe ingresar recomendaciones.',
+    ]);
+
+    // Actualizar campos de texto
+    $place->name = $request->nombre;
+    $place->slogan = $request->slogan;
+    $place->description = $request->descripcion;
+    $place->localization = $request->localizacion;
+    $place->lat = $request->lat;
+    $place->lng = $request->lng;
+    $place->Weather = $request->clima;
+    $place->features = $request->caracteristicas;
+    $place->flora = $request->flora;
+    $place->estructure = $request->infraestructura;
+    $place->tips = $request->recomendacion;
+
+    // Actualizar portada si se subió nueva imagen
+    if ($request->hasFile('portada')) {
+        // Eliminar imagen anterior
+        if ($place->cover) {
+            Storage::disk('public')->delete($place->cover);
+        }
+        // Guardar nueva imagen
+        $place->cover = $request->file('portada')->store('portadas', 'public');
+    }
+
+    // Actualizar imagen de clima
+    if ($request->hasFile('clima_img')) {
+        if ($place->Weather_img) {
+            Storage::disk('public')->delete($place->Weather_img);
+        }
+        $place->Weather_img = $request->file('clima_img')->store('clima', 'public');
+    }
+
+    // Actualizar imagen de características
+    if ($request->hasFile('caracteristicas_img')) {
+        if ($place->features_img) {
+            Storage::disk('public')->delete($place->features_img);
+        }
+        $place->features_img = $request->file('caracteristicas_img')->store('caracteristicas', 'public');
+    }
+
+    // Actualizar imagen de flora
+    if ($request->hasFile('flora_img')) {
+        if ($place->flora_img) {
+            Storage::disk('public')->delete($place->flora_img);
+        }
+        $place->flora_img = $request->file('flora_img')->store('flora', 'public');
+    }
+
+    // Actualizar imagen de infraestructura
+    if ($request->hasFile('infraestructura_img')) {
+        if ($place->estructure_img) {
+            Storage::disk('public')->delete($place->estructure_img);
+        }
+        $place->estructure_img = $request->file('infraestructura_img')->store('infraestructura', 'public');
+    }
+
+    $place->save();
+
+    return redirect()->route('gestionar_sitios')->with('success', 'Sitio actualizado correctamente');
+}
+    public function ver($id){
+        $place = TuristicPlace::findOrFail($id);
+         $user = auth()->user();
+            $reviews = reviews::where('place_id', $id)
+                     ->with('user') 
+                     ->orderBy('created_at', 'desc')
+                     ->get();
+        
+        return view('sitios_ecoturisticos.Sitio', compact('user', 'place', 'reviews'));
+        
+      
     }
 }
