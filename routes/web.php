@@ -32,6 +32,7 @@ Route::post('/preferencias', [preferenceController::class, 'validarpreferencias'
 
 //crear sitio ecoturistico
 Route::get('/Crear_sitio', [TuristicPlaceController::class, 'crear'])
+                            //con esto le pongo un nombre a la ruta para no tener
     ->middleware(['auth', 'role:operator,admin'])
     ->name('crear_sitio');
 
