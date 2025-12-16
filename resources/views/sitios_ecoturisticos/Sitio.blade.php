@@ -312,6 +312,19 @@
           <p>© 2025 Conexión EcoRisaralda – Todos los derechos reservados.</p>
         </div>
       </footer>
-     
+       <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar que las funciones estén disponibles
+            if (typeof window.showPlaceMap === 'function') {
+                window.showPlaceMap(
+                    {{ $place->lat }}, 
+                    {{ $place->lng }}, 
+                    '{{ $place->name }}'
+                );
+            } else {
+                console.error('showPlaceMap no está definida');
+            }
+        });
+    </script>
 </body>
 </html>

@@ -35,4 +35,20 @@ export default function loadMap() {
          document.getElementById('lat').value = e.latlng.lat.toFixed(8);
     document.getElementById('lng').value = e.latlng.lng.toFixed(8);
     });
+
+}
+// Función para VER sitio (mostrar ubicación guardada)
+export function showPlaceMap(lat, lng, placeName) {
+    const map = L.map('map').setView([lat, lng], 15);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap',
+    }).addTo(map);
+
+    // Marcador fijo en la ubicación del sitio
+    const marker = L.marker([lat, lng]).addTo(map);
+    
+    // Popup con el nombre del sitio
+    marker.bindPopup(`<b>${placeName}</b>`).openPopup();
 }

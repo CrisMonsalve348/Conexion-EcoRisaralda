@@ -1,7 +1,7 @@
 import './bootstrap';
 import 'leaflet/dist/leaflet.css';
 import Alpine from 'alpinejs';
-import loadMap from './mapa.js';
+import loadMap , { showPlaceMap } from './mapa.js';
 
 window.Alpine = Alpine;
 Alpine.start();
@@ -12,3 +12,4 @@ document.addEventListener('DOMContentLoaded', () => {
         loadMap();
     }
 });
+window.showPlaceMap = showPlaceMap;
