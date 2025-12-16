@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\TuristicPlace;
 use App\Models\reviews;
 use App\Models\rate;
+use App\Models\FavoritePlace;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -240,5 +241,25 @@ class TuristicPlaceController extends Controller
         return view('sitios_ecoturisticos.Sitio', compact('user', 'place', 'reviews', 'rate'));
         
       
+    }
+
+    public function favoritos($id){
+        $user = auth()->user();
+        $place = TuristicPlace::findOrFail($id);
+
+         $user->favoritePlaces()->attach($id);
+        return redirect()->back()->with('success', 'Sitio añadido a favoritos.');
+    }
+    public function removeFavorite($id)
+    {
+        auth()->user()->favoritePlaces()->detach($id);
+        
+        return back()->with('success', 'Eliminado de favoritos');
+    }
+
+    public function versitiosfavoritos(){
+        $user = auth()->user();
+        $favoritePlaces = $user->favoritePlaces;
+        return view('sitios_ecoturisticos.Sitios_favoritos', compact('favoritePlaces'));
     }
 }

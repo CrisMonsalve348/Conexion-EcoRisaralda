@@ -13,11 +13,9 @@
 </head>
 <body>
     <!-- Navbar -->
-    <header class="header">
-
+      <header class="header">
         <!-- div que contiene el logo de la empresa con hipervinculo a la pagina principal-->
         <div id="logotipo">
-
             <!-- imagen de logo -->
             <a href="Pagina_Inicio.html"><img src="img/Pagina_inicio/nature-svgrepo-com.svg" alt="Logo empresa" id="logo"></a>
 
@@ -27,19 +25,38 @@
             </div>
             
         </div>
-
+ @if($user)
+    @if($user->favoritePlaces()->where('place_id', $place->id)->exists())
+        <!-- Ya está en favoritos - Mostrar botón de eliminar -->
+        <form action="{{ route('eliminar_favorito', $place->id) }}" method="POST">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">
+                ❤️ Eliminar de favoritos
+            </button>
+        </form>
+    @else
+        <!-- NO está en favoritos - Mostrar botón de agregar -->
+        <form action="{{ route('agregar_favorito', $place->id) }}" method="POST">
+            @csrf
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
+                🤍 Agregar a favoritos
+            </button>
+        </form>
+    @endif
+@endif
         <!-- parte derecha del encabezado -->
         <div id="parte_derecha">
-
             <!-- barra de busqueda -->     
                 <div id="buscador">
                     <img src="img/Pagina_inicio/search-svgrepo-com.svg" alt="Buscar" id="buscar">
                     <p>Buscar</p>
-                </div>   
-
-            <!-- botones de inicio de sesion -->
-            <a href="./roles.html"><button id="register_btn">Registrarse</button></a>
-            <a href="inicio_sesion.html"><button id="loguin_btn">Iniciar Sesion</button></a>
+                </div>       
+                <div id="user">
+                    <img src="img/Coleccion_sitios_ecoturisticos/user.svg" alt="">
+                    <p>Jane Mar</p>
+                </div>
+                <img src="img/Coleccion_sitios_ecoturisticos/favourites.png" class="favourites" alt="">
 
             <!-- dropdown -->
                 <img src="img/Pagina_inicio/img_drop_down.png" alt="Menu Desplegable" id="dropdown">
