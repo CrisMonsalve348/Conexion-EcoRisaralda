@@ -262,4 +262,24 @@ class TuristicPlaceController extends Controller
         $favoritePlaces = $user->favoritePlaces;
         return view('sitios_ecoturisticos.Sitios_favoritos', compact('favoritePlaces'));
     }
+
+    public function coleccion(Request $request)
+{
+    $search = $request->input('search');
+    
+    if ($search) {
+        
+        $places = TuristicPlace::where('name', 'LIKE', "%{$search}%")
+                               ->orWhere('description', 'LIKE', "%{$search}%")
+                               ->orWhere('localization', 'LIKE', "%{$search}%")
+                               ->get();
+    } else {
+        
+        $places = TuristicPlace::all();
+    }
+    
+    return view('sitios_ecoturisticos.Coleccion', compact('places', 'search'));
+}
+
+
 }

@@ -73,4 +73,9 @@ Route::delete('/Sitio/{id}', [TuristicPlaceController::class, 'removeFavorite'])
 Route::get('/Sitios_favoritos',[TuristicPlaceController::class,'versitiosfavoritos'])
     ->middleware(['auth', 'verified'])
     ->name('sitios_favoritos');
+
+//ver coleccion de todos los sitios 
+Route::get('/Coleccion', [TuristicPlaceController::class, 'coleccion'])
+    ->name('coleccion_sitios');
+
 require __DIR__.'/auth.php';
