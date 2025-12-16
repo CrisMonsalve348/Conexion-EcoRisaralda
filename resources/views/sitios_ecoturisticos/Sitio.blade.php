@@ -4,17 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="img/svg" href="./img/inicio_sesion/nature-svgrepo-com.svg">
-  <link rel="stylesheet" href="./css/style_Sitio.css">
-  <title> Sitios </title>
+  <link rel="icon" type="image/svg+xml" href="{{ asset('img/inicio_sesion/nature-svgrepo-com.svg') }}">
+  
+  @vite(['resources/css/app.css', 'resources/css/style_Sitio.css', 'resources/js/app.js'])
+  <link rel="stylesheet" href="{{ asset('css/style_Sitio.css') }}">
+  
+  <title>Sitios</title>
 </head>
 <body>
     <!-- Navbar -->
-    <header class="header">
-
+      <header class="header">
         <!-- div que contiene el logo de la empresa con hipervinculo a la pagina principal-->
         <div id="logotipo">
-
             <!-- imagen de logo -->
             <a href="Pagina_Inicio.html"><img src="img/Pagina_inicio/nature-svgrepo-com.svg" alt="Logo empresa" id="logo"></a>
 
@@ -24,19 +25,38 @@
             </div>
             
         </div>
-
+ @if($user)
+    @if($user->favoritePlaces()->where('place_id', $place->id)->exists())
+        <!-- Ya está en favoritos - Mostrar botón de eliminar -->
+        <form action="{{ route('eliminar_favorito', $place->id) }}" method="POST">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded">
+                ❤️ Eliminar de favoritos
+            </button>
+        </form>
+    @else
+        <!-- NO está en favoritos - Mostrar botón de agregar -->
+        <form action="{{ route('agregar_favorito', $place->id) }}" method="POST">
+            @csrf
+            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">
+                🤍 Agregar a favoritos
+            </button>
+        </form>
+    @endif
+@endif
         <!-- parte derecha del encabezado -->
         <div id="parte_derecha">
-
             <!-- barra de busqueda -->     
                 <div id="buscador">
                     <img src="img/Pagina_inicio/search-svgrepo-com.svg" alt="Buscar" id="buscar">
                     <p>Buscar</p>
-                </div>   
-
-            <!-- botones de inicio de sesion -->
-            <a href="./roles.html"><button id="register_btn">Registrarse</button></a>
-            <a href="inicio_sesion.html"><button id="loguin_btn">Iniciar Sesion</button></a>
+                </div>       
+                <div id="user">
+                    <img src="img/Coleccion_sitios_ecoturisticos/user.svg" alt="">
+                    <p>Jane Mar</p>
+                </div>
+                <img src="img/Coleccion_sitios_ecoturisticos/favourites.png" class="favourites" alt="">
 
             <!-- dropdown -->
                 <img src="img/Pagina_inicio/img_drop_down.png" alt="Menu Desplegable" id="dropdown">
@@ -52,8 +72,8 @@
     <!-- Contenedor 1 -->
     <section class="vista">
         <div class="vista_contenido">
-            <h1> Reserva natural parque la Nona </h1>
-            <p> ¡Conéctate con la naturaleza y descubre la magia de La Virginia, Risaralda — un paraíso ecoturístico por explorar! </p>
+            <h1> {{$place->name}}</h1>
+            <p> {{$place->slogan}} </p>
             <a href="sitio.html" class="btn conocer"> Conoce más </a>
         </div>
     </section>
@@ -63,11 +83,7 @@
     <section class="descripcion">
         <div class="descripcion_contenedor">
             <p>
-                La Reserva Natural Parque La Nona es un destino ideal para los amantes del ecoturismo.
-                Rodeada de exuberante vegetación y rica biodiversidad, esta reserva ofrece una experiencia
-                única de conexión con la naturaleza. Los visitantes pueden disfrutar de caminatas ecológicas,
-                avistamiento de aves, y recorridos interpretativos que promueven la conservación del medio ambiente.
-                Es un espacio perfecto para quienes buscan tranquilidad, aire puro y un contacto respetuoso con los ecosistemas locales.
+               {{$place->description}}
             </p>
         </div>
     </section>
@@ -79,13 +95,12 @@
             <div class="info-text">
                 <h2 class="green-title"> Localización </h2>
                 <p>
-                    La Reserva Natural Parque La Nona se encuentra en el municipio de Marsella, en el departamento de Risaralda, Colombia.
-                    Está ubicada a aproximadamente 7 kilómetros del casco urbano de Marsella.
+                  {{$place->localization}}
                 </p>
             </div>
 
             <div class="info-img">
-                <img src="./img/sitios/Captura de pantalla 2025-04-09 235939.png" alt="Mapa de localización">
+                   <div id="map" class="w-80 h-80"></div>
             </div>
         </div>
     </section>
@@ -95,7 +110,7 @@
     <section class="info-section">
         <div class="container info-grid reverse">
             <div class="info-img">
-                <img src="./img/sitios/LA-VIRGINIA-540X370.jpg" alt="Vegetación y clima">
+                <img src="" alt="Vegetación y clima">
             </div>
 
             <div class="info-text">
@@ -180,6 +195,57 @@
     </section>
 
 
+    <section>
+        <h1> Calificación promedio: {{ $rate ? $rate->rating : 'Sin calificaciones aún' }} </h1>
+        @if($user)
+        <button>
+
+        Añadir una reseña
+        </button>
+      
+
+        <form action="/Sitio/{{$place->id}}" method="POST">
+            @csrf
+            <label for="">Calificanos</label>
+            <label><input type="radio" name="rating" value="1"> 1</label>
+            <label><input type="radio" name="rating" value="2"> 2</label>
+            <label><input type="radio" name="rating" value="3"> 3</label>
+            <label><input type="radio" name="rating" value="4"> 4</label>
+            <label><input type="radio" name="rating" value="5"> 5</label>
+            <label for="review">Escribe tu reseña</label>
+            @error('rating')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+            <textarea name="review" id="review"></textarea>
+            <button>Enviar</button>
+            @error('review')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </form>
+        @else
+        <p> Inicia sesión para añadir una reseña </p>
+        @endif
+    </section>
+    <section>
+        <h2> Reseñas </h2>
+        @foreach($reviews as $review)
+            <div class="review">
+                <div>{{$review->rating}}</div>
+                <h3> {{ $review->user->name }} </h3>
+                <p> {{ $review->comment }} </p>
+                <span> {{ $review->created_at->format('d M Y H:i') }} </span>
+            </div>
+            @if($user && $user->id === $review->user_id)
+            <form action="/Sitio/{{$place->id}}" method="POST">
+            @csrf
+            @method('DELETE')
+            <button type="submit">Eliminar reseña</button>
+            </form>
+            @endif
+        @endforeach
+        
+    </section>
+
     <!-- footer -->
     <footer class="footer">
         <!-- contenedor de footer -->
@@ -246,6 +312,19 @@
           <p>© 2025 Conexión EcoRisaralda – Todos los derechos reservados.</p>
         </div>
       </footer>
-      <script type="text/javascript" src="js/main_Sitio.js"></script>
+       <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar que las funciones estén disponibles
+            if (typeof window.showPlaceMap === 'function') {
+                window.showPlaceMap(
+                    {{ $place->lat }}, 
+                    {{ $place->lng }}, 
+                    '{{ $place->name }}'
+                );
+            } else {
+                console.error('showPlaceMap no está definida');
+            }
+        });
+    </script>
 </body>
 </html>
