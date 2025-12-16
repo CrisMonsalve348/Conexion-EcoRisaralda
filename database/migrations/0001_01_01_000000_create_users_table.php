@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('image')->nulleable();
+            $table->string('image')->nullable();
             $table->enum('role', ['user', 'operator', 'admin'])->default('user');
             $table->rememberToken();
             $table->timestamps();
@@ -40,9 +40,6 @@ return new class extends Migration
             $table->longText('payload');
             $table->integer('last_activity')->index();
         });
-         Schema::table('users', function (Blueprint $table) {
-        $table->string('image')->nullable()->change();
-    });
     }
 
     /**
@@ -53,8 +50,5 @@ return new class extends Migration
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
-         Schema::table('users', function (Blueprint $table) {
-        $table->string('image')->nullable(false)->change();
-    });
     }
 };

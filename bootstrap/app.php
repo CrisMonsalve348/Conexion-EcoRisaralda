@@ -15,7 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-            'role'=>checkrole::class,
+            'role' => checkrole::class,
         ]);
         // Ensure CORS is handled globally for API/SPA integration
         $middleware->append(HandleCors::class);

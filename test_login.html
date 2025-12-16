@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Login</title>
+    <style>
+        body { font-family: Arial; margin: 40px; }
+        button { padding: 10px 20px; font-size: 16px; }
+        #result { margin-top: 20px; padding: 10px; border: 1px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Test Login API</h1>
+    <button onclick="testLogin()">Test Login</button>
+    <div id="result"></div>
+    
+    <script>
+        async function testLogin() {
+            const result = document.getElementById('result');
+            result.innerText = 'Loading...';
+            
+            try {
+                // Primero obtener CSRF token
+                const csrfRes = await fetch('http://localhost:8000/sanctum/csrf-cookie', {
+                    credentials: 'include'
+                });
+                console.log('CSRF Response:', csrfRes.status);
+                
+                // Luego login
+                const loginRes = await fetch('http://localhost:8000/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        email: 'admin@ecorisaralda.com',
+                        password: 'ecorisaralda123'
+                    })
+                });
+                
+                const data = await loginRes.json();
+                result.innerText = `Status: ${loginRes.status}\n\n${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                result.innerText = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>

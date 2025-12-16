@@ -9,9 +9,10 @@ class VerifyCsrfToken extends Middleware
     /**
      * The URIs that should be excluded from CSRF verification.
      *
-     * For our SPA API endpoints, we manage authentication via Sanctum
-     * and cookies, so we can safely exclude these routes to prevent
-     * 419 errors during cross-origin requests from the frontend.
+     * API routes should not require CSRF tokens.
+     * They use Sanctum tokens or session-based auth without CSRF.
      */
-    protected $except = [];
+    protected $except = [
+        'api/*',
+    ];
 }
