@@ -14,44 +14,44 @@ class preferenceSeeder extends Seeder
     {
         $preferences = [
             [
-                'name' => 'Senderismo',
-                'image' => 'hiking.png',
-                'color' => 'D9D9D9',
+                'name' => 'Senderismo (hiking)',
+                'image' => 'hiking',
+                'color' => 'FF6B6B',
             ],
             [
-                'name' => 'Avistamiento de Aves',
-                'image' => 'birdwatching.png',
-                'color' => 'FED9A0',
+                'name' => 'Avistamiento de aves (birdwatching)',
+                'image' => 'birdwatching',
+                'color' => 'FFA500',
             ],
             [
-                'name' => 'Ciclismo de Montaña',
-                'image' => 'bicycle.png',
-                'color' => '96D471',
+                'name' => 'Ciclismo de montaña o ecológico',
+                'image' => 'biking',
+                'color' => '4ECDC4',
             ],
             [
-                'name' => 'Escaladismo',
-                'image' => 'rappelling.png',
-                'color' => 'E6C675',
+                'name' => 'Escalada o rappel en roca natural',
+                'image' => 'climbing',
+                'color' => 'FFD93D',
             ],
             [
-                'name' => 'Voluntariado Ambiental',
-                'image' => 'turtle.png',
-                'color' => 'CEF3BD',
+                'name' => 'Liberación de especies o voluntariado con fauna',
+                'image' => 'wildlife',
+                'color' => '6BCB77',
             ],
             [
-                'name' => 'Visitas a Parques Naturales',
-                'image' => 'national-park.png',
-                'color' => 'DBB48E',
+                'name' => 'Visitas a reservas naturales o parques nacionales',
+                'image' => 'reserves',
+                'color' => '8B6F47',
             ],
             [
-                'name' => 'Paseo en canoa o kayak',
-                'image' => 'kayaking.png',
-                'color' => 'DBE9F5',
+                'name' => 'Paseos en kayak o canoa',
+                'image' => 'kayaking',
+                'color' => '4D96FF',
             ],
             [
-                'name' => 'Bosquejo',
-                'image' => 'forest.png',
-                'color' => '6FBF6B',
+                'name' => 'Baños de bosque (forest bathing)',
+                'image' => 'forest_bathing',
+                'color' => '52B788',
             ],
         ];
 
