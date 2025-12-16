@@ -4,14 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class reviews extends Model
+class FavoritePlace extends Model
 {
-    protected $fillable = [
-        'rating',
-        'comment',
-        'user_id',
-        'place_id',
-    ];
+    protected $fillable = ['user_id', 'place_id'];
+
 
     public function user()
     {

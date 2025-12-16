@@ -34,6 +34,7 @@ Route::post('/preferencias', [preferenceController::class, 'validarpreferencias'
 
 //crear sitio ecoturistico
 Route::get('/Crear_sitio', [TuristicPlaceController::class, 'crear'])
+                            //con esto le pongo un nombre a la ruta para no tener
     ->middleware(['auth', 'role:operator,admin'])
     ->name('crear_sitio');
 
@@ -60,6 +61,21 @@ Route::put('/Editar_sitio/{id}', [TuristicPlaceController::class, 'sitioactualiz
 Route::get('/Sitio/{id}', [TuristicPlaceController::class, 'ver'])->name('sitio_ecoturistico');
 //publicar comentario o reseña
 Route::post('/Sitio/{id}', [ReviewsController::class, 'publicarreseña'])->name('sitio_ecoturistico');
-require __DIR__.'/auth.php';
+
 //eliminar reseña
 Route::delete('/Sitio/{id}', [ReviewsController::class, 'eliminarreseña'])->name('eliminar_reseña');
+
+//añadir a favoritos
+Route::post('/Sitio/{id}', [TuristicPlaceController::class, 'favoritos'])->name('agregar_favorito');
+//eliminar de favoritos
+Route::delete('/Sitio/{id}', [TuristicPlaceController::class, 'removeFavorite'])->name('eliminar_favorito');
+
+Route::get('/Sitios_favoritos',[TuristicPlaceController::class,'versitiosfavoritos'])
+    ->middleware(['auth', 'verified'])
+    ->name('sitios_favoritos');
+
+//ver coleccion de todos los sitios 
+Route::get('/Coleccion', [TuristicPlaceController::class, 'coleccion'])
+    ->name('coleccion_sitios');
+
+require __DIR__.'/auth.php';

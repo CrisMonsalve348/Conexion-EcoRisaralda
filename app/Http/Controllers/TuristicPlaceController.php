@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TuristicPlace;
 use App\Models\reviews;
+use App\Models\rate;
+use App\Models\FavoritePlace;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -227,15 +229,57 @@ class TuristicPlaceController extends Controller
     return redirect()->route('gestionar_sitios')->with('success', 'Sitio actualizado correctamente');
 }
     public function ver($id){
+
         $place = TuristicPlace::findOrFail($id);
          $user = auth()->user();
             $reviews = reviews::where('place_id', $id)
                      ->with('user') 
                      ->orderBy('created_at', 'desc')
                      ->get();
+            $rate= rate::where('place_id',$id)->first();
         
-        return view('sitios_ecoturisticos.Sitio', compact('user', 'place', 'reviews'));
+        return view('sitios_ecoturisticos.Sitio', compact('user', 'place', 'reviews', 'rate'));
         
       
     }
+
+    public function favoritos($id){
+        $user = auth()->user();
+        $place = TuristicPlace::findOrFail($id);
+
+         $user->favoritePlaces()->attach($id);
+        return redirect()->back()->with('success', 'Sitio añadido a favoritos.');
+    }
+    public function removeFavorite($id)
+    {
+        auth()->user()->favoritePlaces()->detach($id);
+        
+        return back()->with('success', 'Eliminado de favoritos');
+    }
+
+    public function versitiosfavoritos(){
+        $user = auth()->user();
+        $favoritePlaces = $user->favoritePlaces;
+        return view('sitios_ecoturisticos.Sitios_favoritos', compact('favoritePlaces'));
+    }
+
+    public function coleccion(Request $request)
+{
+    $search = $request->input('search');
+    
+    if ($search) {
+        
+        $places = TuristicPlace::where('name', 'LIKE', "%{$search}%")
+                               ->orWhere('description', 'LIKE', "%{$search}%")
+                               ->orWhere('localization', 'LIKE', "%{$search}%")
+                               ->get();
+    } else {
+        
+        $places = TuristicPlace::all();
+    }
+    
+    return view('sitios_ecoturisticos.Coleccion', compact('places', 'search'));
+}
+
+
 }

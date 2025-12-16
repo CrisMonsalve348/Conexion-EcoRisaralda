@@ -24,6 +24,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'Country',
         'date_of_birth',
         'password',
+        'image',
         'role'
     ];
 
@@ -53,6 +54,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public function preferences()
 {
     return $this->belongsToMany(preference::class);
+}
+public function favoritePlaces(){
+    return $this->belongsToMany(TuristicPlace::class, 'favorite_places', 'user_id','place_id')->withTimestamps();
 }
 
 }

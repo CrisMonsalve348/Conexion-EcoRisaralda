@@ -16,19 +16,19 @@ return new class extends Migration
             $table->string('name');
             $table->string('slogan');
             $table->string('cover');
-            $table->string('description');
-            $table->string('localization');
+            $table->longText('description');
+            $table->longText('localization');
             $table->decimal('lat', 10, 8); 
             $table->decimal('lng', 11, 8); 
-            $table->string('Weather');
+            $table->longText('Weather');
             $table->string('Weather_img');
-            $table->string('features');
+            $table->longText('features');
             $table->string('features_img');
-            $table->string('flora');
+            $table->longText('flora');
             $table->string('flora_img');
-            $table->string('estructure');
+            $table->longText('estructure');
             $table->string('estructure_img');
-            $table->string('tips');
+            $table->longText('tips');
             $table->boolean('terminos')->default(false);
             $table->boolean('politicas')->default(false);
             
