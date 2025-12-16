@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\preferenceController;
 use App\Http\Controllers\TuristicPlaceController;
 use App\Http\Controllers\ReviewsController;
+use App\Http\Controllers\AdminFunctionController;
 
 use Illuminate\Support\Facades\Route;
 //Laravel default web routes file
@@ -77,5 +78,10 @@ Route::get('/Sitios_favoritos',[TuristicPlaceController::class,'versitiosfavorit
 //ver coleccion de todos los sitios 
 Route::get('/Coleccion', [TuristicPlaceController::class, 'coleccion'])
     ->name('coleccion_sitios');
+
+//panel de control admin
+Route::get('/panel_control', [AdminFunctionController::class, 'index'])
+    ->middleware(['auth', 'role:admin'])
+    ->name('Modificar_sitio');
 
 require __DIR__.'/auth.php';
