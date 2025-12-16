@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\TuristicPlace;
 use App\Models\User;
-use App\Models\Review;
+use App\Models\reviews;
 
 
 class AdminFunctionController extends Controller
@@ -15,7 +15,7 @@ class AdminFunctionController extends Controller
         $counts = [
             'users' => User::count(),
             'places' => TuristicPlace::count(),
-            'reviews' => Review::count(),
+            'reviews' => reviews::count(),
         ];
         return view('admin.panel_control', compact('counts'));
     }
@@ -34,12 +34,12 @@ class AdminFunctionController extends Controller
     public function managereviews()
     {
         
-        $reviews = Review::all();
+        $reviews = reviews::all();
         return view('admin.manage_reviews', compact('reviews'));
     }
     public function deleteReview(){
         $id=request()->input('id');
-        $review = Review::findOrFail($id);
+        $review = reviews::findOrFail($id);
         $review->delete();
         return redirect()->route('admin.manage_reviews')->with('success', 'Review deleted successfully.');
     }
