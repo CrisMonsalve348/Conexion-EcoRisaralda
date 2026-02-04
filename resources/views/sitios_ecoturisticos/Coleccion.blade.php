@@ -105,7 +105,7 @@
                                 @forelse($places as $place)
                                     <a href="/Sitio/{{ $place->id }}">
                                         <div class="place-card">
-                                            <img src="{{ asset('storage/' . $place->cover) }}" alt="{{ $place->name }}">
+                                            <img src="{{ url('/api/files/' . $place->cover) }}" alt="{{ $place->name }}">
                                             <div>
                                                 <h5>{{ $place->name }}</h5>
                                                 <h5>{{ $place->slogan }}</h5>

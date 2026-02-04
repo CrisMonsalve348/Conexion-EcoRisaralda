@@ -16,7 +16,7 @@
     @foreach($favoritePlaces as $place)
     <a href="/Sitio/{{ $place->id }}">
         <div class="sitio-ecoturistico">
-            <img src="{{ asset('storage/' . $place->cover) }}" alt="{{ $place->name }}" class="imagen-sitio">
+            <img src="{{ url('/api/files/' . $place->cover) }}" alt="{{ $place->name }}" class="imagen-sitio">
             <h2>{{ $place->name }}</h2>
             <p>{{ $place->user->name }}</p>
 

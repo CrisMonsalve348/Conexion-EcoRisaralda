@@ -51,4 +51,38 @@ class ReviewApiController extends Controller
 
         return response()->json(['message' => 'Reseña eliminada exitosamente']);
     }
+
+    /**
+     * PUT /api/reviews/{id}
+     * Update a review (owner or admin only)
+     */
+    public function update(Request $request, $id)
+    {
+        $review = reviews::findOrFail($id);
+
+        // Authorization check
+        if ($request->user()->id !== $review->user_id && $request->user()->role !== 'admin') {
+            return response()->json(['message' => 'No autorizado'], 403);
+        }
+
+        $validated = $request->validate([
+            'rating' => 'nullable|integer|min:1|max:5',
+            'comment' => 'nullable|string|min:10|max:1000',
+        ]);
+
+        if (array_key_exists('rating', $validated)) {
+            $review->rating = $validated['rating'];
+        }
+        if (array_key_exists('comment', $validated)) {
+            $review->comment = $validated['comment'];
+        }
+
+        $review->save();
+        $review->load('user');
+
+        return response()->json([
+            'message' => 'Reseña actualizada exitosamente',
+            'review' => $review,
+        ]);
+    }
 }
