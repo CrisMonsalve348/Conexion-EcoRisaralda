@@ -11,6 +11,7 @@ class reviews extends Model
         'comment',
         'user_id',
         'place_id',
+        'is_restricted',
     ];
 
     public function user()

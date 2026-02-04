@@ -72,12 +72,23 @@ Route::middleware('web')->group(function () {
             'name' => 'required|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:15',
+                'regex:/[a-z]/',      // al menos una minúscula
+                'regex:/[A-Z]/',      // al menos una mayúscula
+                'regex:/[0-9]/',      // al menos un dígito
+            ],
             'role' => 'required|in:turist,operator,user,admin',
             'country' => 'nullable|string|max:255',
             'birth_date' => 'nullable|date|before:-16 years',
         ], [
             'birth_date.before' => 'Debes ser mayor de 16 años para registrarte',
+            'password.min' => 'La contraseña debe tener entre 8 y 15 caracteres',
+            'password.max' => 'La contraseña debe tener entre 8 y 15 caracteres',
+            'password.regex' => 'La contraseña debe incluir al menos una mayúscula, una minúscula y un dígito',
         ]);
 
         $role = $data['role'];
@@ -523,8 +534,30 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                     ->orderBy('created_at', 'desc')
                     ->get();
             });
+
+            // Restringir reseña (admin)
+            Route::post('/reviews/{id}/restrict', function ($id) {
+                $review = \App\Models\reviews::findOrFail($id);
+                $review->update(['is_restricted' => true]);
+                
+                return response()->json([
+                    'message' => 'Reseña restringida exitosamente',
+                    'review' => $review,
+                ]);
+            });
+
+            // Desrestringir reseña (admin)
+            Route::post('/reviews/{id}/unrestrict', function ($id) {
+                $review = \App\Models\reviews::findOrFail($id);
+                $review->update(['is_restricted' => false]);
+                
+                return response()->json([
+                    'message' => 'Reseña desrestringida exitosamente',
+                    'review' => $review,
+                ]);
+            });
         });
-});
+    });
 
 // Verificar email (enlace firmado) y redirigir al frontend
 Route::middleware('web')->get('/email/verify/{id}/{hash}', function (Request $request) {
