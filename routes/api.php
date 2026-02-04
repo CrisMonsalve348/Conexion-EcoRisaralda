@@ -75,7 +75,9 @@ Route::middleware('web')->group(function () {
             'password' => 'required|string|min:8',
             'role' => 'required|in:turist,operator,user,admin',
             'country' => 'nullable|string|max:255',
-            'birth_date' => 'nullable|date',
+            'birth_date' => 'nullable|date|before:-16 years',
+        ], [
+            'birth_date.before' => 'Debes ser mayor de 16 años para registrarte',
         ]);
 
         $role = $data['role'];
@@ -92,20 +94,11 @@ Route::middleware('web')->group(function () {
             'date_of_birth' => $data['birth_date'] ?? null,
         ]);
 
-        Auth::login($user);
-
         if (method_exists($user, 'sendEmailVerificationNotification')) {
             $user->sendEmailVerificationNotification();
         }
 
-        $userData = $user->toArray();
-        if ($user->image) {
-            $imagePath = str_replace('\\', '/', $user->image);
-            $userData['avatar_url'] = url('/api/files/' . $imagePath);
-        }
-
         return response()->json([
-            'user' => $userData,
             'message' => 'Registro exitoso. Revisa tu correo para verificar la cuenta.',
         ]);
     });
@@ -117,8 +110,17 @@ Route::middleware('web')->group(function () {
         ]);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
             $user = Auth::user();
+            
+            // Verificar si el email está verificado
+            if (!$user->hasVerifiedEmail()) {
+                Auth::logout();
+                return response()->json([
+                    'message' => 'Debes verificar tu correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada.',
+                ], 403);
+            }
+            
+            $request->session()->regenerate();
             
             // Generar Sanctum token para SPA
             $token = $user->createToken('api-token')->plainTextToken;
