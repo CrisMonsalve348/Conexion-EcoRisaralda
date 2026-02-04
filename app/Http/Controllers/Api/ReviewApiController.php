@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\reviews;
 use Illuminate\Http\Request;
+use Waad\ProfanityFilter\Facades\ProfanityFilter;
 
 class ReviewApiController extends Controller
 {
@@ -16,7 +17,17 @@ class ReviewApiController extends Controller
     {
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
-            'comment' => 'required|string|min:10|max:1000',
+            'comment' => [
+                'required',
+                'string',
+                'min:10',
+                'max:1000',
+                function ($attribute, $value, $fail) {
+                    if (ProfanityFilter::hasProfanity($value)) {
+                        $fail('El comentario contiene lenguaje inapropiado. Por favor, utiliza un lenguaje respetuoso.');
+                    }
+                }
+            ],
         ]);
 
         $review = reviews::create([
@@ -67,7 +78,17 @@ class ReviewApiController extends Controller
 
         $validated = $request->validate([
             'rating' => 'nullable|integer|min:1|max:5',
-            'comment' => 'nullable|string|min:10|max:1000',
+            'comment' => [
+                'nullable',
+                'string',
+                'min:10',
+                'max:1000',
+                function ($attribute, $value, $fail) {
+                    if ($value && ProfanityFilter::hasProfanity($value)) {
+                        $fail('El comentario contiene lenguaje inapropiado. Por favor, utiliza un lenguaje respetuoso.');
+                    }
+                }
+            ],
         ]);
 
         if (array_key_exists('rating', $validated)) {
