@@ -67,9 +67,9 @@ Route::post('/Sitio/{id}', [ReviewsController::class, 'publicarreseña'])->name(
 Route::delete('/Sitio/{id}', [ReviewsController::class, 'eliminarreseña'])->name('eliminar_reseña');
 
 //añadir a favoritos
-Route::post('/Sitio/{id}', [TuristicPlaceController::class, 'favoritos'])->name('agregar_favorito');
+Route::post('/Sitio/{id}/favorite', [TuristicPlaceController::class, 'favoritos'])->name('agregar_favorito');
 //eliminar de favoritos
-Route::delete('/Sitio/{id}', [TuristicPlaceController::class, 'removeFavorite'])->name('eliminar_favorito');
+Route::delete('/Sitio/{id}/favorite', [TuristicPlaceController::class, 'removeFavorite'])->name('eliminar_favorito');
 
 Route::get('/Sitios_favoritos',[TuristicPlaceController::class,'versitiosfavoritos'])
     ->middleware(['auth', 'verified'])
