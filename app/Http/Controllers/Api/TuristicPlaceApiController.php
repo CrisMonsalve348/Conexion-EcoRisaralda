@@ -32,13 +32,36 @@ class TuristicPlaceApiController extends Controller
      * GET /api/places/{id}
      * Show single place with reviews
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $place = TuristicPlace::with('user')->findOrFail($id);
         $reviews = reviews::where('place_id', $id)
-            ->with('user')
+            ->with(['user', 'reactions'])
             ->orderBy('created_at', 'desc')
             ->get();
+        
+        // Procesar cada review para agregar contadores y reacción del usuario
+        // Intentar obtener el usuario autenticado (puede ser null si es público)
+        $userId = $request->user() ? $request->user()->id : null;
+        
+        $reviews->each(function ($review) use ($userId) {
+            // Contar likes y dislikes
+            $review->likes_count = $review->reactions->where('type', 'like')->count();
+            $review->dislikes_count = $review->reactions->where('type', 'dislike')->count();
+            
+            // Obtener reacción del usuario actual si existe
+            if ($userId) {
+                $userReaction = $review->reactions->first(function ($reaction) use ($userId) {
+                    return $reaction->user_id === $userId;
+                });
+                $review->user_reaction = $userReaction ? $userReaction->type : null;
+            } else {
+                $review->user_reaction = null;
+            }
+            
+            // Eliminar las reacciones del payload para reducir tamaño
+            unset($review->reactions);
+        });
         
         return response()->json([
             'place' => $place,

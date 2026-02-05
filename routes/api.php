@@ -61,12 +61,12 @@ Route::get('/files/{type}/{filename}', function ($type, $filename) {
     return response()->file($path);
 })->where('filename', '.*');
 
-// Turistic places - read only (public)
-Route::get('/places', [TuristicPlaceApiController::class, 'index']);
-Route::get('/places/{id}', [TuristicPlaceApiController::class, 'show']);
-
 // Estas rutas necesitan sesión pero omiten CSRF para el primer contacto del cliente SPA
 Route::middleware('web')->group(function () {
+    // Turistic places - read only (public but session-aware)
+    Route::get('/places', [TuristicPlaceApiController::class, 'index']);
+    Route::get('/places/{id}', [TuristicPlaceApiController::class, 'show']);
+    
     Route::post('/register', function (Request $request) {
         $data = $request->validate([
             'name' => 'required|string|max:255',
@@ -368,6 +368,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
         Route::post('/places/{id}/reviews', [ReviewApiController::class, 'store']);
         Route::put('/reviews/{id}', [ReviewApiController::class, 'update']);
         Route::delete('/reviews/{id}', [ReviewApiController::class, 'destroy']);
+        Route::post('/reviews/{id}/react', [ReviewApiController::class, 'react']);
 
         // ============ ADMIN ROUTES ============
         Route::middleware('role:admin')->prefix('admin')->group(function () {

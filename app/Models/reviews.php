@@ -22,4 +22,19 @@ class reviews extends Model
     {
         return $this->belongsTo(TuristicPlace::class, 'place_id');
     }
+    
+    public function reactions()
+    {
+        return $this->hasMany(ReviewReaction::class, 'review_id');
+    }
+    
+    public function likes()
+    {
+        return $this->reactions()->where('type', 'like');
+    }
+    
+    public function dislikes()
+    {
+        return $this->reactions()->where('type', 'dislike');
+    }
 }
