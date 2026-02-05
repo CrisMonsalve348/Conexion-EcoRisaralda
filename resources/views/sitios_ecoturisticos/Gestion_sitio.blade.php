@@ -15,7 +15,7 @@
 
     @foreach($places as $place)
         <div class="w-full h-2/6 flex flex-row border-2 border-gray-300 mb-4 p-4 items-center" >
-            <img class="w-40 h-20 object-cover" src="{{ asset('storage/' . $place->cover) }}" alt="{{$place->name}}">
+            <img class="w-40 h-20 object-cover" src="{{ url('/api/files/' . $place->cover) }}" alt="{{$place->name}}">
             <div>
                 <h3>{{$place->name}}</h3>
                 <p>Id:{{$place->id}}</p>

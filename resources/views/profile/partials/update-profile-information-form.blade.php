@@ -23,7 +23,7 @@
          alt="Avatar por defecto" 
          class="w-32 h-32 rounded-full object-cover">
          @else
-         <img src="{{ asset('storage/' . $user->image) }}" 
+         <img src="{{ url('/api/files/' . $user->image) }}" 
          alt="Avatar por defecto" 
          class="w-full h-full rounded-full object-cover">
     @endif

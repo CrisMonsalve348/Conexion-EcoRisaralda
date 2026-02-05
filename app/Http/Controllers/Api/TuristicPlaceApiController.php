@@ -13,24 +13,55 @@ class TuristicPlaceApiController extends Controller
 {
     /**
      * GET /api/places
-     * List all turistic places
+     * List all turistic places with optional search
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(TuristicPlace::with('user')->latest()->get());
+        $query = TuristicPlace::with('user')->latest();
+        
+        // Si hay un parámetro de búsqueda, filtrar resultados por nombre
+        if ($request->has('search') && $request->search) {
+            $search = $request->search;
+            $query->where('name', 'like', "%{$search}%");
+        }
+        
+        return response()->json($query->get());
     }
 
     /**
      * GET /api/places/{id}
      * Show single place with reviews
      */
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $place = TuristicPlace::with('user')->findOrFail($id);
         $reviews = reviews::where('place_id', $id)
-            ->with('user')
+            ->with(['user', 'reactions'])
             ->orderBy('created_at', 'desc')
             ->get();
+        
+        // Procesar cada review para agregar contadores y reacción del usuario
+        // Intentar obtener el usuario autenticado (puede ser null si es público)
+        $userId = $request->user() ? $request->user()->id : null;
+        
+        $reviews->each(function ($review) use ($userId) {
+            // Contar likes y dislikes
+            $review->likes_count = $review->reactions->where('type', 'like')->count();
+            $review->dislikes_count = $review->reactions->where('type', 'dislike')->count();
+            
+            // Obtener reacción del usuario actual si existe
+            if ($userId) {
+                $userReaction = $review->reactions->first(function ($reaction) use ($userId) {
+                    return $reaction->user_id === $userId;
+                });
+                $review->user_reaction = $userReaction ? $userReaction->type : null;
+            } else {
+                $review->user_reaction = null;
+            }
+            
+            // Eliminar las reacciones del payload para reducir tamaño
+            unset($review->reactions);
+        });
         
         return response()->json([
             'place' => $place,
@@ -68,6 +99,49 @@ class TuristicPlaceApiController extends Controller
             'caracteristicas_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
             'flora_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
             'infraestructura_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+        ], [
+            'nombre.required' => 'El nombre del sitio es obligatorio.',
+            'nombre.max' => 'El nombre del sitio no debe tener más de 255 caracteres.',
+            'slogan.required' => 'El slogan es obligatorio.',
+            'slogan.max' => 'El slogan no debe tener más de 255 caracteres.',
+            'descripcion.required' => 'La descripción es obligatoria.',
+            'descripcion.min' => 'La descripción debe tener al menos 10 caracteres.',
+            'localizacion.required' => 'La localización es obligatoria.',
+            'localizacion.min' => 'La localización debe tener al menos 10 caracteres.',
+            'lat.required' => 'La latitud es obligatoria. Por favor, selecciona una ubicación en el mapa.',
+            'lat.numeric' => 'La latitud debe ser un número válido.',
+            'lng.required' => 'La longitud es obligatoria. Por favor, selecciona una ubicación en el mapa.',
+            'lng.numeric' => 'La longitud debe ser un número válido.',
+            'clima.required' => 'La descripción del clima es obligatoria.',
+            'clima.min' => 'La descripción del clima debe tener al menos 10 caracteres.',
+            'caracteristicas.required' => 'Las características son obligatorias.',
+            'caracteristicas.min' => 'Las características deben tener al menos 10 caracteres.',
+            'flora.required' => 'La descripción de flora y fauna es obligatoria.',
+            'flora.min' => 'La descripción de flora y fauna debe tener al menos 10 caracteres.',
+            'infraestructura.required' => 'La descripción de infraestructura es obligatoria.',
+            'infraestructura.min' => 'La descripción de infraestructura debe tener al menos 10 caracteres.',
+            'recomendacion.required' => 'Las recomendaciones son obligatorias.',
+            'recomendacion.min' => 'Las recomendaciones deben tener al menos 10 caracteres.',
+            'portada.required' => 'La imagen de portada es obligatoria.',
+            'portada.image' => 'El archivo de portada debe ser una imagen.',
+            'portada.mimes' => 'La imagen de portada debe ser de tipo: jpg, jpeg, png o webp.',
+            'portada.max' => 'La imagen de portada no debe pesar más de 4MB.',
+            'clima_img.required' => 'La imagen del clima es obligatoria.',
+            'clima_img.image' => 'El archivo del clima debe ser una imagen.',
+            'clima_img.mimes' => 'La imagen del clima debe ser de tipo: jpg, jpeg, png o webp.',
+            'clima_img.max' => 'La imagen del clima no debe pesar más de 4MB.',
+            'caracteristicas_img.required' => 'La imagen de características es obligatoria.',
+            'caracteristicas_img.image' => 'El archivo de características debe ser una imagen.',
+            'caracteristicas_img.mimes' => 'La imagen de características debe ser de tipo: jpg, jpeg, png o webp.',
+            'caracteristicas_img.max' => 'La imagen de características no debe pesar más de 4MB.',
+            'flora_img.required' => 'La imagen de flora y fauna es obligatoria.',
+            'flora_img.image' => 'El archivo de flora y fauna debe ser una imagen.',
+            'flora_img.mimes' => 'La imagen de flora y fauna debe ser de tipo: jpg, jpeg, png o webp.',
+            'flora_img.max' => 'La imagen de flora y fauna no debe pesar más de 4MB.',
+            'infraestructura_img.required' => 'La imagen de infraestructura es obligatoria.',
+            'infraestructura_img.image' => 'El archivo de infraestructura debe ser una imagen.',
+            'infraestructura_img.mimes' => 'La imagen de infraestructura debe ser de tipo: jpg, jpeg, png o webp.',
+            'infraestructura_img.max' => 'La imagen de infraestructura no debe pesar más de 4MB.',
         ]);
 
         // Store images
@@ -138,6 +212,44 @@ class TuristicPlaceApiController extends Controller
             'caracteristicas_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             'flora_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             'infraestructura_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+        ], [
+            'nombre.required' => 'El nombre del sitio es obligatorio.',
+            'nombre.max' => 'El nombre del sitio no debe tener más de 255 caracteres.',
+            'slogan.required' => 'El slogan es obligatorio.',
+            'slogan.max' => 'El slogan no debe tener más de 255 caracteres.',
+            'descripcion.required' => 'La descripción es obligatoria.',
+            'descripcion.min' => 'La descripción debe tener al menos 10 caracteres.',
+            'localizacion.required' => 'La localización es obligatoria.',
+            'localizacion.min' => 'La localización debe tener al menos 10 caracteres.',
+            'lat.required' => 'La latitud es obligatoria. Por favor, selecciona una ubicación en el mapa.',
+            'lat.numeric' => 'La latitud debe ser un número válido.',
+            'lng.required' => 'La longitud es obligatoria. Por favor, selecciona una ubicación en el mapa.',
+            'lng.numeric' => 'La longitud debe ser un número válido.',
+            'clima.required' => 'La descripción del clima es obligatoria.',
+            'clima.min' => 'La descripción del clima debe tener al menos 10 caracteres.',
+            'caracteristicas.required' => 'Las características son obligatorias.',
+            'caracteristicas.min' => 'Las características deben tener al menos 10 caracteres.',
+            'flora.required' => 'La descripción de flora y fauna es obligatoria.',
+            'flora.min' => 'La descripción de flora y fauna debe tener al menos 10 caracteres.',
+            'infraestructura.required' => 'La descripción de infraestructura es obligatoria.',
+            'infraestructura.min' => 'La descripción de infraestructura debe tener al menos 10 caracteres.',
+            'recomendacion.required' => 'Las recomendaciones son obligatorias.',
+            'recomendacion.min' => 'Las recomendaciones deben tener al menos 10 caracteres.',
+            'portada.image' => 'El archivo de portada debe ser una imagen.',
+            'portada.mimes' => 'La imagen de portada debe ser de tipo: jpg, jpeg, png o webp.',
+            'portada.max' => 'La imagen de portada no debe pesar más de 4MB.',
+            'clima_img.image' => 'El archivo del clima debe ser una imagen.',
+            'clima_img.mimes' => 'La imagen del clima debe ser de tipo: jpg, jpeg, png o webp.',
+            'clima_img.max' => 'La imagen del clima no debe pesar más de 4MB.',
+            'caracteristicas_img.image' => 'El archivo de características debe ser una imagen.',
+            'caracteristicas_img.mimes' => 'La imagen de características debe ser de tipo: jpg, jpeg, png o webp.',
+            'caracteristicas_img.max' => 'La imagen de características no debe pesar más de 4MB.',
+            'flora_img.image' => 'El archivo de flora y fauna debe ser una imagen.',
+            'flora_img.mimes' => 'La imagen de flora y fauna debe ser de tipo: jpg, jpeg, png o webp.',
+            'flora_img.max' => 'La imagen de flora y fauna no debe pesar más de 4MB.',
+            'infraestructura_img.image' => 'El archivo de infraestructura debe ser una imagen.',
+            'infraestructura_img.mimes' => 'La imagen de infraestructura debe ser de tipo: jpg, jpeg, png o webp.',
+            'infraestructura_img.max' => 'La imagen de infraestructura no debe pesar más de 4MB.',
         ]);
 
         // Update text fields

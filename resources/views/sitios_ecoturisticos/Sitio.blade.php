@@ -236,7 +236,7 @@
                 <span> {{ $review->created_at->format('d M Y H:i') }} </span>
             </div>
             @if($user && $user->id === $review->user_id)
-            <form action="/Sitio/{{$place->id}}" method="POST">
+            <form action="{{ route('eliminar_reseña', $review->id) }}" method="POST">
             @csrf
             @method('DELETE')
             <button type="submit">Eliminar reseña</button>

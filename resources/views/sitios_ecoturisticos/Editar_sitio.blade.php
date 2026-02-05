@@ -35,7 +35,7 @@
         @if($place->cover)
             <div class="mb-2">
                 <p class="text-sm text-gray-600">Imagen actual:</p>
-                <img src="{{ asset('storage/' . $place->cover) }}" alt="Portada actual" class="w-32 h-32 object-cover rounded">
+                <img src="{{ url('/api/files/' . $place->cover) }}" alt="Portada actual" class="w-32 h-32 object-cover rounded">
             </div>
         @endif
         
@@ -80,7 +80,7 @@
              @if($place->Weather_img)
             <div class="mb-2">
                 <p class="text-sm text-gray-600">Imagen actual:</p>
-                <img src="{{ asset('storage/' . $place->Weather_img) }}" alt="clima actual" class="w-32 h-32 object-cover rounded">
+                <img src="{{ url('/api/files/' . $place->Weather_img) }}" alt="clima actual" class="w-32 h-32 object-cover rounded">
             </div>
             @endif
         
@@ -111,7 +111,7 @@
             @if($place->features_img)
             <div class="mb-2">
                 <p class="text-sm text-gray-600">Imagen actual:</p>
-                <img src="{{ asset('storage/' . $place->features_img) }}" alt="caracteristicas_img" class="w-32 h-32 object-cover rounded">
+                <img src="{{ url('/api/files/' . $place->features_img) }}" alt="caracteristicas_img" class="w-32 h-32 object-cover rounded">
             </div>
         @endif
         
@@ -130,7 +130,7 @@
             @if($place->flora_img)
             <div class="mb-2">
                 <p class="text-sm text-gray-600">Imagen actual:</p>
-                <img src="{{ asset('storage/' . $place->flora_img) }}" alt="caracteristicas_img" class="w-32 h-32 object-cover rounded">
+                <img src="{{ url('/api/files/' . $place->flora_img) }}" alt="caracteristicas_img" class="w-32 h-32 object-cover rounded">
             </div>
         @endif
         
@@ -153,7 +153,7 @@
           @if($place->estructure_img)
             <div class="mb-2">
                 <p class="text-sm text-gray-600">Imagen actual:</p>
-                <img src="{{ asset('storage/' . $place->estructure_img) }}" alt="caracteristicas_img" class="w-32 h-32 object-cover rounded">
+                <img src="{{ url('/api/files/' . $place->estructure_img) }}" alt="caracteristicas_img" class="w-32 h-32 object-cover rounded">
             </div>
         @endif
         

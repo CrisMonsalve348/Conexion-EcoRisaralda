@@ -48,22 +48,47 @@ Route::get('/preferences', function () {
     return \App\Models\preference::all();
 });
 
-// Turistic places - read only (public)
-Route::get('/places', [TuristicPlaceApiController::class, 'index']);
-Route::get('/places/{id}', [TuristicPlaceApiController::class, 'show']);
+// Servir archivos desde storage (avatares, imágenes, etc)
+Route::get('/files/{type}/{filename}', function ($type, $filename) {
+    $path = storage_path("app/public/{$type}/{$filename}");
+    
+    // Validar que el archivo existe
+    if (!file_exists($path)) {
+        return response()->json(['message' => 'Archivo no encontrado'], 404);
+    }
+    
+    // Retornar el archivo
+    return response()->file($path);
+})->where('filename', '.*');
 
-// ============ AUTH ROUTES (SPA) - WITHOUT CSRF BUT WITH SESSION ============
 // Estas rutas necesitan sesión pero omiten CSRF para el primer contacto del cliente SPA
 Route::middleware('web')->group(function () {
+    // Turistic places - read only (public but session-aware)
+    Route::get('/places', [TuristicPlaceApiController::class, 'index']);
+    Route::get('/places/{id}', [TuristicPlaceApiController::class, 'show']);
+    
     Route::post('/register', function (Request $request) {
         $data = $request->validate([
             'name' => 'required|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:8',
+            'password' => [
+                'required',
+                'string',
+                'min:8',
+                'max:15',
+                'regex:/[a-z]/',      // al menos una minúscula
+                'regex:/[A-Z]/',      // al menos una mayúscula
+                'regex:/[0-9]/',      // al menos un dígito
+            ],
             'role' => 'required|in:turist,operator,user,admin',
             'country' => 'nullable|string|max:255',
-            'birth_date' => 'nullable|date',
+            'birth_date' => 'nullable|date|before:-16 years',
+        ], [
+            'birth_date.before' => 'Debes ser mayor de 16 años para registrarte',
+            'password.min' => 'La contraseña debe tener entre 8 y 15 caracteres',
+            'password.max' => 'La contraseña debe tener entre 8 y 15 caracteres',
+            'password.regex' => 'La contraseña debe incluir al menos una mayúscula, una minúscula y un dígito',
         ]);
 
         $role = $data['role'];
@@ -80,14 +105,11 @@ Route::middleware('web')->group(function () {
             'date_of_birth' => $data['birth_date'] ?? null,
         ]);
 
-        Auth::login($user);
-
         if (method_exists($user, 'sendEmailVerificationNotification')) {
             $user->sendEmailVerificationNotification();
         }
 
         return response()->json([
-            'user' => $user,
             'message' => 'Registro exitoso. Revisa tu correo para verificar la cuenta.',
         ]);
     });
@@ -99,14 +121,29 @@ Route::middleware('web')->group(function () {
         ]);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
             $user = Auth::user();
+            
+            // Verificar si el email está verificado
+            if (!$user->hasVerifiedEmail()) {
+                Auth::logout();
+                return response()->json([
+                    'message' => 'Debes verificar tu correo electrónico antes de iniciar sesión. Revisa tu bandeja de entrada.',
+                ], 403);
+            }
+            
+            $request->session()->regenerate();
             
             // Generar Sanctum token para SPA
             $token = $user->createToken('api-token')->plainTextToken;
             
+            $userData = $user->toArray();
+            if ($user->image) {
+                $imagePath = str_replace('\\', '/', $user->image);
+                $userData['avatar_url'] = url('/api/files/' . $imagePath);
+            }
+            
             return response()->json([
-                'user' => $user,
+                'user' => $userData,
                 'token' => $token,
                 'message' => 'Inicio de sesión exitoso',
             ]);
@@ -121,10 +158,10 @@ Route::middleware('web')->group(function () {
         $request->validate(['email' => 'required|email']);
         $status = Password::sendResetLink($request->only('email'));
         if ($status === Password::RESET_LINK_SENT) {
-            return response()->json(['message' => __($status)]);
+            return response()->json(['message' => __('passwords.sent')]);
         }
 
-        return response()->json(['message' => __($status)], 422);
+        return response()->json(['message' => __('passwords.user')], 422);
     });
 
     Route::post('/reset-password', function (Request $request) {
@@ -147,10 +184,10 @@ Route::middleware('web')->group(function () {
         );
 
         if ($status === Password::PASSWORD_RESET) {
-            return response()->json(['message' => __($status)]);
+            return response()->json(['message' => __('passwords.reset')]);
         }
 
-        return response()->json(['message' => __($status)], 422);
+        return response()->json(['message' => __('passwords.token')], 422);
     });
 });
 
@@ -182,7 +219,8 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             $userData = $user->toArray();
             // Agregar URL completa del avatar si existe
             if ($user->image) {
-                $userData['avatar_url'] = asset('storage/' . $user->image);
+                $imagePath = str_replace('\\', '/', $user->image);
+                $userData['avatar_url'] = url('/api/files/' . $imagePath);
             }
             return response()->json($userData);
         });
@@ -204,7 +242,8 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             // Incluir avatar_url en la respuesta
             $userData = $user->toArray();
             if ($user->image) {
-                $userData['avatar_url'] = asset('storage/' . $user->image);
+                $imagePath = str_replace('\\', '/', $user->image);
+                $userData['avatar_url'] = url('/api/files/' . $imagePath);
             }
 
             return response()->json(['user' => $userData, 'message' => 'Perfil actualizado']);
@@ -246,11 +285,12 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
 
             // Preparar respuesta con avatar_url incluido
             $userData = $user->toArray();
-            $userData['avatar_url'] = asset('storage/'.$path);
+            $imagePath = str_replace('\\', '/', $path);
+            $userData['avatar_url'] = url('/api/files/' . $imagePath);
 
             return response()->json([
                 'message' => 'Foto actualizada',
-                'avatar_url' => asset('storage/'.$path),
+                'avatar_url' => url('/api/files/' . $imagePath),
                 'user' => $userData,
             ]);
         });
@@ -292,7 +332,8 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             $userData = $user->toArray();
             // Agregar URL completa del avatar si existe
             if ($user->image) {
-                $userData['avatar_url'] = asset('storage/' . $user->image);
+                $imagePath = str_replace('\\', '/', $user->image);
+                $userData['avatar_url'] = url('/api/files/' . $imagePath);
             }
             return response()->json($userData);
         });
@@ -325,7 +366,9 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
 
         // ============ REVIEWS ============
         Route::post('/places/{id}/reviews', [ReviewApiController::class, 'store']);
+        Route::put('/reviews/{id}', [ReviewApiController::class, 'update']);
         Route::delete('/reviews/{id}', [ReviewApiController::class, 'destroy']);
+        Route::post('/reviews/{id}/react', [ReviewApiController::class, 'react']);
 
         // ============ ADMIN ROUTES ============
         Route::middleware('role:admin')->prefix('admin')->group(function () {
@@ -482,8 +525,40 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             // Gestión de sitios turísticos (todos los sitios)
             Route::get('/places', [TuristicPlaceApiController::class, 'index']);
             Route::delete('/places/{id}', [TuristicPlaceApiController::class, 'destroy']);
+
+            // Gestión de reseñas (admin)
+            Route::get('/reviews', function () {
+                return \App\Models\reviews::with([
+                        'user:id,name',
+                        'place:id,name'
+                    ])
+                    ->orderBy('created_at', 'desc')
+                    ->get();
+            });
+
+            // Restringir reseña (admin)
+            Route::post('/reviews/{id}/restrict', function ($id) {
+                $review = \App\Models\reviews::findOrFail($id);
+                $review->update(['is_restricted' => true]);
+                
+                return response()->json([
+                    'message' => 'Reseña restringida exitosamente',
+                    'review' => $review,
+                ]);
+            });
+
+            // Desrestringir reseña (admin)
+            Route::post('/reviews/{id}/unrestrict', function ($id) {
+                $review = \App\Models\reviews::findOrFail($id);
+                $review->update(['is_restricted' => false]);
+                
+                return response()->json([
+                    'message' => 'Reseña desrestringida exitosamente',
+                    'review' => $review,
+                ]);
+            });
         });
-});
+    });
 
 // Verificar email (enlace firmado) y redirigir al frontend
 Route::middleware('web')->get('/email/verify/{id}/{hash}', function (Request $request) {

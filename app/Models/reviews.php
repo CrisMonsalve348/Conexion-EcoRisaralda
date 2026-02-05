@@ -11,6 +11,7 @@ class reviews extends Model
         'comment',
         'user_id',
         'place_id',
+        'is_restricted',
     ];
 
     public function user()
@@ -20,5 +21,20 @@ class reviews extends Model
     public function place()
     {
         return $this->belongsTo(TuristicPlace::class, 'place_id');
+    }
+    
+    public function reactions()
+    {
+        return $this->hasMany(ReviewReaction::class, 'review_id');
+    }
+    
+    public function likes()
+    {
+        return $this->reactions()->where('type', 'like');
+    }
+    
+    public function dislikes()
+    {
+        return $this->reactions()->where('type', 'dislike');
     }
 }

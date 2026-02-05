@@ -14,6 +14,12 @@ class RateController extends Controller
 
          $average = reviews::where('place_id', $id)->avg('rating');
 
+           if ($average === null) {
+            Rate::where('place_id', $id)->delete();
+            return;
+        }
+         
+
          Rate::updateOrCreate(
             ['place_id' => $id],
             ['rating' => round($average, 2)]

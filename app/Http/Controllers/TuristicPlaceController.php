@@ -7,6 +7,7 @@ use App\Models\TuristicPlace;
 use App\Models\reviews;
 use App\Models\rate;
 use App\Models\FavoritePlace;
+use App\Models\LabelPlace;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -15,7 +16,9 @@ class TuristicPlaceController extends Controller
 {
     public function crear()
     {
-        return view('sitios_ecoturisticos.Crear_sitio');
+          $preferences = \App\Models\preference::all();
+     
+        return view('sitios_ecoturisticos.Crear_sitio',compact('preferences'));
     }
 
     public function validarsitio(Request $request)
@@ -32,6 +35,7 @@ class TuristicPlaceController extends Controller
             'flora'                => 'required|string|min:10',
             'infraestructura'      => 'required|string|min:10',
             'recomendacion'        => 'required|string|min:10',
+             'preferences' => 'required|array|min:1',
 
             // imágenes
             'portada'              => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
@@ -59,6 +63,7 @@ class TuristicPlaceController extends Controller
 
             'terminos.accepted' => 'Debe aceptar los términos.',
             'politicas.accepted' => 'Debe aceptar las políticas.',
+            'preferences.required'=>'Debe aceptar al menos una etiqueta del sitio'
         ]);
 
         // Guardar imágenes
@@ -93,6 +98,8 @@ class TuristicPlaceController extends Controller
             'terminos'            => true,
             'politicas'           => true,
         ]);
+
+        $place->labels()->attach($request->preferences);
 
         return redirect()->route('gestionar_sitios')->with('success', 'Sitio creado correctamente.');
     }
