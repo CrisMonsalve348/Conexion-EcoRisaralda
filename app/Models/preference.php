@@ -17,5 +17,8 @@ class preference extends Model
 {
     return $this->belongsToMany(user::class);
 }
-
+  public function places(){
+    return $this->belongsToMany(TuristicPlace::class, 'LabelPlace', 'label_id');
+        
+}
 }
