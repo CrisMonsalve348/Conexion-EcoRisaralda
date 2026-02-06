@@ -2,19 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\Pivot;
 
-class LabelPlace extends Model
+class LabelPlace extends Pivot
 {
     protected $fillable = ['label_id', 'place_id'];
-
-
-    public function label()
-    {
-        return $this->belongsTo(preference::class);
-    }
-    public function place()
-    {
-        return $this->belongsTo(TuristicPlace::class, 'place_id');
-    }
+    protected $table = 'label_place';
 }

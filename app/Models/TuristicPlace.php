@@ -45,6 +45,8 @@ class TuristicPlace extends Model
 
     }
     public function label(){
-        return $this->belongsToMany(preference::class,'label_place', 'place_id');
+        return $this->belongsToMany(preference::class,'label_place', 'place_id', 'label_id')
+            ->withTimestamps()
+            ->using(LabelPlace::class);
     }
 }

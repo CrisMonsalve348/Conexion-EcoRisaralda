@@ -18,7 +18,8 @@ class preference extends Model
     return $this->belongsToMany(user::class);
 }
   public function places(){
-    return $this->belongsToMany(TuristicPlace::class, 'LabelPlace', 'label_id');
-        
+    return $this->belongsToMany(TuristicPlace::class, 'label_place', 'label_id', 'place_id')
+        ->withTimestamps()
+        ->using(LabelPlace::class);
 }
 }

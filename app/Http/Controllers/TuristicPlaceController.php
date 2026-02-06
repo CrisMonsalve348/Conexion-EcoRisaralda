@@ -74,32 +74,29 @@ class TuristicPlaceController extends Controller
         $infraestructura_path = $request->file('infraestructura_img')->store('infraestructura', 'public');
 
         // Guardado en DB
-        TuristicPlace::create([
-            'user_id'             => auth()->id(),
-
-            'name'              => $request->nombre,
-            'slogan'              => $request->slogan,
-            'description'         => $request->descripcion,
-            'localization'        => $request->localizacion,
-            'lat'                 =>$request->lat,
-            'lng'                  =>$request->lng,
-            'Weather'               => $request->clima,
-            'features'     => $request->caracteristicas,
-            'flora'               => $request->flora,
-            'estructure'     => $request->infraestructura,
-            'tips'       => $request->recomendacion,
-
-            'cover'             => $portada_path,
-            'Weather_img'           => $clima_path,
-            'features_img' => $caracteristicas_path,
-            'flora_img'           => $flora_path,
-            'estructure_img' => $infraestructura_path,
-
-            'terminos'            => true,
-            'politicas'           => true,
-        ]);
-
-        $place->labels()->attach($request->preferences);
+           // ✅ ASIGNAR EL RESULTADO A LA VARIABLE $place
+    $place = TuristicPlace::create([
+        'user_id'             => auth()->id(),
+        'name'                => $request->nombre,
+        'slogan'              => $request->slogan,
+        'description'         => $request->descripcion,
+        'localization'        => $request->localizacion,
+        'lat'                 => $request->lat,
+        'lng'                 => $request->lng,
+        'Weather'             => $request->clima,
+        'features'            => $request->caracteristicas,
+        'flora'               => $request->flora,
+        'estructure'          => $request->infraestructura,
+        'tips'                => $request->recomendacion,
+        'cover'               => $portada_path,
+        'Weather_img'         => $clima_path,
+        'features_img'        => $caracteristicas_path,
+        'flora_img'           => $flora_path,
+        'estructure_img'      => $infraestructura_path,
+        'terminos'            => true,
+        'politicas'           => true,
+    ]);
+        $place->label()->attach($request->preferences);
 
         return redirect()->route('gestionar_sitios')->with('success', 'Sitio creado correctamente.');
     }
