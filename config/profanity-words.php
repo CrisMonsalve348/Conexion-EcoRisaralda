@@ -149,7 +149,7 @@ return [
     // Insultos generales
     'puta','puto','putita','putazo','mierda','coño','joder','jodido','jodida','maldito','malparido',
     'idiota','imbecil','estupido','estúpido','tonto','tarado','bobo','baboso','pajero','verga',
-    'culo','polla','pito','zorra','cerdo','asqueroso',
+    'culo','polla','pito','zorra','cerdo','asqueroso','putito','putos',
 
     // España
     'gilipollas','cabrón','cabron','capullo','pringado','subnormal','chupapollas','mierdaseca',

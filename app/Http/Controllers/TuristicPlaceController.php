@@ -73,8 +73,6 @@ class TuristicPlaceController extends Controller
         $flora_path = $request->file('flora_img')->store('flora', 'public');
         $infraestructura_path = $request->file('infraestructura_img')->store('infraestructura', 'public');
 
-        // Guardado en DB
-           // ✅ ASIGNAR EL RESULTADO A LA VARIABLE $place
     $place = TuristicPlace::create([
         'user_id'             => auth()->id(),
         'name'                => $request->nombre,
