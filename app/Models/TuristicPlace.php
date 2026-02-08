@@ -29,9 +29,16 @@ class TuristicPlace extends Model
         'estructure',
         'estructure_img',
         'tips',
+        'contact_info',
+        'open_days',
+        'opening_status',
         'user_id',
         'terminos',
         'politicas',
+    ];
+
+    protected $casts = [
+        'open_days' => 'array',
     ];
 
     // Relación con usuario

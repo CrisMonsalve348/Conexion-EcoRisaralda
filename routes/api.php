@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\TuristicPlace;
+use App\Models\reviews;
 use App\Http\Controllers\Api\TuristicPlaceApiController;
 use App\Http\Controllers\Api\ReviewApiController;
 use Illuminate\Support\Facades\Mail;
@@ -45,6 +47,26 @@ Route::get('/dev/fix-roles', function() {
 
 // ============ PUBLIC ENDPOINTS ============
 Route::get('/preferences', function () {
+    if (\App\Models\preference::count() === 0) {
+        $defaults = [
+            ['name' => 'Senderismo', 'image' => 'hiking', 'color' => 'FF6B6B'],
+            ['name' => 'Avistamiento de aves', 'image' => 'birdwatching', 'color' => 'FFA500'],
+            ['name' => 'Ciclismo de montaña', 'image' => 'biking', 'color' => '4ECDC4'],
+            ['name' => 'Escalada o rappel', 'image' => 'climbing', 'color' => 'FFD93D'],
+            ['name' => 'Fauna y voluntariado', 'image' => 'wildlife', 'color' => '6BCB77'],
+            ['name' => 'Reservas naturales', 'image' => 'reserves', 'color' => '8B6F47'],
+            ['name' => 'Kayak o canoa', 'image' => 'kayaking', 'color' => '4D96FF'],
+            ['name' => 'Baños de bosque', 'image' => 'forest_bathing', 'color' => '52B788'],
+        ];
+
+        foreach ($defaults as $item) {
+            \App\Models\preference::firstOrCreate(
+                ['name' => $item['name']],
+                ['image' => $item['image'], 'color' => $item['color']]
+            );
+        }
+    }
+
     return \App\Models\preference::all();
 });
 
@@ -270,6 +292,43 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             return response()->json(['message' => 'Contraseña actualizada']);
         });
 
+        // Perfil: eliminar cuenta
+        Route::post('/profile/delete', function (Request $request) {
+            $user = $request->user();
+            $data = $request->validate([
+                'current_password' => 'required|string',
+            ]);
+
+            if (! Hash::check($data['current_password'], $user->password)) {
+                return response()->json(['message' => 'La contraseña actual es incorrecta'], 422);
+            }
+
+            if ($user->image) {
+                Storage::disk('public')->delete($user->image);
+            }
+
+            // Mantener reseñas, pero desvincular al usuario
+            reviews::where('user_id', $user->id)->update(['user_id' => null]);
+
+            try {
+                $user->tokens()->delete();
+            } catch (\Exception $e) {
+                // Ignorar si no hay tokens
+            }
+
+            try {
+                Auth::guard('web')->logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+            } catch (\Exception $e) {
+                // Ignorar errores de sesión
+            }
+
+            $user->delete();
+
+            return response()->json(['message' => 'Cuenta eliminada']);
+        });
+
         // Perfil: subir foto
         Route::post('/profile/avatar', function (Request $request) {
             $request->validate([
@@ -356,6 +415,120 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             return response()->json([
                 'first_time' => $request->user()->first_time_preferences
             ]);
+        });
+
+        // Recomendaciones basadas en preferencias del usuario
+        Route::get('/recommendations', function (Request $request) {
+            $user = $request->user();
+            $preferenceIds = $user->preferences()->pluck('preferences.id')->toArray();
+
+            if (count($preferenceIds) === 0) {
+                return response()->json([]);
+            }
+
+            $places = TuristicPlace::with('label')
+                ->whereHas('label', function ($query) use ($preferenceIds) {
+                    $query->whereIn('preferences.id', $preferenceIds);
+                })
+                ->latest()
+                ->take(12)
+                ->get();
+
+            return response()->json($places);
+        });
+
+        // ============ FAVORITOS ============
+        Route::get('/favorites', function (Request $request) {
+            return $request->user()->favoritePlaces()->get();
+        });
+
+        Route::post('/places/{id}/favorite', function (Request $request, $id) {
+            $place = TuristicPlace::findOrFail($id);
+            $request->user()->favoritePlaces()->syncWithoutDetaching([$place->id]);
+
+            return response()->json(['message' => 'Agregado a favoritos']);
+        });
+
+        Route::delete('/places/{id}/favorite', function (Request $request, $id) {
+            $request->user()->favoritePlaces()->detach($id);
+            return response()->json(['message' => 'Eliminado de favoritos']);
+        });
+
+        // ============ HISTORIAL (TURISTA) ============
+        Route::post('/places/{id}/visit', function (Request $request, $id) {
+            $user = $request->user();
+            $place = TuristicPlace::findOrFail($id);
+            $now = now();
+
+            $exists = DB::table('user_place_visits')
+                ->where('user_id', $user->id)
+                ->where('place_id', $place->id)
+                ->exists();
+
+            if ($exists) {
+                DB::table('user_place_visits')
+                    ->where('user_id', $user->id)
+                    ->where('place_id', $place->id)
+                    ->update([
+                        'visited_at' => $now,
+                        'updated_at' => $now,
+                    ]);
+            } else {
+                DB::table('user_place_visits')->insert([
+                    'user_id' => $user->id,
+                    'place_id' => $place->id,
+                    'visited_at' => $now,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ]);
+            }
+
+            return response()->json(['message' => 'Visita registrada']);
+        });
+
+        Route::get('/user/history', function (Request $request) {
+            $limit = (int) $request->query('limit', 8);
+            $limit = $limit > 0 ? $limit : 8;
+
+            $items = DB::table('user_place_visits')
+                ->where('user_place_visits.user_id', $request->user()->id)
+                ->join('turistic_places', 'user_place_visits.place_id', '=', 'turistic_places.id')
+                ->select(
+                    'user_place_visits.id',
+                    'user_place_visits.place_id',
+                    'user_place_visits.visited_at',
+                    'turistic_places.name as place_name',
+                    'turistic_places.localization as place_localization'
+                )
+                ->orderByDesc('user_place_visits.visited_at')
+                ->limit($limit)
+                ->get()
+                ->map(function ($row) {
+                    return [
+                        'id' => $row->id,
+                        'visited_at' => $row->visited_at,
+                        'place' => [
+                            'id' => $row->place_id,
+                            'name' => $row->place_name,
+                            'localization' => $row->place_localization,
+                        ],
+                    ];
+                });
+
+            return response()->json($items);
+        });
+
+        Route::get('/user/reviews', function (Request $request) {
+            $limit = (int) $request->query('limit', 8);
+            $limit = $limit > 0 ? $limit : 8;
+
+            $items = reviews::with(['place:id,name'])
+                ->where('user_id', $request->user()->id)
+                ->orderBy('created_at', 'desc')
+                ->limit($limit)
+                ->get();
+
+            return response()->json($items);
         });
 
         // ============ TURISTIC PLACES - CREATE/UPDATE/DELETE ============
@@ -556,6 +729,53 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                     'message' => 'Reseña desrestringida exitosamente',
                     'review' => $review,
                 ]);
+            });
+        });
+
+        // ============ ADMIN: ETIQUETAS ============
+        Route::middleware('role:admin')->prefix('admin')->group(function () {
+            Route::get('/preferences', function () {
+                return \App\Models\preference::orderBy('name')->get();
+            });
+
+            Route::post('/preferences', function (Request $request) {
+                $data = $request->validate([
+                    'name' => 'required|string|max:255',
+                    'image' => 'nullable|string|max:255',
+                    'color' => 'required|string|max:20',
+                ]);
+
+                if (empty($data['image'])) {
+                    $data['image'] = Str::slug($data['name'], '_');
+                }
+
+                $pref = \App\Models\preference::create($data);
+
+                return response()->json(['preference' => $pref, 'message' => 'Etiqueta creada']);
+            });
+
+            Route::put('/preferences/{id}', function (Request $request, $id) {
+                $pref = \App\Models\preference::findOrFail($id);
+                $data = $request->validate([
+                    'name' => 'required|string|max:255',
+                    'image' => 'nullable|string|max:255',
+                    'color' => 'required|string|max:20',
+                ]);
+
+                if (empty($data['image'])) {
+                    $data['image'] = Str::slug($data['name'], '_');
+                }
+
+                $pref->update($data);
+
+                return response()->json(['preference' => $pref, 'message' => 'Etiqueta actualizada']);
+            });
+
+            Route::delete('/preferences/{id}', function ($id) {
+                $pref = \App\Models\preference::findOrFail($id);
+                $pref->delete();
+
+                return response()->json(['message' => 'Etiqueta eliminada']);
             });
         });
     });
