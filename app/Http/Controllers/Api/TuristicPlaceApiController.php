@@ -329,9 +329,9 @@ class TuristicPlaceApiController extends Controller
         $user = $request->user();
         
         if ($user->role === 'operator') {
-            $places = TuristicPlace::where('user_id', $user->id)->get();
+            $places = TuristicPlace::with('user')->where('user_id', $user->id)->get();
         } elseif ($user->role === 'admin') {
-            $places = TuristicPlace::all();
+            $places = TuristicPlace::with('user')->get();
         } else {
             return response()->json(['message' => 'No autorizado'], 403);
         }
