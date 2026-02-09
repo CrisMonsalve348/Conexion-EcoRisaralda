@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\TuristicPlace;
 use App\Models\reviews;
+use App\Models\PlaceEvent;
 use App\Http\Controllers\Api\TuristicPlaceApiController;
 use App\Http\Controllers\Api\ReviewApiController;
 use Illuminate\Support\Facades\Mail;
@@ -531,6 +532,46 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             return response()->json($items);
         });
 
+        Route::get('/events/next', function () {
+            $expiredEvents = PlaceEvent::where('starts_at', '<', now())->get();
+            foreach ($expiredEvents as $expiredEvent) {
+                if ($expiredEvent->image) {
+                    Storage::disk('public')->delete($expiredEvent->image);
+                }
+                $expiredEvent->delete();
+            }
+            $event = PlaceEvent::with('place:id,name')
+                ->where('starts_at', '>=', now())
+                ->orderBy('starts_at', 'asc')
+                ->first();
+
+            return response()->json([
+                'event' => $event,
+            ]);
+        });
+
+        Route::get('/events/upcoming', function (Request $request) {
+            $expiredEvents = PlaceEvent::where('starts_at', '<', now())->get();
+            foreach ($expiredEvents as $expiredEvent) {
+                if ($expiredEvent->image) {
+                    Storage::disk('public')->delete($expiredEvent->image);
+                }
+                $expiredEvent->delete();
+            }
+            $limit = (int) $request->query('limit', 5);
+            $limit = $limit > 0 ? $limit : 5;
+
+            $events = PlaceEvent::with('place:id,name')
+                ->where('starts_at', '>=', now())
+                ->orderBy('starts_at', 'asc')
+                ->limit($limit)
+                ->get();
+
+            return response()->json([
+                'events' => $events,
+            ]);
+        });
+
         // ============ TURISTIC PLACES - CREATE/UPDATE/DELETE ============
         Route::post('/places', [TuristicPlaceApiController::class, 'store']);
         Route::put('/places/{id}', [TuristicPlaceApiController::class, 'update']);
@@ -542,6 +583,49 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
         Route::put('/reviews/{id}', [ReviewApiController::class, 'update']);
         Route::delete('/reviews/{id}', [ReviewApiController::class, 'destroy']);
         Route::post('/reviews/{id}/react', [ReviewApiController::class, 'react']);
+
+        // ============ OPERATOR REVIEW MODERATION ============
+        Route::middleware('role:operator')->prefix('operator')->group(function () {
+            Route::post('/reviews/{id}/restrict', function (Request $request, $id) {
+                $data = $request->validate([
+                    'reason' => 'required|in:insultos,spam',
+                ]);
+
+                $review = reviews::with('place')->findOrFail($id);
+                if (! $review->place || $review->place->user_id !== $request->user()->id) {
+                    return response()->json(['message' => 'No autorizado'], 403);
+                }
+
+                $review->update([
+                    'is_restricted' => true,
+                    'restricted_by_role' => 'operator',
+                    'restriction_reason' => $data['reason'],
+                ]);
+
+                return response()->json([
+                    'message' => 'Reseña restringida exitosamente',
+                    'review' => $review,
+                ]);
+            });
+
+            Route::post('/reviews/{id}/unrestrict', function (Request $request, $id) {
+                $review = reviews::with('place')->findOrFail($id);
+                if (! $review->place || $review->place->user_id !== $request->user()->id) {
+                    return response()->json(['message' => 'No autorizado'], 403);
+                }
+
+                $review->update([
+                    'is_restricted' => false,
+                    'restricted_by_role' => null,
+                    'restriction_reason' => null,
+                ]);
+
+                return response()->json([
+                    'message' => 'Reseña desrestringida exitosamente',
+                    'review' => $review,
+                ]);
+            });
+        });
 
         // ============ ADMIN ROUTES ============
         Route::middleware('role:admin')->prefix('admin')->group(function () {
@@ -712,7 +796,11 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             // Restringir reseña (admin)
             Route::post('/reviews/{id}/restrict', function ($id) {
                 $review = \App\Models\reviews::findOrFail($id);
-                $review->update(['is_restricted' => true]);
+                $review->update([
+                    'is_restricted' => true,
+                    'restricted_by_role' => 'admin',
+                    'restriction_reason' => null,
+                ]);
                 
                 return response()->json([
                     'message' => 'Reseña restringida exitosamente',
@@ -723,7 +811,11 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             // Desrestringir reseña (admin)
             Route::post('/reviews/{id}/unrestrict', function ($id) {
                 $review = \App\Models\reviews::findOrFail($id);
-                $review->update(['is_restricted' => false]);
+                $review->update([
+                    'is_restricted' => false,
+                    'restricted_by_role' => null,
+                    'restriction_reason' => null,
+                ]);
                 
                 return response()->json([
                     'message' => 'Reseña desrestringida exitosamente',

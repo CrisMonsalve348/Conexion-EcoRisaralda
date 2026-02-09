@@ -12,6 +12,8 @@ class reviews extends Model
         'user_id',
         'place_id',
         'is_restricted',
+        'restricted_by_role',
+        'restriction_reason',
     ];
 
     public function user()

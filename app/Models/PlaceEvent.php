@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class PlaceEvent extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'place_id',
+        'title',
+        'description',
+        'image',
+        'starts_at',
+    ];
+
+    protected $casts = [
+        'starts_at' => 'datetime',
+    ];
+
+    public function place()
+    {
+        return $this->belongsTo(TuristicPlace::class, 'place_id');
+    }
+}

@@ -56,4 +56,9 @@ class TuristicPlace extends Model
             ->withTimestamps()
             ->using(LabelPlace::class);
     }
+
+    public function events()
+    {
+        return $this->hasMany(PlaceEvent::class, 'place_id');
+    }
 }

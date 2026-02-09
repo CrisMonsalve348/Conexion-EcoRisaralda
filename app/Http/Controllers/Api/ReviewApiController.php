@@ -105,6 +105,8 @@ class ReviewApiController extends Controller
             // Si el comentario fue restringido y ahora no tiene palabras inapropiadas, desrestringirlo
             if ($review->is_restricted && !ProfanityFilter::hasProfanity($validated['comment'])) {
                 $review->is_restricted = false;
+                $review->restricted_by_role = null;
+                $review->restriction_reason = null;
             }
         }
 

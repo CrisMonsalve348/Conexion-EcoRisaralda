@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\TuristicPlace;
 use App\Models\reviews;
+use App\Models\PlaceEvent;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -35,6 +36,17 @@ class TuristicPlaceApiController extends Controller
     public function show(Request $request, $id)
     {
         $place = TuristicPlace::with(['user', 'label'])->findOrFail($id);
+        $expiredEvents = $place->events()->where('starts_at', '<', now())->get();
+        foreach ($expiredEvents as $expiredEvent) {
+            if ($expiredEvent->image) {
+                Storage::disk('public')->delete($expiredEvent->image);
+            }
+            $expiredEvent->delete();
+        }
+        $event = $place->events()
+            ->where('starts_at', '>=', now())
+            ->orderBy('starts_at', 'asc')
+            ->first();
         $reviews = reviews::where('place_id', $id)
             ->with(['user', 'reactions'])
             ->orderBy('created_at', 'desc')
@@ -66,6 +78,7 @@ class TuristicPlaceApiController extends Controller
         return response()->json([
             'place' => $place,
             'reviews' => $reviews,
+            'event' => $event,
         ]);
     }
 
@@ -98,6 +111,10 @@ class TuristicPlaceApiController extends Controller
             'contacto' => 'nullable|string|max:500',
             'dias_abiertos' => 'nullable',
             'estado_apertura' => 'nullable|in:open,closed_temporarily,open_with_restrictions',
+            'event_title' => 'nullable|string|max:255|required_with:event_datetime,event_description,event_image',
+            'event_description' => 'nullable|string|max:1000',
+            'event_datetime' => 'nullable|date|required_with:event_title,event_description,event_image',
+            'event_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             
             'portada' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
             'clima_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
@@ -195,6 +212,19 @@ class TuristicPlaceApiController extends Controller
 
         $place->label()->attach($validated['preferences']);
 
+        if ($request->filled('event_title') || $request->filled('event_datetime') || $request->filled('event_description')) {
+            $eventImagePath = null;
+            if ($request->hasFile('event_image')) {
+                $eventImagePath = $request->file('event_image')->store('events', 'public');
+            }
+            $place->events()->create([
+                'title' => $request->input('event_title'),
+                'description' => $request->input('event_description'),
+                'image' => $eventImagePath,
+                'starts_at' => $request->input('event_datetime'),
+            ]);
+        }
+
         return response()->json([
             'message' => 'Sitio creado exitosamente',
             'place' => $place,
@@ -232,6 +262,10 @@ class TuristicPlaceApiController extends Controller
             'contacto' => 'nullable|string|max:500',
             'dias_abiertos' => 'nullable',
             'estado_apertura' => 'nullable|in:open,closed_temporarily,open_with_restrictions',
+            'event_title' => 'nullable|string|max:255|required_with:event_datetime,event_description,event_image',
+            'event_description' => 'nullable|string|max:1000',
+            'event_datetime' => 'nullable|date|required_with:event_title,event_description,event_image',
+            'event_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             
             'portada' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             'clima_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
@@ -338,6 +372,34 @@ class TuristicPlaceApiController extends Controller
         $place->save();
 
         $place->label()->sync($validated['preferences']);
+
+        if ($request->filled('event_title') || $request->filled('event_datetime') || $request->filled('event_description')) {
+            $event = $place->events()->orderBy('starts_at', 'desc')->first();
+            $eventImagePath = $event?->image;
+
+            if ($request->hasFile('event_image')) {
+                if ($event && $event->image) {
+                    Storage::disk('public')->delete($event->image);
+                }
+                $eventImagePath = $request->file('event_image')->store('events', 'public');
+            }
+
+            if ($event) {
+                $event->update([
+                    'title' => $request->input('event_title'),
+                    'description' => $request->input('event_description'),
+                    'image' => $eventImagePath,
+                    'starts_at' => $request->input('event_datetime'),
+                ]);
+            } else {
+                $place->events()->create([
+                    'title' => $request->input('event_title'),
+                    'description' => $request->input('event_description'),
+                    'image' => $eventImagePath,
+                    'starts_at' => $request->input('event_datetime'),
+                ]);
+            }
+        }
 
         return response()->json([
             'message' => 'Sitio actualizado exitosamente',
