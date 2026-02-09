@@ -96,6 +96,24 @@ class TuristicPlaceController extends Controller
     ]);
         $place->label()->attach($request->preferences);
 
+          // ✅ ENVIAR EMAILS A USUARIOS INTERESADOS
+        $this->enviarNotificaciones($place, $request->preferences);
+
+        return redirect()->route('gestionar_sitios')->with('success', 'Sitio creado correctamente.');
+    }
+
+    /**
+     * Enviar notificaciones por email a usuarios con preferencias coincidentes
+     */
+    protected function enviarNotificaciones(TuristicPlace $place, array $selectedPreferences)
+    {
+        // 1. Buscar usuarios que tengan al menos una preferencia coincidente
+        $interestedUsers = User::whereHas('preferences', function($query) use ($selectedPreferences) {
+            $query->whereIn('preference_id', $selectedPreferences);
+        })
+        ->where('id', '!=', auth()->id()) // No notificar al creador
+        ->get();
+
         return redirect()->route('gestionar_sitios')->with('success', 'Sitio creado correctamente.');
     }
   public function gestionsitios()
