@@ -175,6 +175,21 @@
             <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
         @enderror
 
+        <div class="tags">
+            @foreach($preferences as $preference)
+                <input
+                    type="checkbox"
+                    name="preferences[]"
+                    value="{{ $preference->id }}"
+                    {{ in_array($preference->id, $selectedPreferences) ? 'checked' : '' }}
+                >
+                <p>{{ $preference->name }}</p>
+            @endforeach
+            @error('preferences')
+                <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+            @enderror
+        </div>
+
 
  
 

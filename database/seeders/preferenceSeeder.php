@@ -14,42 +14,42 @@ class preferenceSeeder extends Seeder
     {
         $preferences = [
             [
-                'name' => 'Senderismo (hiking)',
+                'name' => 'Senderismo',
                 'image' => 'hiking',
                 'color' => 'FF6B6B',
             ],
             [
-                'name' => 'Avistamiento de aves (birdwatching)',
+                'name' => 'Avistamiento de aves',
                 'image' => 'birdwatching',
                 'color' => 'FFA500',
             ],
             [
-                'name' => 'Ciclismo de montaña o ecológico',
+                'name' => 'Ciclismo de montaña',
                 'image' => 'biking',
                 'color' => '4ECDC4',
             ],
             [
-                'name' => 'Escalada o rappel en roca natural',
+                'name' => 'Escalada o rappel',
                 'image' => 'climbing',
                 'color' => 'FFD93D',
             ],
             [
-                'name' => 'Liberación de especies o voluntariado con fauna',
+                'name' => 'Fauna y voluntariado',
                 'image' => 'wildlife',
                 'color' => '6BCB77',
             ],
             [
-                'name' => 'Visitas a reservas naturales o parques nacionales',
+                'name' => 'Reservas naturales',
                 'image' => 'reserves',
                 'color' => '8B6F47',
             ],
             [
-                'name' => 'Paseos en kayak o canoa',
+                'name' => 'Kayak o canoa',
                 'image' => 'kayaking',
                 'color' => '4D96FF',
             ],
             [
-                'name' => 'Baños de bosque (forest bathing)',
+                'name' => 'Baños de bosque',
                 'image' => 'forest_bathing',
                 'color' => '52B788',
             ],

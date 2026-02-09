@@ -29,9 +29,16 @@ class TuristicPlace extends Model
         'estructure',
         'estructure_img',
         'tips',
+        'contact_info',
+        'open_days',
+        'opening_status',
         'user_id',
         'terminos',
         'politicas',
+    ];
+
+    protected $casts = [
+        'open_days' => 'array',
     ];
 
     // Relación con usuario
@@ -48,5 +55,10 @@ class TuristicPlace extends Model
         return $this->belongsToMany(preference::class,'label_place', 'place_id', 'label_id')
             ->withTimestamps()
             ->using(LabelPlace::class);
+    }
+
+    public function events()
+    {
+        return $this->hasMany(PlaceEvent::class, 'place_id');
     }
 }
