@@ -10,6 +10,9 @@ use App\Models\FavoritePlace;
 use App\Models\LabelPlace;
 
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\NewPlaceNotification;
+use App\Models\User;
 
 
 class TuristicPlaceController extends Controller
@@ -36,9 +39,6 @@ class TuristicPlaceController extends Controller
             'infraestructura'      => 'required|string|min:10',
             'recomendacion'        => 'required|string|min:10',
              'preferences' => 'required|array|min:1',
-            'contacto'             => 'nullable|string|max:500',
-            'dias_abiertos'        => 'nullable',
-            'estado_apertura'      => 'nullable|in:open,closed_temporarily,open_with_restrictions',
 
             // imágenes
             'portada'              => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
@@ -76,17 +76,6 @@ class TuristicPlaceController extends Controller
         $flora_path = $request->file('flora_img')->store('flora', 'public');
         $infraestructura_path = $request->file('infraestructura_img')->store('infraestructura', 'public');
 
-    $openDays = null;
-    $openDaysRaw = $request->input('dias_abiertos');
-    if (is_string($openDaysRaw)) {
-        $decoded = json_decode($openDaysRaw, true);
-        if (json_last_error() === JSON_ERROR_NONE) {
-            $openDays = $decoded;
-        }
-    } elseif (is_array($openDaysRaw)) {
-        $openDays = $openDaysRaw;
-    }
-
     $place = TuristicPlace::create([
         'user_id'             => auth()->id(),
         'name'                => $request->nombre,
@@ -100,9 +89,6 @@ class TuristicPlaceController extends Controller
         'flora'               => $request->flora,
         'estructure'          => $request->infraestructura,
         'tips'                => $request->recomendacion,
-        'contact_info'        => $request->contacto,
-        'open_days'           => $openDays,
-        'opening_status'      => $request->estado_apertura ?? 'open',
         'cover'               => $portada_path,
         'Weather_img'         => $clima_path,
         'features_img'        => $caracteristicas_path,
@@ -113,23 +99,7 @@ class TuristicPlaceController extends Controller
     ]);
         $place->label()->attach($request->preferences);
 
-          // ✅ ENVIAR EMAILS A USUARIOS INTERESADOS
-        $this->enviarNotificaciones($place, $request->preferences);
-
-        return redirect()->route('gestionar_sitios')->with('success', 'Sitio creado correctamente.');
-    }
-
-    /**
-     * Enviar notificaciones por email a usuarios con preferencias coincidentes
-     */
-    protected function enviarNotificaciones(TuristicPlace $place, array $selectedPreferences)
-    {
-        // 1. Buscar usuarios que tengan al menos una preferencia coincidente
-        $interestedUsers = User::whereHas('preferences', function($query) use ($selectedPreferences) {
-            $query->whereIn('preference_id', $selectedPreferences);
-        })
-        ->where('id', '!=', auth()->id()) // No notificar al creador
-        ->get();
+        
 
         return redirect()->route('gestionar_sitios')->with('success', 'Sitio creado correctamente.');
     }
@@ -166,10 +136,7 @@ class TuristicPlaceController extends Controller
     public function editar($id)
     {
         $place = TuristicPlace::findOrFail($id);
-        $preferences = \App\Models\preference::all();
-        $selectedPreferences = $place->label()->pluck('preferences.id')->toArray();
-
-        return view('sitios_ecoturisticos.Editar_sitio', compact('place', 'preferences', 'selectedPreferences'));
+        return view('sitios_ecoturisticos.Editar_sitio', compact('place'));
     }
     public function sitioactualizado(Request $request, $id)
 {
@@ -188,9 +155,6 @@ class TuristicPlaceController extends Controller
         'flora'                => 'required|string|min:10',
         'infraestructura'      => 'required|string|min:10',
         'recomendacion'        => 'required|string|min:10',
-        'contacto'             => 'nullable|string|max:500',
-        'dias_abiertos'        => 'nullable',
-        'estado_apertura'      => 'nullable|in:open,closed_temporarily,open_with_restrictions',
 
         // Imágenes opcionales
         'portada'              => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
@@ -224,25 +188,6 @@ class TuristicPlaceController extends Controller
     $place->flora = $request->flora;
     $place->estructure = $request->infraestructura;
     $place->tips = $request->recomendacion;
-    if ($request->has('contacto')) {
-        $place->contact_info = $request->contacto;
-    }
-    if ($request->has('dias_abiertos')) {
-        $openDays = null;
-        $openDaysRaw = $request->input('dias_abiertos');
-        if (is_string($openDaysRaw)) {
-            $decoded = json_decode($openDaysRaw, true);
-            if (json_last_error() === JSON_ERROR_NONE) {
-                $openDays = $decoded;
-            }
-        } elseif (is_array($openDaysRaw)) {
-            $openDays = $openDaysRaw;
-        }
-        $place->open_days = $openDays;
-    }
-    if ($request->has('estado_apertura')) {
-        $place->opening_status = $request->estado_apertura ?: $place->opening_status;
-    }
 
     // Actualizar portada si se subió nueva imagen
     if ($request->hasFile('portada')) {
@@ -303,27 +248,43 @@ class TuristicPlaceController extends Controller
         return view('sitios_ecoturisticos.Sitio', compact('user', 'place', 'reviews', 'rate'));
         
       
+
+        // Enviar notificaciones por correo a usuarios cuyas preferencias coinciden
+        try {
+            $creator = auth()->user();
+            if ($creator && in_array($creator->role, ['admin', 'operator'])) {
+                $labelIds = $request->preferences;
+
+                // Obtener usuarios que tienen al menos una de las preferencias seleccionadas
+                $users = User::whereHas('preferences', function ($q) use ($labelIds) {
+                    $q->whereIn('preferences.id', $labelIds);
+                })->whereNotNull('email')->get();
+
+                foreach ($users as $user) {
+                    // Obtener las preferencias que coinciden para pasar a la vista del correo
+                    $matchedPreferences = $user->preferences()->whereIn('preferences.id', $labelIds)->get();
+
+                    Mail::to($user->email)->send(new NewPlaceNotification($place, $matchedPreferences));
+                }
+            }
+        } catch (\Exception $e) {
+            // No detener el flujo si falla el envío; registrar si es necesario
+            logger()->error('Error sending new place notifications: ' . $e->getMessage());
+        }
+
     }
 
     public function favoritos($id){
         $user = auth()->user();
         $place = TuristicPlace::findOrFail($id);
-        $user->favoritePlaces()->syncWithoutDetaching([$place->id]);
 
-        if (request()->expectsJson()) {
-            return response()->json(['message' => 'Sitio añadido a favoritos.']);
-        }
-
+         $user->favoritePlaces()->attach($id);
         return redirect()->back()->with('success', 'Sitio añadido a favoritos.');
     }
     public function removeFavorite($id)
     {
         auth()->user()->favoritePlaces()->detach($id);
-
-        if (request()->expectsJson()) {
-            return response()->json(['message' => 'Eliminado de favoritos']);
-        }
-
+        
         return back()->with('success', 'Eliminado de favoritos');
     }
 
