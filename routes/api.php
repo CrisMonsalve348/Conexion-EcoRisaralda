@@ -86,6 +86,13 @@ Route::get('/files/{type}/{filename}', function ($type, $filename) {
 
 // Estas rutas necesitan sesión pero omiten CSRF para el primer contacto del cliente SPA
 Route::middleware('web')->group(function () {
+    // Notificaciones de usuario (turista)
+    Route::middleware('auth')->group(function () {
+        Route::get('/user/notifications', [\App\Http\Controllers\Api\NotificationController::class, 'index']);
+        Route::post('/user/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markRead']);
+        Route::post('/user/notifications/{id}/archive', [\App\Http\Controllers\Api\NotificationController::class, 'archive']);
+        Route::post('/user/notifications/archive-all', [\App\Http\Controllers\Api\NotificationController::class, 'archiveAll']);
+    });
     // Turistic places - read only (public but session-aware)
     Route::get('/places', [TuristicPlaceApiController::class, 'index']);
     Route::get('/places/{id}', [TuristicPlaceApiController::class, 'show']);
@@ -574,7 +581,14 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
 
             // Obtener evento por ID
             Route::get('/events/{id}', function (Request $request, $id) {
-                $event = PlaceEvent::with('place:id,name')->findOrFail($id);
+                $event = PlaceEvent::with('place:id,name')->find($id);
+                if (!$event) {
+                    return response()->json([
+                        'message' => 'El evento no está disponible en este momento.',
+                        'event' => null,
+                        'place' => null,
+                    ], 404);
+                }
                 return response()->json([
                     'event' => $event,
                     'place' => $event->place,
