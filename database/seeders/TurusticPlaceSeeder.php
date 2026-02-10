@@ -1,0 +1,231 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Storage;
+use App\Models\TuristicPlace;
+
+class TurusticPlaceSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     */
+    public function run(): void
+    {
+        // Limpiar carpetas anteriores (opcional)
+        Storage::disk('public')->deleteDirectory('portadas');
+        Storage::disk('public')->deleteDirectory('clima');
+        Storage::disk('public')->deleteDirectory('caracteristicas');
+        Storage::disk('public')->deleteDirectory('flora');
+        Storage::disk('public')->deleteDirectory('infraestructura');
+
+        // Crear las carpetas en storage/app/public
+        Storage::disk('public')->makeDirectory('portadas');
+        Storage::disk('public')->makeDirectory('clima');
+        Storage::disk('public')->makeDirectory('caracteristicas');
+        Storage::disk('public')->makeDirectory('flora');
+        Storage::disk('public')->makeDirectory('infraestructura');
+
+        $sitios = [
+            [
+                'name' => 'Parque Regional Natural Ucumarí',
+                'slogan' => 'Biodiversidad en el corazón del eje cafetero',
+                'description' => 'El Parque Regional Natural Ucumarí es la puerta de entrada a la selva nublada de los Andes Occidentales. Con una extensión de 4,590 hectáreas, alberga más de 400 especies de aves y es hogar del oso de anteojos.',
+                'localization' => 'Pereira, Risaralda',
+                'lat' => 4.8097,
+                'lng' => -75.5150,
+                'Weather' => 'Variable entre 8°C a 18°C debido a la altitud',
+                'features' => 'Senderos ecológicos, cascadas, observación de fauna',
+                'flora' => 'Orquídeas, helechos arborescentes, robles, palmas de cera',
+                'estructure' => 'Centro de visitantes, miradores, senderos señalizados',
+                'tips' => 'Llevar ropa impermeable y calzado resistente.',
+                'contact_info' => 'Tel: (6) 3135220 - Email: info@parqueucumari.org',
+                'open_days' => json_encode(['Lunes' => false, 'Martes' => true, 'Miércoles' => true, 'Jueves' => true, 'Viernes' => true, 'Sábado' => true, 'Domingo' => true]),
+                'opening_status' => true,
+                'user_id' => 1,
+                'terminos' => true,
+                'politicas' => true,
+                'images' => [
+                    'cover' => ['src' => 'portada/cover-ucumari.jpg', 'dest' => 'portadas/cover-ucumari.jpg'],
+                    'Weather_img' => ['src' => 'clima/clima-ucumari.jpg', 'dest' => 'clima/clima-ucumari.jpg'],
+                    'features_img' => ['src' => 'caracteristicas/caracterisitcas-ucumari.jpg', 'dest' => 'caracteristicas/caracterisitcas-ucumari.jpg'],
+                    'flora_img' => ['src' => 'flora/Fauna-FloraUcumari.jpg', 'dest' => 'flora/Fauna-FloraUcumari.jpg'],
+                    'estructure_img' => ['src' => 'estructura/estructura-ucumari.jpg', 'dest' => 'infraestructura/estructura-ucumari.jpg'],
+                ],
+            ],
+            [
+                'name' => 'Termales de Santa Rosa de Cabal',
+                'slogan' => 'Aguas termales entre la naturaleza del eje cafetero',
+                'description' => 'Complejo de termas naturales con piscinas y cascadas, ideal para relajarse.',
+                'localization' => 'Santa Rosa de Cabal, Risaralda',
+                'lat' => 5.1065,
+                'lng' => -75.7447,
+                'Weather' => 'Templado entre 18°C y 25°C',
+                'features' => 'Piscinas termales, masajes, alojamiento',
+                'flora' => 'Palmas, helechos y bromelias',
+                'estructure' => 'Piscinas termales, vestieres, restaurante',
+                'tips' => 'Llevar toalla y bloqueador.',
+                'contact_info' => 'Tel: (6) 3145000',
+                'open_days' => json_encode(['Lunes' => true, 'Martes' => true, 'Miércoles' => true, 'Jueves' => true, 'Viernes' => true, 'Sábado' => true, 'Domingo' => true]),
+                'opening_status' => true,
+                'user_id' => 1,
+                'terminos' => true,
+                'politicas' => true,
+                'images' => [
+                    'cover' => ['src' => 'portada/cover-termales.jpg', 'dest' => 'portadas/cover-termales.jpg'],
+                    'Weather_img' => ['src' => 'clima/clima-termales.jpg', 'dest' => 'clima/clima-termales.jpg'],
+                    'features_img' => ['src' => 'caracteristicas/caracteristicas-termales.jpg', 'dest' => 'caracteristicas/caracteristicas-termales.jpg'],
+                    'flora_img' => ['src' => 'flora/flora-termales.webp', 'dest' => 'flora/flora-termales.webp'],
+                    'estructure_img' => ['src' => 'estructura/estructura-termales.jpg', 'dest' => 'infraestructura/estructura-termales.jpg'],
+                ],
+            ],
+            [
+                'name' => 'Santuario de Fauna y Flora Otún Quimbaya',
+                'slogan' => 'Tesoro escondido del bosque húmedo tropical',
+                'description' => 'Área protegida dedicada a la conservación de especies endémicas y avistamiento de aves.',
+                'localization' => 'Pereira-Santa Rosa de Cabal, Risaralda',
+                'lat' => 4.9033,
+                'lng' => -75.5833,
+                'Weather' => 'Frío entre 11°C y 20°C',
+                'features' => 'Senderos, cascadas, avistamiento de aves',
+                'flora' => 'Orquídeas, helechos y musgos',
+                'estructure' => 'Centro de visitantes y senderos marcados',
+                'tips' => 'Llevar ropa impermeable y prismáticos.',
+                'contact_info' => 'Tel: (6) 3140000',
+                'open_days' => json_encode(['Lunes' => true, 'Martes' => true, 'Miércoles' => true, 'Jueves' => true, 'Viernes' => true, 'Sábado' => true, 'Domingo' => true]),
+                'opening_status' => true,
+                'user_id' => 1,
+                'terminos' => true,
+                'politicas' => true,
+                'images' => [
+                    'cover' => ['src' => 'portada/cover-otun.jpg', 'dest' => 'portadas/cover-otun.jpg'],
+                    'Weather_img' => ['src' => 'clima/clima-otun.jpg', 'dest' => 'clima/clima-otun.jpg'],
+                    'features_img' => ['src' => 'caracteristicas/caracteristicas-otun.jpg', 'dest' => 'caracteristicas/caracteristicas-otun.jpg'],
+                    'flora_img' => ['src' => 'flora/flora-otun.jpg', 'dest' => 'flora/flora-otun.jpg'],
+                    'estructure_img' => ['src' => 'estructura/estructura-otun.jpg', 'dest' => 'infraestructura/estructura-otun.jpg'],
+                ],
+            ],
+            [
+                'name' => 'Laguna de Otún',
+                'slogan' => 'Espejo de agua en la montaña risaraldense',
+                'description' => 'Laguna alpina localizada en los páramos, rodeada de frailejones y vegetación de altura.',
+                'localization' => 'Páramo de Santa Rosa de Cabal, Risaralda',
+                'lat' => 5.0483,
+                'lng' => -75.7650,
+                'Weather' => 'Muy frío entre 2°C y 8°C',
+                'features' => 'Laguna, senderos de montaña, fotografía de paisaje',
+                'flora' => 'Frailejones, musgos y líquenes',
+                'estructure' => 'Miradores y senderos de trekking',
+                'tips' => 'Ropa térmica y buen calzado. Contratar guía.',
+                'contact_info' => 'Contacto con guías locales',
+                'open_days' => json_encode(['Lunes' => true, 'Martes' => true, 'Miércoles' => true, 'Jueves' => true, 'Viernes' => true, 'Sábado' => true, 'Domingo' => true]),
+                'opening_status' => true,
+                'user_id' => 1,
+                'terminos' => true,
+                'politicas' => true,
+                'images' => [
+                    'cover' => ['src' => 'portada/portada-laguna-otun.jpg', 'dest' => 'portadas/portada-laguna-otun.jpg'],
+                    'Weather_img' => ['src' => 'clima/clima-laguna-otun.jpg', 'dest' => 'clima/clima-laguna-otun.jpg'],
+                    'features_img' => ['src' => 'caracteristicas/caracteristicas-laguna-otun.jpg', 'dest' => 'caracteristicas/caracteristicas-laguna-otun.jpg'],
+                    'flora_img' => ['src' => 'flora/flora-Laguna-del-Otun.jpg', 'dest' => 'flora/flora-Laguna-del-Otun.jpg'],
+                    'estructure_img' => ['src' => 'estructura/estructura-laguna-del-otun.jpg', 'dest' => 'infraestructura/estructura-laguna-del-otun.jpg'],
+                ],
+            ],
+            [
+                'name' => 'Reserva Natural Bosque de Yotoco',
+                'slogan' => 'Bosque seco tropical en peligro de extinción',
+                'description' => 'Reserva natural dedicada a la conservación del bosque seco tropical y programas de educación ambiental.',
+                'localization' => 'Belén de Umbría, Risaralda',
+                'lat' => 5.2500,
+                'lng' => -75.8150,
+                'Weather' => 'Cálido entre 24°C y 28°C',
+                'features' => 'Senderos interpretativos y reforestación',
+                'flora' => 'Ceibo, roble y plantas medicinales',
+                'estructure' => 'Centro de visitantes y aula ambiental',
+                'tips' => 'Ideal para familias y actividades educativas.',
+                'contact_info' => 'Tel: (6) 3125000',
+                'open_days' => json_encode(['Lunes' => true, 'Martes' => true, 'Miércoles' => true, 'Jueves' => true, 'Viernes' => true, 'Sábado' => true, 'Domingo' => true]),
+                'opening_status' => true,
+                'user_id' => 1,
+                'terminos' => true,
+                'politicas' => true,
+                'images' => [
+                    'cover' => ['src' => 'portada/portada-yotoco.jpg', 'dest' => 'portadas/portada-yotoco.jpg'],
+                    'Weather_img' => ['src' => 'clima/clima-yotoco.avif', 'dest' => 'clima/clima-yotoco.avif'],
+                    'features_img' => ['src' => 'caracteristicas/caracteristicas-yotoco.jpg', 'dest' => 'caracteristicas/caracteristicas-yotoco.jpg'],
+                    'flora_img' => ['src' => 'flora/fauna-yotoco.jpg', 'dest' => 'flora/fauna-yotoco.jpg'],
+                    'estructure_img' => ['src' => 'estructura/estructura-yotoco.jpg', 'dest' => 'infraestructura/estructura-yotoco.jpg'],
+                ],
+            ],
+        ];
+
+        foreach ($sitios as $s) {
+            // Copiar imágenes si existen y mapear campos al array para crear
+            $data = [
+                'name' => $s['name'],
+                'slogan' => $s['slogan'] ?? null,
+                'cover' => null,
+                'description' => $s['description'] ?? null,
+                'localization' => $s['localization'] ?? null,
+                'lat' => $s['lat'] ?? null,
+                'lng' => $s['lng'] ?? null,
+                'Weather' => $s['Weather'] ?? null,
+                'Weather_img' => null,
+                'features' => $s['features'] ?? null,
+                'features_img' => null,
+                'flora' => $s['flora'] ?? null,
+                'flora_img' => null,
+                'estructure' => $s['estructure'] ?? null,
+                'estructure_img' => null,
+                'tips' => $s['tips'] ?? null,
+                'contact_info' => $s['contact_info'] ?? null,
+                'open_days' => $s['open_days'] ?? json_encode(['Lunes' => true, 'Martes' => true, 'Miércoles' => true, 'Jueves' => true, 'Viernes' => true, 'Sábado' => true, 'Domingo' => true]),
+                'opening_status' => $s['opening_status'] ?? true,
+                'user_id' => $s['user_id'] ?? 1,
+                'terminos' => $s['terminos'] ?? true,
+                'politicas' => $s['politicas'] ?? true,
+            ];
+
+            if (!empty($s['images']) && is_array($s['images'])) {
+                foreach ($s['images'] as $field => $paths) {
+                    $copied = $this->copyImage($paths['src'], $paths['dest']);
+                    if ($copied) {
+                        $data[$field] = $copied;
+                    }
+                }
+            }
+
+            TuristicPlace::create($data);
+        }
+    }
+
+    /**
+     * Copiar imagen desde public/seeders/images/places a storage/app/public
+     * @param string $sourceRelativePath ruta relativa dentro de public/seeders/images/places
+     * @param string|null $destRelativePath ruta relativa destino dentro de storage/app/public
+     * @return string|null ruta destino o null si no existe
+     */
+    private function copyImage(string $sourceRelativePath, ?string $destRelativePath = null): ?string
+    {
+        // Si source está vacío, retornar null sin error
+        if (empty($sourceRelativePath)) {
+            return null;
+        }
+
+        $sourcePath = public_path('seeders/images/places/' . $sourceRelativePath);
+
+        if (!File::exists($sourcePath)) {
+            echo "⚠️ Imagen no encontrada: {$sourcePath}\n";
+            return null;
+        }
+
+        $dest = $destRelativePath ?? $sourceRelativePath;
+
+        Storage::disk('public')->put($dest, File::get($sourcePath));
+
+        return $dest;
+    }
+}

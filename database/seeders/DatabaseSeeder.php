@@ -18,8 +18,8 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // User::factory(10)->create();
-         $this->call(PreferenceSeeder::class);
-
+        
+        // Crear usuarios primero
         User::factory()->create([
            'name' => 'Test User',
            'last_name'=>'apellido',
@@ -29,14 +29,9 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password123'),
             'role'=>'operator',
             'email' => 'test@example.com',
+        ]);
 
-        ]
-    
-    
-    );
-
-
-     User::factory()->create([
+        User::factory()->create([
            'name' => 'Test User2',
            'last_name'=>'apellido2',
            'Country'=>'Colombia',
@@ -45,12 +40,9 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password123'),
             'role'=>'user',
             'email' => 'test2@example.com',
+        ]);
 
-        ]
-    
-    
-    );
-    User::factory()->create([
+        User::factory()->create([
            'name' => 'Test User3',
            'last_name'=>'apellido3',
            'Country'=>'Colombia',
@@ -59,12 +51,9 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password123'),
             'role'=>'user',
             'email' => 'test3@example.com',
+        ]);
 
-        ]
-    
-    
-    );
-     User::factory()->create([
+        User::factory()->create([
            'name' => 'Test User4',
            'last_name'=>'apellido4',
            'Country'=>'Colombia',
@@ -73,10 +62,10 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password123'),
             'role'=>'admin',
             'email' => 'test4@example.com',
+        ]);
 
-        ]
-    
-    
-    );
+        // Luego ejecutar los seeders que dependen de usuarios
+        $this->call(PreferenceSeeder::class);
+        $this->call(TurusticPlaceSeeder::class);
     }
 }
