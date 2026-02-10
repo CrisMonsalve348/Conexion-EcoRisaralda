@@ -235,6 +235,30 @@ class TuristicPlaceController extends Controller
 
     return redirect()->route('gestionar_sitios')->with('success', 'Sitio actualizado correctamente');
 }
+    public function toggleOpeningStatus(Request $request, $id)
+    {
+        $place = TuristicPlace::findOrFail($id);
+        $user = auth()->user();
+
+        if ($user->role == 'operator' && $place->user_id != $user->id) {
+            abort(403, 'No tienes permisos para cambiar el estado de este sitio');
+        }
+
+        if ($request->has('opening_status')) {
+            $value = filter_var($request->input('opening_status'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
+            $place->opening_status = is_null($value) ? ! $place->opening_status : $value;
+        } else {
+            $place->opening_status = ! $place->opening_status;
+        }
+
+        $place->save();
+
+        if ($request->wantsJson()) {
+            return response()->json(['success' => true, 'opening_status' => (bool) $place->opening_status]);
+        }
+
+        return redirect()->back()->with('success', 'Estado de apertura actualizado.');
+    }
     public function ver($id){
 
         $place = TuristicPlace::findOrFail($id);

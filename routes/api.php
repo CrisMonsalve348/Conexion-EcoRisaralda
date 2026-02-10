@@ -86,6 +86,13 @@ Route::get('/files/{type}/{filename}', function ($type, $filename) {
 
 // Estas rutas necesitan sesión pero omiten CSRF para el primer contacto del cliente SPA
 Route::middleware('web')->group(function () {
+    // Notificaciones de usuario (turista)
+    Route::middleware('auth')->group(function () {
+        Route::get('/user/notifications', [\App\Http\Controllers\Api\NotificationController::class, 'index']);
+        Route::post('/user/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationController::class, 'markRead']);
+        Route::post('/user/notifications/{id}/archive', [\App\Http\Controllers\Api\NotificationController::class, 'archive']);
+        Route::post('/user/notifications/archive-all', [\App\Http\Controllers\Api\NotificationController::class, 'archiveAll']);
+    });
     // Turistic places - read only (public but session-aware)
     Route::get('/places', [TuristicPlaceApiController::class, 'index']);
     Route::get('/places/{id}', [TuristicPlaceApiController::class, 'show']);
@@ -572,6 +579,84 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             ]);
         });
 
+            // Obtener evento por ID
+            Route::get('/events/{id}', function (Request $request, $id) {
+                $event = PlaceEvent::with('place:id,name')->find($id);
+                if (!$event) {
+                    return response()->json([
+                        'message' => 'El evento no está disponible en este momento.',
+                        'event' => null,
+                        'place' => null,
+                    ], 404);
+                }
+                return response()->json([
+                    'event' => $event,
+                    'place' => $event->place,
+                ]);
+            });
+
+            // Editar evento
+            Route::put('/events/{id}', function (Request $request, $id) {
+                $event = PlaceEvent::findOrFail($id);
+                $data = $request->validate([
+                    'title' => 'required|string|max:255',
+                    'description' => 'nullable|string|max:1000',
+                    'starts_at' => 'required|date',
+                    'image' => 'nullable|image|max:4096',
+                ]);
+                $event->title = $data['title'];
+                $event->description = $data['description'] ?? '';
+                $event->starts_at = $data['starts_at'];
+                    $event->approval_status = 'pending';
+                if ($request->hasFile('image')) {
+                    if ($event->image) {
+                        Storage::disk('public')->delete($event->image);
+                    }
+                    $event->image = $request->file('image')->store('eventos', 'public');
+                }
+                $event->save();
+                return response()->json(['event' => $event, 'message' => 'Evento actualizado exitosamente']);
+            });
+
+            // Eliminar evento
+            Route::delete('/events/{id}', function (Request $request, $id) {
+                $event = PlaceEvent::findOrFail($id);
+                // Solo el operador dueño o admin puede eliminar
+                $user = $request->user();
+                if ($user->role !== 'admin' && $event->place->user_id !== $user->id) {
+                    return response()->json(['message' => 'No autorizado'], 403);
+                }
+                if ($event->image) {
+                    Storage::disk('public')->delete($event->image);
+                }
+                $event->delete();
+                return response()->json(['message' => 'Evento eliminado exitosamente']);
+            });
+
+                // Crear evento (operador/admin)
+                Route::post('/places/{id}/events', function (Request $request, $id) {
+                    $user = $request->user();
+                    $place = TuristicPlace::findOrFail($id);
+                    if (!in_array($user->role, ['operator', 'admin']) || ($user->role === 'operator' && $place->user_id !== $user->id)) {
+                        return response()->json(['message' => 'No autorizado'], 403);
+                    }
+                    $data = $request->validate([
+                        'title' => 'required|string|max:255',
+                        'description' => 'nullable|string|max:1000',
+                        'starts_at' => 'required|date',
+                        'image' => 'required|image|max:4096',
+                    ]);
+                    $event = new PlaceEvent();
+                    $event->place_id = $place->id;
+                    $event->title = $data['title'];
+                    $event->description = $data['description'] ?? '';
+                    $event->starts_at = $data['starts_at'];
+                    $event->approval_status = 'pending';
+                    $event->image = $request->file('image')->store('eventos', 'public');
+                    $event->save();
+                    return response()->json(['event' => $event, 'message' => 'Evento creado exitosamente']);
+                });
+
         // ============ TURISTIC PLACES - CREATE/UPDATE/DELETE ============
         Route::post('/places', [TuristicPlaceApiController::class, 'store']);
         Route::put('/places/{id}', [TuristicPlaceApiController::class, 'update']);
@@ -587,10 +672,6 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
         // ============ OPERATOR REVIEW MODERATION ============
         Route::middleware('role:operator')->prefix('operator')->group(function () {
             Route::post('/reviews/{id}/restrict', function (Request $request, $id) {
-                $data = $request->validate([
-                    'reason' => 'required|in:insultos,spam',
-                ]);
-
                 $review = reviews::with('place')->findOrFail($id);
                 if (! $review->place || $review->place->user_id !== $request->user()->id) {
                     return response()->json(['message' => 'No autorizado'], 403);
@@ -599,7 +680,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                 $review->update([
                     'is_restricted' => true,
                     'restricted_by_role' => 'operator',
-                    'restriction_reason' => $data['reason'],
+                    'restriction_reason' => null,
                 ]);
 
                 return response()->json([
@@ -625,24 +706,141 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                     'review' => $review,
                 ]);
             });
+                // Obtener todas las reseñas de los sitios del operador
+                Route::get('/reviews', function (Request $request) {
+                    $user = $request->user();
+                    $places = TuristicPlace::where('user_id', $user->id)->pluck('id');
+                    $reviews = reviews::with(['user:id,name', 'place:id,name'])
+                        ->whereIn('place_id', $places)
+                        ->orderBy('created_at', 'desc')
+                        ->get();
+                    return response()->json($reviews);
+                });
+                // Estadísticas del operador
+                Route::get('/stats', function (Request $request) {
+                    $user = $request->user();
+                    // Sitios turísticos creados por el operador
+                    $places = TuristicPlace::where('user_id', $user->id)->get();
+                    $places_count = $places->count();
+                    // Eventos creados por el operador
+                    $events_count = PlaceEvent::whereIn('place_id', $places->pluck('id'))->count();
+                    // Reseñas recibidas en sitios del operador
+                    $reviews = reviews::whereIn('place_id', $places->pluck('id'))->get();
+                    $reviews_count = $reviews->count();
+                    // Turistas únicos que han visitado sitios del operador
+                    $unique_turists = DB::table('user_place_visits')
+                        ->join('turistic_places', 'user_place_visits.place_id', '=', 'turistic_places.id')
+                        ->where('turistic_places.user_id', $user->id)
+                        ->distinct('user_place_visits.user_id')
+                        ->count('user_place_visits.user_id');
+
+                    // Visitas totales a sitios del operador
+                    $visits = DB::table('user_place_visits')
+                        ->join('turistic_places', 'user_place_visits.place_id', '=', 'turistic_places.id')
+                        ->where('turistic_places.user_id', $user->id)
+                        ->count();
+
+                    // Favoritos totales de sitios del operador
+                    $favorites = DB::table('favorite_places')
+                        ->join('turistic_places', 'favorite_places.place_id', '=', 'turistic_places.id')
+                        ->where('turistic_places.user_id', $user->id)
+                        ->count();
+
+                    // Promedio de calificación de sitios del operador
+                    $avg_rating = $reviews_count > 0 ? round($reviews->avg('rating'), 2) : 0.0;
+
+                    // Comentarios recientes en sitios del operador (últimos 6)
+                    $recent_comments = reviews::whereIn('place_id', $places->pluck('id'))
+                        ->orderBy('created_at', 'desc')
+                        ->limit(6)
+                        ->get()
+                        ->map(function ($review) {
+                            return [
+                                'place_name' => optional($review->place)->name,
+                                'user_name' => optional($review->user)->name,
+                                'created_at' => $review->created_at,
+                                'comment' => $review->comment,
+                            ];
+                        });
+
+                    return response()->json([
+                        'places_count' => $places_count,
+                        'events_count' => $events_count,
+                        'reviews_count' => $reviews_count,
+                        'unique_turists' => $unique_turists,
+                        'visits' => $visits,
+                        'favorites' => $favorites,
+                        'avg_rating' => $avg_rating,
+                        'recent_comments' => $recent_comments,
+                    ]);
+                });
         });
 
         // ============ ADMIN ROUTES ============
         Route::middleware('role:admin')->prefix('admin')->group(function () {
-            // Dashboard con estadísticas
+            // Listar todos los eventos turísticos
+            Route::get('/events', function () {
+                return \App\Models\PlaceEvent::orderBy('starts_at', 'desc')->get();
+            });
+
+            // Aprobar evento
+            Route::post('/events/{id}/approve', function ($id) {
+                $event = \App\Models\PlaceEvent::findOrFail($id);
+                $event->approval_status = 'approved';
+                $event->save();
+                return response()->json(['event' => $event, 'message' => 'Evento aprobado exitosamente']);
+            });
+
+            // Rechazar evento
+            Route::post('/events/{id}/reject', function ($id) {
+                $event = \App\Models\PlaceEvent::findOrFail($id);
+                $event->approval_status = 'rejected';
+                $event->save();
+                return response()->json(['event' => $event, 'message' => 'Evento rechazado']);
+            });
+
+            // Eliminar evento (admin)
+            Route::delete('/events/{id}', function ($id) {
+                $event = \App\Models\PlaceEvent::findOrFail($id);
+                if ($event->image) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($event->image);
+                }
+                $event->delete();
+                return response()->json(['message' => 'Evento eliminado exitosamente']);
+            });
+                        // Actualizar estado y aprobación de sitio turístico
+                        Route::put('/places/{id}', function (Request $request, $id) {
+                            $place = \App\Models\TuristicPlace::findOrFail($id);
+                            $data = $request->validate([
+                                'approval_status' => 'sometimes|in:pending,approved,rejected',
+                                'archived_at' => 'nullable|date',
+                            ]);
+                            if (array_key_exists('approval_status', $data)) {
+                                $place->approval_status = $data['approval_status'];
+                            }
+                            if (array_key_exists('archived_at', $data)) {
+                                $place->archived_at = $data['archived_at'];
+                            }
+                            $place->save();
+                            return response()->json(['place' => $place, 'message' => 'Sitio actualizado exitosamente']);
+                        });
+            // Dashboard con estadísticas para frontend
             Route::get('/dashboard', function () {
-                $totalUsers = User::count();
-                $totalOperators = User::where('role', 'operator')->count();
-                $pendingOperators = User::where('role', 'operator')->where('status', 'pending')->count();
-                $totalTuristas = User::where('role', 'user')->count();
-                $totalPlaces = DB::table('turistic_places')->count();
+                $active_turistas = User::where('role', 'user')->where('status', 'active')->count();
+                $active_operators = User::where('role', 'operator')->where('status', 'active')->count();
+                $active_places = DB::table('turistic_places')->where('approval_status', 'approved')->count();
+                $active_events = \App\Models\PlaceEvent::where('starts_at', '>=', now())
+                    ->where('approval_status', 'approved')
+                    ->whereNull('archived_at')
+                    ->count();
+                // Eliminar eventos archivados
+                \App\Models\PlaceEvent::whereNotNull('archived_at')->delete();
 
                 return response()->json([
-                    'total_users' => $totalUsers,
-                    'total_operators' => $totalOperators,
-                    'pending_operators' => $pendingOperators,
-                    'total_turistas' => $totalTuristas,
-                    'total_places' => $totalPlaces,
+                    'active_turistas' => $active_turistas,
+                    'active_operators' => $active_operators,
+                    'active_places' => $active_places,
+                    'active_events' => $active_events,
                 ]);
             });
 
@@ -698,26 +896,46 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                 return response()->json($user);
             });
 
-            // Actualizar usuario (cambiar rol, status, etc.)
+            // Actualizar usuario (cambiar rol, status, soft delete/reactivar)
             Route::put('/users/{id}', function (Request $request, $id) {
                 $user = User::findOrFail($id);
-                
                 $data = $request->validate([
                     'name' => 'sometimes|string|max:255',
                     'last_name' => 'sometimes|string|max:255',
-                    'email' => 'sometimes|email|unique:users,email,'.$id,
+                    'email' => 'sometimes|email',
                     'role' => 'sometimes|in:user,operator,admin',
-                    'status' => 'sometimes|in:pending,approved,rejected,active',
+                    'status' => 'sometimes|in:pending,approved,rejected,active,inactive',
                     'country' => 'nullable|string|max:255',
                     'birth_date' => 'nullable|date',
                 ]);
 
-                $user->update($data);
+                // Soft delete: desactivar usuario y liberar correo
+                if (array_key_exists('status', $data) && $data['status'] === 'inactive') {
+                    // Guardar correo original en campo temporal
+                    $user->original_email = $user->email;
+                    $user->status = 'inactive';
+                    $user->email = $data['email'] ?? (time().'-deactivated-'.$user->id.'@deactivated.local');
+                    $user->save();
+                    return response()->json(['user' => $user, 'message' => 'Usuario desactivado (soft delete)']);
+                }
 
-                return response()->json([
-                    'user' => $user,
-                    'message' => 'Usuario actualizado exitosamente',
-                ]);
+                // Reactivar usuario: restaurar status y correo si está disponible
+                if (array_key_exists('status', $data) && $data['status'] === 'active') {
+                    // Restaurar correo original si existe y está disponible
+                    $restoreEmail = $user->original_email ?? $user->email;
+                    $emailInUse = User::where('email', $restoreEmail)->where('id', '!=', $id)->exists();
+                    if ($emailInUse) {
+                        return response()->json(['error' => 'correo original ya está en uso'], 409);
+                    }
+                    $user->email = $restoreEmail;
+                    $user->status = 'active';
+                    $user->save();
+                    return response()->json(['user' => $user, 'message' => 'Usuario reactivado']);
+                }
+
+                // Cambio de rol u otros campos
+                $user->update($data);
+                return response()->json(['user' => $user, 'message' => 'Usuario actualizado exitosamente']);
             });
 
             // Eliminar usuario

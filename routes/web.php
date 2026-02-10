@@ -50,6 +50,9 @@ Route::get('/Gestion_sitio', [TuristicPlaceController::class, 'gestionsitios'])
 Route::delete('/Gestion_sitio/{id}', [TuristicPlaceController::class, 'destroy'])
     ->middleware(['auth', 'role:operator,admin'])
     ->name('eliminar_sitio');
+Route::patch('/Gestion_sitio/{id}/opening_status', [TuristicPlaceController::class, 'toggleOpeningStatus'])
+    ->middleware(['auth', 'role:operator,admin'])
+    ->name('toggle_opening_status');
 //editar sitios de oprador y admin
 Route::get('/Editar_sitio/{id}', [TuristicPlaceController::class, 'editar'])
     ->middleware(['auth', 'role:operator,admin'])
