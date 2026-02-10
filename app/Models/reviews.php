@@ -27,7 +27,8 @@ class reviews extends Model
     
     public function reactions()
     {
-        return $this->hasMany(ReviewReaction::class, 'review_id');
+        return $this->hasMany(ReviewReaction::class, 'review_id')
+            ->whereNull('archived_at');
     }
     
     public function likes()

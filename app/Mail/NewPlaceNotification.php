@@ -42,7 +42,7 @@ class NewPlaceNotification extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'emails.new_place_notification',
+            markdown: 'emails.new_place_notification',
         );
     }
 

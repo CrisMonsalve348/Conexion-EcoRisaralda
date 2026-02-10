@@ -35,6 +35,8 @@ class TuristicPlace extends Model
         'user_id',
         'terminos',
         'politicas',
+        'archived_at',
+        'approval_status',
     ];
 
     protected $casts = [
@@ -48,7 +50,9 @@ class TuristicPlace extends Model
     }
 
     public function favoriteby(){
-        return $this->belongsToMany(User::class, 'favorite_places', 'place_id', 'user_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'favorite_places', 'place_id', 'user_id')
+            ->wherePivotNull('archived_at')
+            ->withTimestamps();
 
     }
     public function label(){
