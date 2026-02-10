@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Country;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -19,7 +20,8 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $countries = Country::orderByRaw("IF(name = 'Colombia', 0, 1), name")->get();
+        return view('auth.register', compact('countries'));
     }
 
     /**
@@ -32,7 +34,7 @@ class RegisteredUserController extends Controller
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
-            'Country' => ['required', 'string', 'max:255'],
+            'country_id' => ['required', 'exists:countries,id'],
             'date_of_birth' => ['required', 'date'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
@@ -46,7 +48,7 @@ class RegisteredUserController extends Controller
             
             'name' => $request->name,
             'last_name' => $request->last_name,
-            'Country' => $request->Country,
+            'country_id' => $request->country_id,
             'date_of_birth' => $request->date_of_birth,
             'email' => $request->email,
             'password' => Hash::make($request->password),

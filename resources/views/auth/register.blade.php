@@ -16,15 +16,14 @@
         </div>
         <!-- Country -->
         <div class="mt-4">
-            <x-input-label for="Country" :value="__('Country')" />
-            <select name="Country" id="#">
-                <option value="Colombia">Colombia</option>
-                <option value="Argentina">Argentina</option>
-                <option value="Brasil">Brasil</option>
-                <option value="Chile">Chile</option>
-                <option value="Peru">Peru</option>
+            <x-input-label for="country_id" :value="__('Country')" />
+            <select name="country_id" id="country_id">
+                
+                @foreach($countries as $country)
+                    <option value="{{ $country->id }}">{{ $country->name }}</option>
+                @endforeach
             </select>
-            <x-input-error :messages="$errors->get('Country')" class="mt-2" />
+            <x-input-error :messages="$errors->get('country_id')" class="mt-2" />
         </div>
         <!-- Date of Birth -->
         <div class="mt-4">

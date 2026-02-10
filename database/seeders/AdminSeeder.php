@@ -17,7 +17,7 @@ class AdminSeeder extends Seeder
         User::create([
             'name' => 'Admin EcoRisaralda',
             'last_name' => 'Admin',
-            'Country' => 'Colombia',
+            'country_id' => 1,
             'date_of_birth' => '1990-01-01',
             'email' => 'admin@ecorisaralda.com',
             'password' => Hash::make('ecorisaralda123'),

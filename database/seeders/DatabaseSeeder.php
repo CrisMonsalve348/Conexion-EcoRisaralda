@@ -17,13 +17,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+         $this->call(CountrySeeder::class);
         // User::factory(10)->create();
         
         // Crear usuarios primero
         User::factory()->create([
            'name' => 'Test User',
            'last_name'=>'apellido',
-           'Country'=>'Colombia',
+           'country_id'=>'1',
            'date_of_birth'=>'2025-10-02',
            'email_verified_at'=>now(),
             'password' => Hash::make('password123'),
@@ -34,7 +35,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
            'name' => 'Test User2',
            'last_name'=>'apellido2',
-           'Country'=>'Colombia',
+           'country_id'=>'1',
            'date_of_birth'=>'2025-10-02',
            'email_verified_at'=>now(),
             'password' => Hash::make('password123'),
@@ -45,7 +46,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
            'name' => 'Test User3',
            'last_name'=>'apellido3',
-           'Country'=>'Colombia',
+           'country_id'=>'1',
            'date_of_birth'=>'2025-10-02',
            'email_verified_at'=>now(),
             'password' => Hash::make('password123'),
@@ -56,7 +57,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
            'name' => 'Test User4',
            'last_name'=>'apellido4',
-           'Country'=>'Colombia',
+           'country_id'=>'1',
            'date_of_birth'=>'2025-10-02',
            'email_verified_at'=>now(),
             'password' => Hash::make('password123'),
