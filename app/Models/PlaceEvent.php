@@ -15,6 +15,7 @@ class PlaceEvent extends Model
         'description',
         'image',
         'starts_at',
+        'approval_status',
     ];
 
     protected $casts = [

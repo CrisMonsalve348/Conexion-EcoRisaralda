@@ -18,7 +18,23 @@ class TuristicPlaceApiController extends Controller
      */
     public function index(Request $request)
     {
-        $query = TuristicPlace::with(['user', 'label'])->latest();
+        $query = TuristicPlace::with(['user', 'label'])
+            ->whereNull('archived_at')
+            ->latest();
+
+        $user = $request->user();
+        $isAdmin = $user && $user->role === 'admin';
+        $isOperator = $user && $user->role === 'operator';
+        if ($isAdmin) {
+            // Admin ve todos los sitios
+        } elseif ($isOperator) {
+            $query->where(function ($subQuery) use ($user) {
+                $subQuery->where('approval_status', 'approved')
+                    ->orWhere('user_id', $user->id);
+            });
+        } else {
+            $query->where('approval_status', 'approved');
+        }
         
         // Si hay un parámetro de búsqueda, filtrar resultados por nombre
         if ($request->has('search') && $request->search) {
@@ -35,15 +51,35 @@ class TuristicPlaceApiController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $place = TuristicPlace::with(['user', 'label'])->findOrFail($id);
-        $expiredEvents = $place->events()->where('starts_at', '<', now())->get();
+        $place = TuristicPlace::with(['user', 'label'])
+            ->whereNull('archived_at')
+            ->where('id', $id)
+            ->first();
+
+        if (! $place) {
+            return response()->json(['message' => 'Sitio no encontrado'], 404);
+        }
+
+        $canViewUnapproved = $request->user()
+            && ($request->user()->role === 'admin' || $request->user()->id === $place->user_id);
+        if (! $canViewUnapproved && $place->approval_status !== 'approved') {
+            return response()->json(['message' => 'Sitio no disponible'], 404);
+        }
+        $expiredEvents = $place->events()
+            ->whereNull('archived_at')
+            ->where('starts_at', '<', now())
+            ->get();
         foreach ($expiredEvents as $expiredEvent) {
             if ($expiredEvent->image) {
                 Storage::disk('public')->delete($expiredEvent->image);
             }
             $expiredEvent->delete();
         }
-        $event = $place->events()
+        $eventQuery = $place->events()->whereNull('archived_at');
+        if (! $canViewUnapproved) {
+            $eventQuery->where('approval_status', 'approved');
+        }
+        $event = $eventQuery
             ->where('starts_at', '>=', now())
             ->orderBy('starts_at', 'asc')
             ->first();
@@ -95,27 +131,22 @@ class TuristicPlaceApiController extends Controller
 
         // Validation
         $validated = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'slogan' => 'required|string|max:255',
-            'descripcion' => 'required|string|min:10',
-            'localizacion' => 'required|string|min:10',
+            'nombre' => 'required|string|min:5|max:80',
+            'slogan' => 'required|string|min:5|max:120',
+            'descripcion' => 'required|string|min:30|max:1000',
+            'localizacion' => 'required|string|min:10|max:500',
             'lat' => 'required|numeric',
             'lng' => 'required|numeric',
-            'clima' => 'required|string|min:10',
-            'caracteristicas' => 'required|string|min:10',
-            'flora' => 'required|string|min:10',
-            'infraestructura' => 'required|string|min:10',
-            'recomendacion' => 'required|string|min:10',
+            'clima' => 'required|string|min:20|max:600',
+            'caracteristicas' => 'required|string|min:20|max:600',
+            'flora' => 'required|string|min:20|max:600',
+            'infraestructura' => 'required|string|min:20|max:600',
+            'recomendacion' => 'required|string|min:20|max:600',
             'preferences' => 'required|array|min:1',
             'preferences.*' => 'integer|exists:preferences,id',
-            'contacto' => 'nullable|string|max:500',
+            'contacto' => 'nullable|string|max:200',
             'dias_abiertos' => 'nullable',
             'estado_apertura' => 'nullable|in:open,closed_temporarily,open_with_restrictions',
-            'event_title' => 'nullable|string|max:255|required_with:event_datetime,event_description,event_image',
-            'event_description' => 'nullable|string|max:1000',
-            'event_datetime' => 'nullable|date|required_with:event_title,event_description,event_image',
-            'event_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
-            
             'portada' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
             'clima_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
             'caracteristicas_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
@@ -123,27 +154,36 @@ class TuristicPlaceApiController extends Controller
             'infraestructura_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
         ], [
             'nombre.required' => 'El nombre del sitio es obligatorio.',
-            'nombre.max' => 'El nombre del sitio no debe tener más de 255 caracteres.',
+            'nombre.min' => 'El nombre del sitio debe tener al menos 5 caracteres.',
+            'nombre.max' => 'El nombre del sitio no debe tener más de 80 caracteres.',
             'slogan.required' => 'El slogan es obligatorio.',
-            'slogan.max' => 'El slogan no debe tener más de 255 caracteres.',
+            'slogan.min' => 'El slogan debe tener al menos 5 caracteres.',
+            'slogan.max' => 'El slogan no debe tener más de 120 caracteres.',
             'descripcion.required' => 'La descripción es obligatoria.',
-            'descripcion.min' => 'La descripción debe tener al menos 10 caracteres.',
+            'descripcion.min' => 'La descripción debe tener al menos 30 caracteres.',
+            'descripcion.max' => 'La descripción no debe tener más de 1000 caracteres.',
             'localizacion.required' => 'La localización es obligatoria.',
             'localizacion.min' => 'La localización debe tener al menos 10 caracteres.',
+            'localizacion.max' => 'La localización no debe tener más de 500 caracteres.',
             'lat.required' => 'La latitud es obligatoria. Por favor, selecciona una ubicación en el mapa.',
             'lat.numeric' => 'La latitud debe ser un número válido.',
             'lng.required' => 'La longitud es obligatoria. Por favor, selecciona una ubicación en el mapa.',
             'lng.numeric' => 'La longitud debe ser un número válido.',
             'clima.required' => 'La descripción del clima es obligatoria.',
-            'clima.min' => 'La descripción del clima debe tener al menos 10 caracteres.',
+            'clima.min' => 'La descripción del clima debe tener al menos 20 caracteres.',
+            'clima.max' => 'La descripción del clima no debe tener más de 600 caracteres.',
             'caracteristicas.required' => 'Las características son obligatorias.',
-            'caracteristicas.min' => 'Las características deben tener al menos 10 caracteres.',
+            'caracteristicas.min' => 'Las características deben tener al menos 20 caracteres.',
+            'caracteristicas.max' => 'Las características no deben tener más de 600 caracteres.',
             'flora.required' => 'La descripción de flora y fauna es obligatoria.',
-            'flora.min' => 'La descripción de flora y fauna debe tener al menos 10 caracteres.',
+            'flora.min' => 'La descripción de flora y fauna debe tener al menos 20 caracteres.',
+            'flora.max' => 'La descripción de flora y fauna no debe tener más de 600 caracteres.',
             'infraestructura.required' => 'La descripción de infraestructura es obligatoria.',
-            'infraestructura.min' => 'La descripción de infraestructura debe tener al menos 10 caracteres.',
+            'infraestructura.min' => 'La descripción de infraestructura debe tener al menos 20 caracteres.',
+            'infraestructura.max' => 'La descripción de infraestructura no debe tener más de 600 caracteres.',
             'recomendacion.required' => 'Las recomendaciones son obligatorias.',
-            'recomendacion.min' => 'Las recomendaciones deben tener al menos 10 caracteres.',
+            'recomendacion.min' => 'Las recomendaciones deben tener al menos 20 caracteres.',
+            'recomendacion.max' => 'Las recomendaciones no deben tener más de 600 caracteres.',
             'portada.required' => 'La imagen de portada es obligatoria.',
             'portada.image' => 'El archivo de portada debe ser una imagen.',
             'portada.mimes' => 'La imagen de portada debe ser de tipo: jpg, jpeg, png o webp.',
@@ -208,22 +248,10 @@ class TuristicPlaceApiController extends Controller
             'estructure_img' => $infraestructura_path,
             'terminos' => true,
             'politicas' => true,
+            'approval_status' => 'pending',
         ]);
 
         $place->label()->attach($validated['preferences']);
-
-        if ($request->filled('event_title') || $request->filled('event_datetime') || $request->filled('event_description')) {
-            $eventImagePath = null;
-            if ($request->hasFile('event_image')) {
-                $eventImagePath = $request->file('event_image')->store('events', 'public');
-            }
-            $place->events()->create([
-                'title' => $request->input('event_title'),
-                'description' => $request->input('event_description'),
-                'image' => $eventImagePath,
-                'starts_at' => $request->input('event_datetime'),
-            ]);
-        }
 
         return response()->json([
             'message' => 'Sitio creado exitosamente',
@@ -237,7 +265,9 @@ class TuristicPlaceApiController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $place = TuristicPlace::findOrFail($id);
+        $place = TuristicPlace::whereNull('archived_at')
+            ->where('id', $id)
+            ->firstOrFail();
 
         // Authorization check
         if ($request->user()->id !== $place->user_id && $request->user()->role !== 'admin') {
@@ -246,27 +276,22 @@ class TuristicPlaceApiController extends Controller
 
         // Validation
         $validated = $request->validate([
-            'nombre' => 'required|string|max:255',
-            'slogan' => 'required|string|max:255',
-            'descripcion' => 'required|string|min:10',
-            'localizacion' => 'required|string|min:10',
+            'nombre' => 'required|string|min:5|max:80',
+            'slogan' => 'required|string|min:5|max:120',
+            'descripcion' => 'required|string|min:30|max:1000',
+            'localizacion' => 'required|string|min:10|max:500',
             'lat' => 'required|numeric',
             'lng' => 'required|numeric',
-            'clima' => 'required|string|min:10',
-            'caracteristicas' => 'required|string|min:10',
-            'flora' => 'required|string|min:10',
-            'infraestructura' => 'required|string|min:10',
-            'recomendacion' => 'required|string|min:10',
+            'clima' => 'required|string|min:20|max:600',
+            'caracteristicas' => 'required|string|min:20|max:600',
+            'flora' => 'required|string|min:20|max:600',
+            'infraestructura' => 'required|string|min:20|max:600',
+            'recomendacion' => 'required|string|min:20|max:600',
             'preferences' => 'required|array|min:1',
             'preferences.*' => 'integer|exists:preferences,id',
-            'contacto' => 'nullable|string|max:500',
+            'contacto' => 'nullable|string|max:200',
             'dias_abiertos' => 'nullable',
             'estado_apertura' => 'nullable|in:open,closed_temporarily,open_with_restrictions',
-            'event_title' => 'nullable|string|max:255|required_with:event_datetime,event_description,event_image',
-            'event_description' => 'nullable|string|max:1000',
-            'event_datetime' => 'nullable|date|required_with:event_title,event_description,event_image',
-            'event_image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
-            
             'portada' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             'clima_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             'caracteristicas_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
@@ -274,27 +299,36 @@ class TuristicPlaceApiController extends Controller
             'infraestructura_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
         ], [
             'nombre.required' => 'El nombre del sitio es obligatorio.',
-            'nombre.max' => 'El nombre del sitio no debe tener más de 255 caracteres.',
+            'nombre.min' => 'El nombre del sitio debe tener al menos 5 caracteres.',
+            'nombre.max' => 'El nombre del sitio no debe tener más de 80 caracteres.',
             'slogan.required' => 'El slogan es obligatorio.',
-            'slogan.max' => 'El slogan no debe tener más de 255 caracteres.',
+            'slogan.min' => 'El slogan debe tener al menos 5 caracteres.',
+            'slogan.max' => 'El slogan no debe tener más de 120 caracteres.',
             'descripcion.required' => 'La descripción es obligatoria.',
-            'descripcion.min' => 'La descripción debe tener al menos 10 caracteres.',
+            'descripcion.min' => 'La descripción debe tener al menos 30 caracteres.',
+            'descripcion.max' => 'La descripción no debe tener más de 1000 caracteres.',
             'localizacion.required' => 'La localización es obligatoria.',
             'localizacion.min' => 'La localización debe tener al menos 10 caracteres.',
+            'localizacion.max' => 'La localización no debe tener más de 500 caracteres.',
             'lat.required' => 'La latitud es obligatoria. Por favor, selecciona una ubicación en el mapa.',
             'lat.numeric' => 'La latitud debe ser un número válido.',
             'lng.required' => 'La longitud es obligatoria. Por favor, selecciona una ubicación en el mapa.',
             'lng.numeric' => 'La longitud debe ser un número válido.',
             'clima.required' => 'La descripción del clima es obligatoria.',
-            'clima.min' => 'La descripción del clima debe tener al menos 10 caracteres.',
+            'clima.min' => 'La descripción del clima debe tener al menos 20 caracteres.',
+            'clima.max' => 'La descripción del clima no debe tener más de 600 caracteres.',
             'caracteristicas.required' => 'Las características son obligatorias.',
-            'caracteristicas.min' => 'Las características deben tener al menos 10 caracteres.',
+            'caracteristicas.min' => 'Las características deben tener al menos 20 caracteres.',
+            'caracteristicas.max' => 'Las características no deben tener más de 600 caracteres.',
             'flora.required' => 'La descripción de flora y fauna es obligatoria.',
-            'flora.min' => 'La descripción de flora y fauna debe tener al menos 10 caracteres.',
+            'flora.min' => 'La descripción de flora y fauna debe tener al menos 20 caracteres.',
+            'flora.max' => 'La descripción de flora y fauna no debe tener más de 600 caracteres.',
             'infraestructura.required' => 'La descripción de infraestructura es obligatoria.',
-            'infraestructura.min' => 'La descripción de infraestructura debe tener al menos 10 caracteres.',
+            'infraestructura.min' => 'La descripción de infraestructura debe tener al menos 20 caracteres.',
+            'infraestructura.max' => 'La descripción de infraestructura no debe tener más de 600 caracteres.',
             'recomendacion.required' => 'Las recomendaciones son obligatorias.',
-            'recomendacion.min' => 'Las recomendaciones deben tener al menos 10 caracteres.',
+            'recomendacion.min' => 'Las recomendaciones deben tener al menos 20 caracteres.',
+            'recomendacion.max' => 'Las recomendaciones no deben tener más de 600 caracteres.',
             'portada.image' => 'El archivo de portada debe ser una imagen.',
             'portada.mimes' => 'La imagen de portada debe ser de tipo: jpg, jpeg, png o webp.',
             'portada.max' => 'La imagen de portada no debe pesar más de 4MB.',
@@ -323,6 +357,44 @@ class TuristicPlaceApiController extends Controller
             } elseif (is_array($openDaysRaw)) {
                 $openDays = $openDaysRaw;
             }
+        }
+
+        $preferencesChanged = false;
+        $currentPreferences = $place->label()->pluck('preferences.id')->toArray();
+        $incomingPreferences = $validated['preferences'] ?? [];
+        sort($currentPreferences);
+        sort($incomingPreferences);
+        if ($currentPreferences !== $incomingPreferences) {
+            $preferencesChanged = true;
+        }
+
+        $placeChanged = false;
+        if ($place->name !== $validated['nombre']) $placeChanged = true;
+        if ($place->slogan !== $validated['slogan']) $placeChanged = true;
+        if ($place->description !== $validated['descripcion']) $placeChanged = true;
+        if ($place->localization !== $validated['localizacion']) $placeChanged = true;
+        if ((string) $place->lat !== (string) $validated['lat']) $placeChanged = true;
+        if ((string) $place->lng !== (string) $validated['lng']) $placeChanged = true;
+        if ($place->Weather !== $validated['clima']) $placeChanged = true;
+        if ($place->features !== $validated['caracteristicas']) $placeChanged = true;
+        if ($place->flora !== $validated['flora']) $placeChanged = true;
+        if ($place->estructure !== $validated['infraestructura']) $placeChanged = true;
+        if ($place->tips !== $validated['recomendacion']) $placeChanged = true;
+        if (array_key_exists('contacto', $validated) && ($place->contact_info ?? '') !== ($validated['contacto'] ?? '')) {
+            $placeChanged = true;
+        }
+        if ($request->has('dias_abiertos')) {
+            $currentOpenDays = is_array($place->open_days) ? $place->open_days : [];
+            $nextOpenDays = is_array($openDays) ? $openDays : [];
+            if ($currentOpenDays != $nextOpenDays) {
+                $placeChanged = true;
+            }
+        }
+        if (array_key_exists('estado_apertura', $validated) && ($place->opening_status ?? '') !== ($validated['estado_apertura'] ?? '')) {
+            $placeChanged = true;
+        }
+        if ($preferencesChanged) {
+            $placeChanged = true;
         }
 
         // Update text fields
@@ -369,37 +441,21 @@ class TuristicPlaceApiController extends Controller
             $place->estructure_img = $request->file('infraestructura_img')->store('infraestructura', 'public');
         }
 
+        if ($request->hasFile('portada')
+            || $request->hasFile('clima_img')
+            || $request->hasFile('caracteristicas_img')
+            || $request->hasFile('flora_img')
+            || $request->hasFile('infraestructura_img')) {
+            $placeChanged = true;
+        }
+
+        if ($placeChanged) {
+            $place->approval_status = 'pending';
+        }
+
         $place->save();
 
         $place->label()->sync($validated['preferences']);
-
-        if ($request->filled('event_title') || $request->filled('event_datetime') || $request->filled('event_description')) {
-            $event = $place->events()->orderBy('starts_at', 'desc')->first();
-            $eventImagePath = $event?->image;
-
-            if ($request->hasFile('event_image')) {
-                if ($event && $event->image) {
-                    Storage::disk('public')->delete($event->image);
-                }
-                $eventImagePath = $request->file('event_image')->store('events', 'public');
-            }
-
-            if ($event) {
-                $event->update([
-                    'title' => $request->input('event_title'),
-                    'description' => $request->input('event_description'),
-                    'image' => $eventImagePath,
-                    'starts_at' => $request->input('event_datetime'),
-                ]);
-            } else {
-                $place->events()->create([
-                    'title' => $request->input('event_title'),
-                    'description' => $request->input('event_description'),
-                    'image' => $eventImagePath,
-                    'starts_at' => $request->input('event_datetime'),
-                ]);
-            }
-        }
 
         return response()->json([
             'message' => 'Sitio actualizado exitosamente',
@@ -413,7 +469,9 @@ class TuristicPlaceApiController extends Controller
      */
     public function destroy(Request $request, $id)
     {
-        $place = TuristicPlace::findOrFail($id);
+        $place = TuristicPlace::whereNull('archived_at')
+            ->where('id', $id)
+            ->firstOrFail();
 
         // Authorization check
         if ($request->user()->id !== $place->user_id && $request->user()->role !== 'admin') {
@@ -441,9 +499,26 @@ class TuristicPlaceApiController extends Controller
         $user = $request->user();
         
         if ($user->role === 'operator') {
-            $places = TuristicPlace::with('user')->where('user_id', $user->id)->get();
+            $places = TuristicPlace::with([
+                    'user',
+                    'events' => function ($query) {
+                        $query->whereNull('archived_at')
+                            ->orderBy('starts_at', 'desc');
+                    },
+                ])
+                ->where('user_id', $user->id)
+                ->whereNull('archived_at')
+                ->get();
         } elseif ($user->role === 'admin') {
-            $places = TuristicPlace::with('user')->get();
+            $places = TuristicPlace::with([
+                    'user',
+                    'events' => function ($query) {
+                        $query->whereNull('archived_at')
+                            ->orderBy('starts_at', 'desc');
+                    },
+                ])
+                ->whereNull('archived_at')
+                ->get();
         } else {
             return response()->json(['message' => 'No autorizado'], 403);
         }
