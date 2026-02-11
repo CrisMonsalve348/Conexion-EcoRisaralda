@@ -275,6 +275,21 @@ class TuristicPlaceApiController extends Controller
         }
 
         // Validation
+        // Permitir actualización parcial solo del estado
+        if ($request->has('opening_status') && count($request->all()) === 1) {
+            $validated = $request->validate([
+                'opening_status' => 'required|in:open,closed_temporarily,open_with_restrictions',
+            ]);
+            $place = TuristicPlace::findOrFail($id);
+            $place->opening_status = $validated['opening_status'];
+            $place->save();
+            return response()->json([
+                'message' => 'Estado actualizado exitosamente',
+                'place' => $place,
+                'opening_status' => $place->opening_status,
+            ]);
+        }
+        // Actualización completa
         $validated = $request->validate([
             'nombre' => 'required|string|min:5|max:80',
             'slogan' => 'required|string|min:5|max:120',
@@ -292,6 +307,7 @@ class TuristicPlaceApiController extends Controller
             'contacto' => 'nullable|string|max:200',
             'dias_abiertos' => 'nullable',
             'estado_apertura' => 'nullable|in:open,closed_temporarily,open_with_restrictions',
+            'opening_status' => 'nullable|in:open,closed_temporarily,open_with_restrictions',
             'portada' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             'clima_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
             'caracteristicas_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
@@ -415,8 +431,10 @@ class TuristicPlaceApiController extends Controller
         if ($request->has('dias_abiertos')) {
             $place->open_days = $openDays;
         }
-        if (array_key_exists('estado_apertura', $validated)) {
-            $place->opening_status = $validated['estado_apertura'] ?? $place->opening_status;
+        if (array_key_exists('opening_status', $validated)) {
+            $place->opening_status = $validated['opening_status'];
+        } else if (array_key_exists('estado_apertura', $validated)) {
+            $place->opening_status = $validated['estado_apertura'];
         }
 
         // Update images if provided
@@ -460,6 +478,7 @@ class TuristicPlaceApiController extends Controller
         return response()->json([
             'message' => 'Sitio actualizado exitosamente',
             'place' => $place,
+            'opening_status' => $place->opening_status,
         ]);
     }
 

@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\TuristicPlaceApiController;
 use App\Http\Controllers\Api\ReviewApiController;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+require_once __DIR__.'/countries_api.php';
 
 Route::get('/health', function() {
     return response()->json(['status' => 'ok']);
@@ -99,9 +100,17 @@ Route::middleware('web')->group(function () {
     
     Route::post('/register', function (Request $request) {
         $data = $request->validate([
-            'name' => 'required|string|max:255',
-            'last_name' => 'nullable|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'name' => 'required|string|min:2|max:50',
+            'last_name' => 'nullable|string|min:2|max:50',
+            'email' => [
+                'required',
+                'email',
+                function($attribute, $value, $fail) {
+                    if (\App\Models\User::where('email', $value)->exists()) {
+                        $fail('El correo ya está registrado o pertenece a una cuenta desactivada.');
+                    }
+                }
+            ],
             'password' => [
                 'required',
                 'string',
@@ -112,13 +121,17 @@ Route::middleware('web')->group(function () {
                 'regex:/[0-9]/',      // al menos un dígito
             ],
             'role' => 'required|in:turist,operator,user,admin',
-            'country' => 'nullable|string|max:255',
+            'country' => 'nullable|integer|exists:countries,id',
             'birth_date' => 'nullable|date|before:-16 years',
         ], [
             'birth_date.before' => 'Debes ser mayor de 16 años para registrarte',
             'password.min' => 'La contraseña debe tener entre 8 y 15 caracteres',
             'password.max' => 'La contraseña debe tener entre 8 y 15 caracteres',
             'password.regex' => 'La contraseña debe incluir al menos una mayúscula, una minúscula y un dígito',
+            'name.min' => 'El nombre debe tener al menos 2 caracteres',
+            'name.max' => 'El nombre no debe tener más de 50 caracteres',
+            'last_name.min' => 'El apellido debe tener al menos 2 caracteres',
+            'last_name.max' => 'El apellido no debe tener más de 50 caracteres',
         ]);
 
         $role = $data['role'];
@@ -131,7 +144,7 @@ Route::middleware('web')->group(function () {
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'role' => $role,
-            'Country' => $data['country'] ?? null,
+            'country_id' => $data['country'] ?? null,
             'date_of_birth' => $data['birth_date'] ?? null,
         ]);
 
@@ -259,9 +272,14 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
         Route::put('/profile', function (Request $request) {
             $user = $request->user();
             $data = $request->validate([
-                'name' => 'required|string|max:255',
-                'last_name' => 'nullable|string|max:255',
+                'name' => 'required|string|min:2|max:50',
+                'last_name' => 'nullable|string|min:2|max:50',
                 'email' => 'required|email|unique:users,email,'.$user->id,
+            ], [
+                'name.min' => 'El nombre debe tener al menos 2 caracteres',
+                'name.max' => 'El nombre no debe tener más de 50 caracteres',
+                'last_name.min' => 'El apellido debe tener al menos 2 caracteres',
+                'last_name.max' => 'El apellido no debe tener más de 50 caracteres',
             ]);
 
             $user->name = $data['name'];
@@ -295,6 +313,12 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             $user->setRememberToken(Str::random(60));
             $user->save();
 
+
+            // Forzar logout y login para asegurar que la sesión use el nuevo hash de contraseña
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            Auth::guard('web')->login($user);
             $request->session()->regenerate();
 
             return response()->json(['message' => 'Contraseña actualizada']);
@@ -311,30 +335,41 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                 return response()->json(['message' => 'La contraseña actual es incorrecta'], 422);
             }
 
-            if ($user->image) {
-                Storage::disk('public')->delete($user->image);
+            // Solo permitir eliminación total para turistas
+            if ($user->role !== 'user') {
+                return response()->json(['message' => 'Solo los turistas pueden eliminar completamente su cuenta desde el perfil.'], 403);
             }
 
-            // Mantener reseñas, pero desvincular al usuario
-            reviews::where('user_id', $user->id)->update(['user_id' => null]);
+            // Eliminar favoritos
+            $user->favoritePlaces()->detach();
+            // Eliminar reseñas
+            if (method_exists($user, 'reviews')) {
+                $user->reviews()->delete();
+            } else {
+                \App\Models\reviews::where('user_id', $user->id)->delete();
+            }
+            // Eliminar sitios turísticos creados
+            if (method_exists($user, 'turisticPlaces')) {
+                $user->turisticPlaces()->delete();
+            } else {
+                \App\Models\TuristicPlace::where('user_id', $user->id)->delete();
+            }
+            // Eliminar eventos creados
+            if (method_exists($user, 'events')) {
+                $user->events()->delete();
+            } // else: no acción, ya que place_events no tiene user_id
 
             try {
                 $user->tokens()->delete();
-            } catch (\Exception $e) {
-                // Ignorar si no hay tokens
-            }
-
+            } catch (\Exception $e) {}
             try {
                 Auth::guard('web')->logout();
                 $request->session()->invalidate();
                 $request->session()->regenerateToken();
-            } catch (\Exception $e) {
-                // Ignorar errores de sesión
-            }
+            } catch (\Exception $e) {}
 
             $user->delete();
-
-            return response()->json(['message' => 'Cuenta eliminada']);
+            return response()->json(['message' => 'Cuenta eliminada permanentemente.']);
         });
 
         // Perfil: subir foto
@@ -428,13 +463,14 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
         // Recomendaciones basadas en preferencias del usuario
         Route::get('/recommendations', function (Request $request) {
             $user = $request->user();
-            $preferenceIds = $user->preferences()->pluck('preferences.id')->toArray();
+            $preferenceIds = $user ? $user->preferences()->pluck('preferences.id')->toArray() : [];
 
             if (count($preferenceIds) === 0) {
                 return response()->json([]);
             }
 
             $places = TuristicPlace::with('label')
+                ->where('approval_status', 'approved')
                 ->whereHas('label', function ($query) use ($preferenceIds) {
                     $query->whereIn('preferences.id', $preferenceIds);
                 })
@@ -602,12 +638,14 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                     'title' => 'required|string|max:255',
                     'description' => 'nullable|string|max:1000',
                     'starts_at' => 'required|date',
+                    'ends_at' => 'nullable|date',
                     'image' => 'nullable|image|max:4096',
                 ]);
                 $event->title = $data['title'];
                 $event->description = $data['description'] ?? '';
                 $event->starts_at = $data['starts_at'];
-                    $event->approval_status = 'pending';
+                $event->ends_at = $data['ends_at'] ?? null;
+                $event->approval_status = 'pending';
                 if ($request->hasFile('image')) {
                     if ($event->image) {
                         Storage::disk('public')->delete($event->image);
@@ -644,6 +682,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                         'title' => 'required|string|max:255',
                         'description' => 'nullable|string|max:1000',
                         'starts_at' => 'required|date',
+                        'ends_at' => 'nullable|date',
                         'image' => 'required|image|max:4096',
                     ]);
                     $event = new PlaceEvent();
@@ -651,6 +690,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                     $event->title = $data['title'];
                     $event->description = $data['description'] ?? '';
                     $event->starts_at = $data['starts_at'];
+                    $event->ends_at = $data['ends_at'] ?? null;
                     $event->approval_status = 'pending';
                     $event->image = $request->file('image')->store('eventos', 'public');
                     $event->save();
@@ -783,11 +823,41 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                 return \App\Models\PlaceEvent::orderBy('starts_at', 'desc')->get();
             });
 
+
             // Aprobar evento
             Route::post('/events/{id}/approve', function ($id) {
                 $event = \App\Models\PlaceEvent::findOrFail($id);
+                $wasPending = $event->approval_status === 'pending';
                 $event->approval_status = 'approved';
                 $event->save();
+
+                // Solo notificar si estaba pendiente antes
+                if ($wasPending) {
+                    $place = $event->place;
+                    // Obtener usuarios que tienen el sitio en favoritos
+                    $users = $place->favoriteby ? $place->favoriteby : (method_exists($place, 'favoriteby') ? $place->favoriteby() : []);
+                    if (is_callable($users)) $users = $users()->get();
+                    foreach ($users as $user) {
+                        // Notificación en la web
+                        \App\Models\UserNotification::create([
+                            'user_id' => $user->id,
+                            'type' => 'event',
+                            'title' => 'Nuevo evento en tu sitio favorito',
+                            'message' => 'Se ha publicado el evento "' . $event->title . '" en ' . $place->name . '.',
+                            'preview' => mb_substr($event->description ?? '', 0, 120),
+                            'target_type' => 'event',
+                            'target_id' => $event->id,
+                            'place_id' => $place->id,
+                            'place_name' => $place->name,
+                        ]);
+                        // Correo
+                        try {
+                            \Mail::to($user->email)->send(new \App\Mail\NewEventNotification($event, $place, $user));
+                        } catch (\Exception $e) {
+                            \Log::error('Error enviando correo de nuevo evento: ' . $e->getMessage());
+                        }
+                    }
+                }
                 return response()->json(['event' => $event, 'message' => 'Evento aprobado exitosamente']);
             });
 
@@ -814,6 +884,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                             $data = $request->validate([
                                 'approval_status' => 'sometimes|in:pending,approved,rejected',
                                 'archived_at' => 'nullable|date',
+                                'opening_status' => 'sometimes|in:open,closed_temporarily,open_with_restrictions',
                             ]);
                             if (array_key_exists('approval_status', $data)) {
                                 $place->approval_status = $data['approval_status'];
@@ -821,8 +892,11 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                             if (array_key_exists('archived_at', $data)) {
                                 $place->archived_at = $data['archived_at'];
                             }
+                            if (array_key_exists('opening_status', $data)) {
+                                $place->opening_status = $data['opening_status'];
+                            }
                             $place->save();
-                            return response()->json(['place' => $place, 'message' => 'Sitio actualizado exitosamente']);
+                            return response()->json(['place' => $place, 'message' => 'Sitio actualizado exitosamente', 'opening_status' => $place->opening_status]);
                         });
             // Dashboard con estadísticas para frontend
             Route::get('/dashboard', function () {
@@ -902,38 +976,33 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                 $data = $request->validate([
                     'name' => 'sometimes|string|max:255',
                     'last_name' => 'sometimes|string|max:255',
-                    'email' => 'sometimes|email',
+                    // No permitir cambio de email por API admin
                     'role' => 'sometimes|in:user,operator,admin',
                     'status' => 'sometimes|in:pending,approved,rejected,active,inactive',
                     'country' => 'nullable|string|max:255',
                     'birth_date' => 'nullable|date',
                 ]);
 
-                // Soft delete: desactivar usuario y liberar correo
-                if (array_key_exists('status', $data) && $data['status'] === 'inactive') {
-                    // Guardar correo original en campo temporal
-                    $user->original_email = $user->email;
-                    $user->status = 'inactive';
-                    $user->email = $data['email'] ?? (time().'-deactivated-'.$user->id.'@deactivated.local');
-                    $user->save();
-                    return response()->json(['user' => $user, 'message' => 'Usuario desactivado (soft delete)']);
+                // Solo admin puede activar/desactivar usuarios
+                if (!auth()->user() || auth()->user()->role !== 'admin') {
+                    return response()->json(['error' => 'Solo el administrador puede realizar esta acción'], 403);
                 }
 
-                // Reactivar usuario: restaurar status y correo si está disponible
+                // Desactivar usuario (solo cambia status)
+                if (array_key_exists('status', $data) && $data['status'] === 'inactive') {
+                    $user->status = 'inactive';
+                    $user->save();
+                    return response()->json(['user' => $user, 'message' => 'Usuario desactivado (archivado)']);
+                }
+
+                // Reactivar usuario (solo cambia status)
                 if (array_key_exists('status', $data) && $data['status'] === 'active') {
-                    // Restaurar correo original si existe y está disponible
-                    $restoreEmail = $user->original_email ?? $user->email;
-                    $emailInUse = User::where('email', $restoreEmail)->where('id', '!=', $id)->exists();
-                    if ($emailInUse) {
-                        return response()->json(['error' => 'correo original ya está en uso'], 409);
-                    }
-                    $user->email = $restoreEmail;
                     $user->status = 'active';
                     $user->save();
                     return response()->json(['user' => $user, 'message' => 'Usuario reactivado']);
                 }
 
-                // Cambio de rol u otros campos
+                // Cambio de rol u otros campos (excepto email)
                 $user->update($data);
                 return response()->json(['user' => $user, 'message' => 'Usuario actualizado exitosamente']);
             });

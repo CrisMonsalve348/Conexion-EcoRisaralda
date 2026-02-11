@@ -16,6 +16,18 @@ class ReviewApiController extends Controller
      */
     public function store(Request $request, $placeId)
     {
+        // Limitar a 3 comentarios por usuario por sitio al día
+        $today = now()->startOfDay();
+        $commentsToday = reviews::where('user_id', $request->user()->id)
+            ->where('place_id', $placeId)
+            ->where('created_at', '>=', $today)
+            ->count();
+        if ($commentsToday >= 3) {
+            return response()->json([
+                'message' => 'Solo puedes hacer hasta 3 comentarios por día en este sitio.'
+            ], 429);
+        }
+        // Verificar si el usuario ya ha comentado este sitio
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'comment' => [
@@ -30,7 +42,6 @@ class ReviewApiController extends Controller
                 }
             ],
         ]);
-
         $review = reviews::create([
             'user_id' => $request->user()->id,
             'place_id' => $placeId,
@@ -39,7 +50,6 @@ class ReviewApiController extends Controller
         ]);
 
         $review->load('user');
-        
         // Agregar contadores inicializados
         $review->likes_count = 0;
         $review->dislikes_count = 0;

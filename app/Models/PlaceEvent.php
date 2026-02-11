@@ -15,11 +15,13 @@ class PlaceEvent extends Model
         'description',
         'image',
         'starts_at',
+        'ends_at',
         'approval_status',
     ];
 
     protected $casts = [
         'starts_at' => 'datetime',
+        'ends_at' => 'datetime',
     ];
 
     public function place()

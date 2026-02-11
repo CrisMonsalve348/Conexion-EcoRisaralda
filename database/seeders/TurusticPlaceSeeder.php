@@ -374,7 +374,7 @@ class TurusticPlaceSeeder extends Seeder
 
             if (!empty($s['images']) && is_array($s['images'])) {
                 foreach ($s['images'] as $field => $paths) {
-                    $copied = $this->copyImage($paths['src'], $paths['dest']);
+                    $copied = $this->copyImage($paths['src'], $paths['dest'], $field);
                     if ($copied) {
                         $data[$field] = $copied;
                     }
@@ -391,7 +391,7 @@ class TurusticPlaceSeeder extends Seeder
      * @param string|null $destRelativePath ruta relativa destino dentro de storage/app/public
      * @return string|null ruta destino o null si no existe
      */
-    private function copyImage(string $sourceRelativePath, ?string $destRelativePath = null): ?string
+    private function copyImage(string $sourceRelativePath, ?string $destRelativePath = null, ?string $type = null): ?string
     {
         // Si source está vacío, retornar null sin error
         if (empty($sourceRelativePath)) {
@@ -401,7 +401,23 @@ class TurusticPlaceSeeder extends Seeder
         $sourcePath = public_path('seeders/images/places/' . $sourceRelativePath);
 
         if (!File::exists($sourcePath)) {
-            echo "⚠️ Imagen no encontrada: {$sourcePath}\n";
+            // Buscar imagen genérica según el tipo
+            $generics = [
+                'cover' => 'portada/portada-UTP.jpg',
+                'Weather_img' => 'clima/clima-consota.webp',
+                'features_img' => 'caracteristicas/caracteristicas-laguna-otun.jpg',
+                'flora_img' => 'flora/flora-consota.jpg',
+                'estructure_img' => 'estructura/estructura-mistrato.jpg',
+            ];
+            if ($type && isset($generics[$type])) {
+                $genericSource = public_path('seeders/images/places/' . $generics[$type]);
+                if (File::exists($genericSource)) {
+                    $dest = $destRelativePath ?? $generics[$type];
+                    Storage::disk('public')->put($dest, File::get($genericSource));
+                    return $dest;
+                }
+            }
+            echo "⚠️ Imagen no encontrada: {$sourcePath} y no se encontró genérica para tipo {$type}\n";
             return null;
         }
 

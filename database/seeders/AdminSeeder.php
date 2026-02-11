@@ -14,17 +14,19 @@ class AdminSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'name' => 'Admin EcoRisaralda',
-            'last_name' => 'Admin',
-            'country_id' => 1,
-            'date_of_birth' => '1990-01-01',
-            'email' => 'admin@ecorisaralda.com',
-            'password' => Hash::make('ecorisaralda123'),
-            'role' => 'admin',
-            'status' => 'active',
-            'email_verified_at' => now(),
-            'first_time_preferences' => true,
-        ]);
+        User::updateOrCreate(
+            ['email' => 'admin@ecorisaralda.com'],
+            [
+                'name' => 'Admin EcoRisaralda',
+                'last_name' => 'Admin',
+                'country_id' => 1,
+                'date_of_birth' => '1990-01-01',
+                'password' => Hash::make('ecorisaralda123'),
+                'role' => 'admin',
+                'status' => 'active',
+                'email_verified_at' => now(),
+                'first_time_preferences' => true,
+            ]
+        );
     }
 }
