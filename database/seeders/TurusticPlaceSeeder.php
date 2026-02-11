@@ -343,6 +343,111 @@ class TurusticPlaceSeeder extends Seeder
                     'estructure_img' => ['src' => 'estructura/estructura-los-nevados.jpg', 'dest' => 'infraestructura/estructura-los-nevados.jpg'],
                 ],
             ],
+                // Sitios solicitados: Marsella, Reserva Barbas Bremen, Los Guayacanes, Gran Reserva Wabanta
+                [
+                    'name' => 'Ecohotel Los Lagos',
+                    'slogan' => 'Ecohotel en el Paisaje Cultural Cafetero - Senderismo, Aves y Relax en la Naturaleza',
+                    'description' => 'Ecohotel rural pionero en ecoturismo (mas de 33 anos), enfocado en alojamiento sostenible rodeado de naturaleza, con senderos ecologicos, avistamiento de aves y relax en un entorno verde del corazon del Paisaje Cultural Cafetero. Ideal para desconectarse, caminar y disfrutar la tranquilidad del bosque y la biodiversidad.',
+                    'localization' => 'Via Pereira - Marsella, km 28, Marsella, Risaralda',
+                    'lat' => null,
+                    'lng' => null,
+                    'Weather' => 'Clima templado de montana entre 18 y 24 C, noches frescas',
+                    'features' => 'Enfoque 100% ecoturistico; sendero ecologico de 3200 m; avistamiento de aves; actividades guiadas; capacidad para grupos hasta 120; pet friendly en algunas areas',
+                    'flora' => 'Bosque nativo andino y paisaje cultural cafetero con palmas, arboles y vegetacion endemica',
+                    'estructure' => '24 habitaciones tipo cabana con banos privados y agua caliente; restaurante; senderos y zonas comunes',
+                    'tips' => 'Llevar ropa comoda y zapatos de senderismo; binoculares para avistamiento; reservar con anticipacion',
+                    'contact_info' => null,
+                    'open_days' => json_encode(['Lunes' => true,'Martes' => true,'Miercoles' => true,'Jueves' => true,'Viernes' => true,'Sabado' => true,'Domingo' => true]),
+                    'opening_status' => true,
+                    'user_id' => 1,
+                    'terminos' => true,
+                    'politicas' => true,
+                    'images' => [
+                        'cover' => ['src' => 'portada/marsella-portada.jpg', 'dest' => 'portadas/marsella-portada.jpg'],
+                        'Weather_img' => ['src' => 'clima/clima-marsella.jpg', 'dest' => 'clima/clima-marsella.jpg'],
+                        'features_img' => ['src' => 'caracteristicas/caracteristicas-marsella.jpg', 'dest' => 'caracteristicas/caracteristicas-marsella.jpg'],
+                        'flora_img' => ['src' => 'flora/fauna-marsella.jpg', 'dest' => 'flora/fauna-marsella.jpg'],
+                        'estructure_img' => ['src' => 'estructura/estuctrura-marsella.jpg', 'dest' => 'infraestructura/estuctrura-marsella.jpg'],
+                    ],
+                ],
+                [
+                    'name' => 'Reserva Natural Barbas Bremen',
+                    'slogan' => 'Paraíso de biodiversidad en el Eje Cafetero',
+                    'description' => 'Area protegida de bosque humedo andino con el canon del rio Barbas, ideal para ecoturismo, avistamiento de monos aulladores, aves y caminatas en selva virgen. Oasis de conservacion muy cerca de Pereira.',
+                    'localization' => 'Cuenca del rio Barbas, acceso desde Pereira (via a Filandia km 17 aprox.)',
+                    'lat' => null,
+                    'lng' => null,
+                    'Weather' => 'Templado-humedo de montana entre 18 y 22 C, niebla frecuente',
+                    'features' => 'Bosque humedo andino preservado; canon fluvial; senderos; avistamiento de monos aulladores; mas de 250 especies de aves',
+                    'flora' => 'Arboles altos, epifitas, orquideas, helechos y vegetacion densa',
+                    'estructure' => 'Senderos rusticos trazados; acceso por caminos rurales; recorridos guiados recomendados',
+                    'tips' => 'Visitar con guia local; llevar calzado antideslizante y repelente; ir temprano en la manana',
+                    'contact_info' => null,
+                    'open_days' => json_encode(['Lunes' => false,'Martes' => true,'Miercoles' => true,'Jueves' => true,'Viernes' => true,'Sabado' => true,'Domingo' => true]),
+                    'opening_status' => true,
+                    'user_id' => 1,
+                    'terminos' => true,
+                    'politicas' => true,
+                    'images' => [
+                        'cover' => ['src' => 'portada/pereira-portada.jpg', 'dest' => 'portadas/pereira-portada.jpg'],
+                        'Weather_img' => ['src' => 'clima/clima-pereira.jpg', 'dest' => 'clima/clima-pereira.jpg'],
+                        'features_img' => ['src' => 'caracteristicas/caracteristicas-pereira.jpg', 'dest' => 'caracteristicas/caracteristicas-pereira.jpg'],
+                        'flora_img' => ['src' => 'flora/flora-pereira.jpg', 'dest' => 'flora/flora-pereira.jpg'],
+                        'estructure_img' => ['src' => 'estructura/estructura-pereira.jpg', 'dest' => 'infraestructura/estructura-pereira.jpg'],
+                    ],
+                ],
+                [
+                    'name' => 'Los Guayacanes Restaurante',
+                    'slogan' => 'Cultivamos vida para alegrar tu vida',
+                    'description' => 'Restaurante campestre familiar con comida tipica regional, preparado con tradicion en un ambiente acogedor rodeado de jardines y vistas a la montana.',
+                    'localization' => 'Sector San Pedro, vereda San Pedro, a 1 km del casco urbano de Quinchia',
+                    'lat' => null,
+                    'lng' => null,
+                    'Weather' => 'Templado de montana entre 18 y 22 C',
+                    'features' => 'Comida casera tradicional; atencion familiar; ideal para almuerzos y celebraciones',
+                    'flora' => 'Jardines con vegetacion local, flores y arboles del Eje Cafetero',
+                    'estructure' => 'Espacio sencillo y acogedor, mesas al aire libre o bajo techo, cocina tradicional visible',
+                    'tips' => 'Probar la semi paisa o los platos del dia; llevar efectivo; confirmar horarios',
+                    'contact_info' => null,
+                    'open_days' => json_encode(['Lunes' => true,'Martes' => true,'Miercoles' => true,'Jueves' => true,'Viernes' => true,'Sabado' => true,'Domingo' => true]),
+                    'opening_status' => true,
+                    'user_id' => 1,
+                    'terminos' => true,
+                    'politicas' => true,
+                    'images' => [
+                        'cover' => ['src' => 'portada/portada-quinchia.jpg', 'dest' => 'portadas/portada-quinchia.jpg'],
+                        'Weather_img' => ['src' => 'clima/clima-quinchia.jpg', 'dest' => 'clima/clima-quinchia.jpg'],
+                        'features_img' => ['src' => 'caracteristicas/caracteristicas-qinchia.jpg', 'dest' => 'caracteristicas/caracteristicas-qinchia.jpg'],
+                        'flora_img' => ['src' => 'flora/flora-quinchia.jpg', 'dest' => 'flora/flora-quinchia.jpg'],
+                        'estructure_img' => ['src' => 'estructura/estructura-quinchia.jpg', 'dest' => 'infraestructura/estructura-quinchia.jpg'],
+                    ],
+                ],
+                [
+                    'name' => 'Gran Reserva Wabanta',
+                    'slogan' => 'Conectate con la naturaleza',
+                    'description' => 'Reserva natural privada y hospedaje ecologico en la zona amortiguadora del Parque Nacional Natural Tatama. Ofrece experiencias de ecoturismo sostenible, senderismo y avistamiento de aves en bosques de niebla.',
+                    'localization' => 'Vereda El Amparo, ingreso por Santuario, Risaralda',
+                    'lat' => null,
+                    'lng' => null,
+                    'Weather' => 'Fresco de alta montana alrededor de 2100 msnm; temperaturas entre 13 y 18 C; niebla frecuente',
+                    'features' => 'Senderos ecologicos guiados; avistamiento de aves; hospedaje y alimentacion incluidos en planes; enfoque en conservacion y educacion ambiental',
+                    'flora' => 'Bosque de niebla con helechos arborescentes, epifitas y arboles nativos',
+                    'estructure' => 'Hospedaje rural comodo, senderos marcados y areas comunes',
+                    'tips' => 'Reservar con anticipacion; ropa en capas, impermeable y botas; visitar en la manana para mejor avistamiento',
+                    'contact_info' => null,
+                    'open_days' => json_encode(['Lunes' => false,'Martes' => true,'Miercoles' => true,'Jueves' => true,'Viernes' => true,'Sabado' => true,'Domingo' => true]),
+                    'opening_status' => true,
+                    'user_id' => 1,
+                    'terminos' => true,
+                    'politicas' => true,
+                    'images' => [
+                        'cover' => ['src' => 'portada/portada-santuario.jpg', 'dest' => 'portadas/portada-santuario.jpg'],
+                        'Weather_img' => ['src' => 'clima/clima-santuario.jpg', 'dest' => 'clima/clima-santuario.jpg'],
+                        'features_img' => ['src' => 'caracteristicas/caracteristicas-santuario.jpg', 'dest' => 'caracteristicas/caracteristicas-santuario.jpg'],
+                        'flora_img' => ['src' => 'flora/flora-santuario.jpg', 'dest' => 'flora/flora-santuario.jpg'],
+                        'estructure_img' => ['src' => 'estructura/estructura-santuario.jpg', 'dest' => 'infraestructura/estructura-santuario.jpg'],
+                    ],
+                ],
         ];
 
         foreach ($sitios as $s) {
@@ -350,19 +455,19 @@ class TurusticPlaceSeeder extends Seeder
             $data = [
                 'name' => $s['name'],
                 'slogan' => $s['slogan'] ?? null,
-                'cover' => null,
+                'cover' => '',
                 'description' => $s['description'] ?? null,
                 'localization' => $s['localization'] ?? null,
-                'lat' => $s['lat'] ?? null,
-                'lng' => $s['lng'] ?? null,
+                'lat' => $s['lat'] ?? 0.0,
+                'lng' => $s['lng'] ?? 0.0,
                 'Weather' => $s['Weather'] ?? null,
-                'Weather_img' => null,
+                'Weather_img' => '',
                 'features' => $s['features'] ?? null,
-                'features_img' => null,
+                'features_img' => '',
                 'flora' => $s['flora'] ?? null,
-                'flora_img' => null,
+                'flora_img' => '',
                 'estructure' => $s['estructure'] ?? null,
-                'estructure_img' => null,
+                'estructure_img' => '',
                 'tips' => $s['tips'] ?? null,
                 'contact_info' => $s['contact_info'] ?? null,
                 'open_days' => $s['open_days'] ?? json_encode(['Lunes' => true, 'Martes' => true, 'Miércoles' => true, 'Jueves' => true, 'Viernes' => true, 'Sábado' => true, 'Domingo' => true]),
@@ -398,30 +503,161 @@ class TurusticPlaceSeeder extends Seeder
             return null;
         }
 
-        $sourcePath = public_path('seeders/images/places/' . $sourceRelativePath);
+        $basePublic = public_path('seeders/images/places/');
+        $sourcePath = $basePublic . $sourceRelativePath;
 
+        // If exact file exists, use it
         if (!File::exists($sourcePath)) {
-            // Buscar imagen genérica según el tipo
-            $generics = [
-                'cover' => 'portada/portada-UTP.jpg',
-                'Weather_img' => 'clima/clima-consota.webp',
-                'features_img' => 'caracteristicas/caracteristicas-laguna-otun.jpg',
-                'flora_img' => 'flora/flora-consota.jpg',
-                'estructure_img' => 'estructura/estructura-mistrato.jpg',
-            ];
-            if ($type && isset($generics[$type])) {
-                $genericSource = public_path('seeders/images/places/' . $generics[$type]);
-                if (File::exists($genericSource)) {
-                    $dest = $destRelativePath ?? $generics[$type];
-                    Storage::disk('public')->put($dest, File::get($genericSource));
-                    return $dest;
+            // 1. Buscar coincidencia aproximada en cualquier subcarpeta
+            $basename = pathinfo($sourceRelativePath, PATHINFO_BASENAME);
+            $nameNoExt = pathinfo($basename, PATHINFO_FILENAME);
+
+            $found = null;
+            $all = File::allFiles($basePublic);
+            foreach ($all as $f) {
+                $fname = $f->getFilename();
+                if (strtolower($fname) === strtolower($basename)) {
+                    $found = $f->getRealPath();
+                    break;
                 }
             }
-            echo "⚠️ Imagen no encontrada: {$sourcePath} y no se encontró genérica para tipo {$type}\n";
-            return null;
+
+            if (!$found) {
+                // try contains match or alnum match
+                $needle = preg_replace('/[^a-z0-9]/', '', strtolower($nameNoExt));
+                foreach ($all as $f) {
+                    $fname = $f->getFilename();
+                    $cmp = preg_replace('/[^a-z0-9]/', '', strtolower(pathinfo($fname, PATHINFO_FILENAME)));
+                    if ($needle !== '' && (strpos($cmp, $needle) !== false || strpos($needle, $cmp) !== false)) {
+                        $found = $f->getRealPath();
+                        break;
+                    }
+                }
+            }
+
+            if (!$found) {
+                // try token matching: split requested name and match any significant token
+                $tokens = preg_split('/[^a-z0-9]+/', strtolower($nameNoExt));
+                foreach ($all as $f) {
+                    $cmp = preg_replace('/[^a-z0-9]/', '', strtolower(pathinfo($f->getFilename(), PATHINFO_FILENAME)));
+                    foreach ($tokens as $t) {
+                        if (strlen($t) >= 3 && strpos($cmp, $t) !== false) {
+                            $found = $f->getRealPath();
+                            break 2;
+                        }
+                    }
+                }
+            }
+
+            if (!$found) {
+                // try removing common prefixes like 'cover' or 'portada' from requested name
+                $trimmed = preg_replace('/^(cover|portada|imagen|img)[-_]*/', '', strtolower($nameNoExt));
+                if ($trimmed !== $nameNoExt) {
+                    $needle2 = preg_replace('/[^a-z0-9]/', '', $trimmed);
+                    foreach ($all as $f) {
+                        $cmp = preg_replace('/[^a-z0-9]/', '', strtolower(pathinfo($f->getFilename(), PATHINFO_FILENAME)));
+                        if ($needle2 !== '' && (strpos($cmp, $needle2) !== false || strpos($needle2, $cmp) !== false)) {
+                            $found = $f->getRealPath();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if ($found) {
+                $sourcePath = $found;
+            } else {
+                // 2. Si no se encuentra, buscar imagen genérica según el tipo
+                $generics = [
+                    'cover' => 'portada/portada-UTP.jpg',
+                    'Weather_img' => 'clima/clima-consota.webp',
+                    'features_img' => 'caracteristicas/caracteristicas-laguna-otun.jpg',
+                    'flora_img' => 'flora/flora-consota.jpg',
+                    'estructure_img' => 'estructura/estructura-mistrato.jpg',
+                ];
+                if ($type && isset($generics[$type])) {
+                    $genericSource = public_path('seeders/images/places/' . $generics[$type]);
+                    if (File::exists($genericSource)) {
+                        $dest = $destRelativePath ?? $generics[$type];
+                        Storage::disk('public')->put($dest, File::get($genericSource));
+                        return $dest;
+                    }
+                }
+                echo "⚠️ Imagen no encontrada: {$sourcePath} y no se encontró genérica para tipo {$type}\n";
+                return null;
+            }
+            // Try to find a close match by filename in any subfolder
+            $basename = pathinfo($sourceRelativePath, PATHINFO_BASENAME);
+            $nameNoExt = pathinfo($basename, PATHINFO_FILENAME);
+
+            $found = null;
+            $all = File::allFiles($basePublic);
+            foreach ($all as $f) {
+                $fname = $f->getFilename();
+                if (strtolower($fname) === strtolower($basename)) {
+                    $found = $f->getRealPath();
+                    break;
+                }
+            }
+
+            if (!$found) {
+                // try contains match or alnum match
+                $needle = preg_replace('/[^a-z0-9]/', '', strtolower($nameNoExt));
+                foreach ($all as $f) {
+                    $fname = $f->getFilename();
+                    $cmp = preg_replace('/[^a-z0-9]/', '', strtolower(pathinfo($fname, PATHINFO_FILENAME)));
+                    if ($needle !== '' && (strpos($cmp, $needle) !== false || strpos($needle, $cmp) !== false)) {
+                        $found = $f->getRealPath();
+                        break;
+                    }
+                }
+            }
+
+            if (!$found) {
+                // try token matching: split requested name and match any significant token
+                $tokens = preg_split('/[^a-z0-9]+/', strtolower($nameNoExt));
+                foreach ($all as $f) {
+                    $cmp = preg_replace('/[^a-z0-9]/', '', strtolower(pathinfo($f->getFilename(), PATHINFO_FILENAME)));
+                    foreach ($tokens as $t) {
+                        if (strlen($t) >= 3 && strpos($cmp, $t) !== false) {
+                            $found = $f->getRealPath();
+                            break 2;
+                        }
+                    }
+                }
+            }
+
+            if (!$found) {
+                // try removing common prefixes like 'cover' or 'portada' from requested name
+                $trimmed = preg_replace('/^(cover|portada|imagen|img)[-_]*/', '', strtolower($nameNoExt));
+                if ($trimmed !== $nameNoExt) {
+                    $needle2 = preg_replace('/[^a-z0-9]/', '', $trimmed);
+                    foreach ($all as $f) {
+                        $cmp = preg_replace('/[^a-z0-9]/', '', strtolower(pathinfo($f->getFilename(), PATHINFO_FILENAME)));
+                        if ($needle2 !== '' && (strpos($cmp, $needle2) !== false || strpos($needle2, $cmp) !== false)) {
+                            $found = $f->getRealPath();
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if ($found) {
+                $sourcePath = $found;
+            } else {
+                echo "⚠️ Imagen no encontrada: {$basePublic}{$sourceRelativePath}\n";
+                return null;
+            }
+>>>>>>> 8f2a349b015d22f621caffa50713f381efec9610
         }
 
         $dest = $destRelativePath ?? $sourceRelativePath;
+
+        // Ensure destination directory exists in storage
+        $destDir = dirname($dest);
+        if ($destDir !== '.' && !Storage::disk('public')->exists($destDir)) {
+            Storage::disk('public')->makeDirectory($destDir);
+        }
 
         Storage::disk('public')->put($dest, File::get($sourcePath));
 
