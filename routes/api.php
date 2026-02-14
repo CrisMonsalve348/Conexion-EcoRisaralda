@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\TuristicPlaceApiController;
 use App\Http\Controllers\Api\ReviewApiController;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Api\CommentController;   
 require_once __DIR__.'/countries_api.php';
 
 Route::get('/health', function() {
@@ -709,6 +710,11 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
         Route::delete('/reviews/{id}', [ReviewApiController::class, 'destroy']);
         Route::post('/reviews/{id}/react', [ReviewApiController::class, 'react']);
 
+        // ============ COMMENTS (sin calificación) ============
+        Route::post('/places/{id}/comments', [CommentController::class, 'store']);
+        Route::put('/comments/{id}', [CommentController::class, 'update']);
+        Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
+
         // ============ OPERATOR REVIEW MODERATION ============
         Route::middleware('role:operator')->prefix('operator')->group(function () {
             Route::post('/reviews/{id}/restrict', function (Request $request, $id) {
@@ -1175,3 +1181,10 @@ Route::middleware('web')->get('/email/verify/{id}/{hash}', function (Request $re
     $frontend = config('app.frontend_url', env('FRONTEND_URL', 'http://localhost:5173'));
     return redirect()->away(rtrim($frontend, '/') . '/email-verified?verified=1');
 })->name('api.verification.verify')->middleware('throttle:6,1');
+
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/places/{id}/comments', [CommentController::class, 'store']);
+    Route::put('/comments/{id}', [CommentController::class, 'update']);
+    Route::delete('/comments/{id}', [CommentController::class, 'destroy']);
+});

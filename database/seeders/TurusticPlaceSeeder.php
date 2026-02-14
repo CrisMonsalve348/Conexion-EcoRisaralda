@@ -648,7 +648,7 @@ class TurusticPlaceSeeder extends Seeder
                 echo "⚠️ Imagen no encontrada: {$basePublic}{$sourceRelativePath}\n";
                 return null;
             }
->>>>>>> 8f2a349b015d22f621caffa50713f381efec9610
+
         }
 
         $dest = $destRelativePath ?? $sourceRelativePath;

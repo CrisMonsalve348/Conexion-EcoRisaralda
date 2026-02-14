@@ -16,18 +16,17 @@ class ReviewApiController extends Controller
      */
     public function store(Request $request, $placeId)
     {
-        // Limitar a 3 comentarios por usuario por sitio al día
-        $today = now()->startOfDay();
-        $commentsToday = reviews::where('user_id', $request->user()->id)
+        // Limitar a 1 comentario con calificación por usuario por sitio
+        $ratedComments = reviews::where('user_id', $request->user()->id)
             ->where('place_id', $placeId)
-            ->where('created_at', '>=', $today)
+            ->whereNotNull('rating')
             ->count();
-        if ($commentsToday >= 3) {
+        if ($ratedComments >= 1) {
             return response()->json([
-                'message' => 'Solo puedes hacer hasta 3 comentarios por día en este sitio.'
+                'message' => 'Solo puedes hacer un comentario con calificación en este sitio.'
             ], 429);
         }
-        // Verificar si el usuario ya ha comentado este sitio
+        // Validar comentario
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'comment' => [
