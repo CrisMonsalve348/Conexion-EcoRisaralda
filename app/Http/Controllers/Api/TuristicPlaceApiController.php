@@ -87,17 +87,16 @@ class TuristicPlaceApiController extends Controller
             ->with(['user', 'reactions'])
             ->orderBy('created_at', 'desc')
             ->get();
-        
+
+        // Calcular promedio solo con ratings válidos (no null)
+        $ratings = $reviews->pluck('rating')->filter();
+        $average = $ratings->count() > 0 ? round($ratings->avg(), 2) : null;
+
         // Procesar cada review para agregar contadores y reacción del usuario
-        // Intentar obtener el usuario autenticado (puede ser null si es público)
         $userId = $request->user() ? $request->user()->id : null;
-        
         $reviews->each(function ($review) use ($userId) {
-            // Contar likes y dislikes
             $review->likes_count = $review->reactions->where('type', 'like')->count();
             $review->dislikes_count = $review->reactions->where('type', 'dislike')->count();
-            
-            // Obtener reacción del usuario actual si existe
             if ($userId) {
                 $userReaction = $review->reactions->first(function ($reaction) use ($userId) {
                     return $reaction->user_id === $userId;
@@ -106,14 +105,13 @@ class TuristicPlaceApiController extends Controller
             } else {
                 $review->user_reaction = null;
             }
-            
-            // Eliminar las reacciones del payload para reducir tamaño
             unset($review->reactions);
         });
-        
+
         return response()->json([
             'place' => $place,
             'reviews' => $reviews,
+            'average_rating' => $average,
             'event' => $event,
         ]);
     }

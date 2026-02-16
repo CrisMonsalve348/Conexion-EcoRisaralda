@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\reviews;
 use App\Models\ReviewReaction;
 use Illuminate\Http\Request;
-use Waad\ProfanityFilter\Facades\ProfanityFilter;
+    // use Waad\ProfanityFilter\Facades\ProfanityFilter;
 
 class ReviewApiController extends Controller
 {
@@ -16,48 +16,85 @@ class ReviewApiController extends Controller
      */
     public function store(Request $request, $placeId)
     {
-        // Limitar a 1 comentario con calificación por usuario por sitio
-        $ratedComments = reviews::where('user_id', $request->user()->id)
-            ->where('place_id', $placeId)
-            ->whereNotNull('rating')
-            ->count();
-        if ($ratedComments >= 1) {
-            return response()->json([
-                'message' => 'Solo puedes hacer un comentario con calificación en este sitio.'
-            ], 429);
-        }
-        // Validar comentario
+        $userId = $request->user()->id;
+        $antiSpamMinutes = 5; // Cambia este valor según tu política
+        $now = now();
+
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'comment' => [
-                'required',
+                'nullable',
                 'string',
                 'min:10',
                 'max:1000',
                 function ($attribute, $value, $fail) {
-                    if (ProfanityFilter::hasProfanity($value)) {
-                        $fail('El comentario contiene lenguaje inapropiado. Por favor, utiliza un lenguaje respetuoso.');
+                    // Filtro de palabras prohibidas (español e inglés)
+                    $badWords = [
+                        // Español
+                        'puta','puto','mierda','joder','gilipollas','pendejo','cabron','coño','marica','imbecil','idiota','culero','zorra','perra','malparido','hijueputa','verga','chingar','cabrón','pendeja','estupido','estúpido','estupida','estúpida',
+                        // Inglés
+                        'fuck','shit','bitch','asshole','bastard','dick','cunt','fag','faggot','slut','whore','motherfucker','douche','douchebag','bollocks','bugger','bloody','wanker','prick','twat','jerk','moron','retard','suck','damn','crap','pussy','cock','arse','arsehole','nigger','nigga','spic','chink','kike','fucker','fucking','fucks','fucked','faggot',
+                    ];
+                    if ($value) {
+                        $text = mb_strtolower($value, 'UTF-8');
+                        foreach ($badWords as $bad) {
+                            if (strpos($text, $bad) !== false) {
+                                $fail('El comentario contiene lenguaje inapropiado. Por favor, utiliza un lenguaje respetuoso.');
+                                break;
+                            }
+                        }
                     }
                 }
             ],
         ]);
-        $review = reviews::create([
-            'user_id' => $request->user()->id,
-            'place_id' => $placeId,
-            'rating' => $validated['rating'],
-            'comment' => $validated['comment'],
-        ]);
 
-        $review->load('user');
-        // Agregar contadores inicializados
-        $review->likes_count = 0;
-        $review->dislikes_count = 0;
-        $review->user_reaction = null;
+        $review = reviews::where('user_id', $userId)
+            ->where('place_id', $placeId)
+            ->first();
 
-        return response()->json([
-            'message' => 'Reseña creada exitosamente',
-            'review' => $review,
-        ], 201);
+        if ($review) {
+            // Permitir editar una vez de manera inmediata después de crearla
+            $editCount = $review->edit_count ?? 0;
+            // Si es la primera edición, permitirla sin restricción
+            if ($editCount >= 1 && $review->updated_at && $review->updated_at->diffInMinutes($now) < $antiSpamMinutes) {
+                return response()->json([
+                    'message' => 'Debes esperar antes de editar tu reseña nuevamente.'
+                ], 429);
+            }
+            $oldRating = $review->rating;
+            $review->rating = $validated['rating'];
+            $review->comment = $validated['comment'] ?? null;
+            $review->edit_count = $editCount + 1;
+            $review->save();
+            $review->load('user');
+            $review->likes_count = $review->reactions->where('type', 'like')->count();
+            $review->dislikes_count = $review->reactions->where('type', 'dislike')->count();
+            $review->user_reaction = null;
+            $wasLowered = $oldRating > $validated['rating'];
+            return response()->json([
+                'message' => 'Reseña actualizada exitosamente',
+                'review' => $review,
+                'was_lowered' => $wasLowered,
+                'edited' => $review->updated_at > $review->created_at,
+            ], 200);
+        } else {
+            $review = reviews::create([
+                'user_id' => $userId,
+                'place_id' => $placeId,
+                'rating' => $validated['rating'],
+                'comment' => $validated['comment'] ?? null,
+            ]);
+            $review->load('user');
+            $review->likes_count = 0;
+            $review->dislikes_count = 0;
+            $review->user_reaction = null;
+            return response()->json([
+                'message' => 'Reseña creada exitosamente',
+                'review' => $review,
+                'was_lowered' => false,
+                'edited' => false,
+            ], 201);
+        }
     }
 
     /**
@@ -85,58 +122,63 @@ class ReviewApiController extends Controller
     public function update(Request $request, $id)
     {
         $review = reviews::findOrFail($id);
+        $userId = $request->user()->id;
+        $antiSpamMinutes = 5; // Cambia este valor según tu política
+        $now = now();
 
         // Authorization check
-        if ($request->user()->id !== $review->user_id && $request->user()->role !== 'admin') {
+        if ($userId !== $review->user_id && $request->user()->role !== 'admin') {
             return response()->json(['message' => 'No autorizado'], 403);
         }
 
+        // Permitir editar una vez de manera inmediata después de crearla
+        $editCount = $review->edit_count ?? 0;
+        if ($editCount >= 1 && $review->updated_at && $review->updated_at->diffInMinutes($now) < $antiSpamMinutes) {
+            return response()->json([
+                'message' => 'Debes esperar antes de editar tu reseña nuevamente.'
+            ], 429);
+        }
+
         $validated = $request->validate([
-            'rating' => 'nullable|integer|min:1|max:5',
+            'rating' => 'required|integer|min:1|max:5',
             'comment' => [
                 'nullable',
                 'string',
                 'min:10',
                 'max:1000',
                 function ($attribute, $value, $fail) {
-                    if ($value && ProfanityFilter::hasProfanity($value)) {
-                        $fail('El comentario contiene lenguaje inapropiado. Por favor, utiliza un lenguaje respetuoso.');
-                    }
+                    // if ($value && ProfanityFilter::hasProfanity($value)) {
+                    //     $fail('El comentario contiene lenguaje inapropiado. Por favor, utiliza un lenguaje respetuoso.');
+                    // }
                 }
             ],
         ]);
 
-        if (array_key_exists('rating', $validated)) {
-            $review->rating = $validated['rating'];
-        }
-        if (array_key_exists('comment', $validated)) {
-            $review->comment = $validated['comment'];
-            // Si el comentario fue restringido y ahora no tiene palabras inapropiadas, desrestringirlo
-            if ($review->is_restricted && !ProfanityFilter::hasProfanity($validated['comment'])) {
-                $review->is_restricted = false;
-                $review->restricted_by_role = null;
-                $review->restriction_reason = null;
-            }
-        }
-
+        $oldRating = $review->rating;
+        $review->rating = $validated['rating'];
+        $review->comment = $validated['comment'] ?? null;
+        $review->edit_count = $editCount + 1;
         $review->save();
         $review->load(['user', 'reactions']);
-        
+
         // Agregar contadores y reacción del usuario
         $review->likes_count = $review->reactions->where('type', 'like')->count();
         $review->dislikes_count = $review->reactions->where('type', 'dislike')->count();
-        
-        $userId = $request->user()->id;
+
         $userReaction = $review->reactions->first(function ($reaction) use ($userId) {
             return $reaction->user_id === $userId;
         });
         $review->user_reaction = $userReaction ? $userReaction->type : null;
-        
+
         unset($review->reactions);
+
+        $wasLowered = $oldRating > $validated['rating'];
 
         return response()->json([
             'message' => 'Reseña actualizada exitosamente',
             'review' => $review,
+            'was_lowered' => $wasLowered,
+            'edited' => $review->updated_at > $review->created_at,
         ]);
     }
 
