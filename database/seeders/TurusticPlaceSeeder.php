@@ -448,6 +448,35 @@ class TurusticPlaceSeeder extends Seeder
                         'estructure_img' => ['src' => 'estructura/estructura-santuario.jpg', 'dest' => 'infraestructura/estructura-santuario.jpg'],
                     ],
                 ],
+
+                [
+                    'name' => 'Jardín Botánico Alejandro Humboldt',
+                    'slogan' => 'El pulmón verde de Marsella',
+                    'description' => 'Jardín botánico fundado en 1979 por ambientalistas locales, dedicado a la conservación de flora nativa del Eje Cafetero. Con senderos, colecciones de plantas endémicas, viveros y elementos educativos/tecnológicos sostenibles.',
+                    'localization' => 'En el área urbana de Marsella, cerca del parque principal: Carrera 10 Calle 15 (Avenida Villa Rica de Segovia o Calle 14b). Fácil acceso a pie desde el centro del pueblo (a 45 min en carro desde Pereira).',
+                    'lat' => 4.93434,
+                    'lng' => -75.73685,
+                    'Weather' => 'Templado de montaña (~1.500 msnm): 18-22 °C promedio, fresco con brisa constante, niebla matutina frecuente y lluvias posibles (más en épocas húmedas). Ambiente húmedo y refrescante, ideal para caminatas.',
+                    'features' => 'Templado de montaña (~1.500 msnm): 18-22 °C promedio, fresco con brisa constante, niebla matutina frecuente y lluvias posibles (más en épocas húmedas). Ambiente húmedo y refrescante, ideal para caminatas.',
+                    'flora' => 'Colecciones de plantas nativas, orquídeas, heliconias, helechos, guadua y especies endémicas del Eje Cafetero (mezcla de naturaleza y cultivos). Aves locales (colibríes, especies andinas), mariposas, insectos y peces en la quebrada/represa. Gran biodiversidad en un entorno preservado.',
+                    'estructure' => 'Senderos bien trazados, viveros, oficinas administrativas, represa de piedra, puente peatonal, canopy (estructura elevada), torre hidromecánica y panel solar. Espacio funcional con zonas educativas; entrada económica o gratuita en algunos casos. Abierto al público con recorrido autoguiado o con guía opcional.',
+                    'tips' => 'Ve de martes a domingo (8:00 a.m. - 5:00 p.m.); reserva para grupos o colegios. Lleva zapatos cómodos (senderos pueden ser húmedos), repelente, agua y cámara. Mejor en mañana para menos calor y mejores fotos.',
+                    'contact_info' => 'Teléfonos: +57 314 810 3019 / +57 314 623 4941 / +57 320 626 7805',
+                    'open_days' => json_encode(['Lunes' => false,'Martes' => true,'Miercoles' => true,'Jueves' => true,'Viernes' => true,'Sabado' => true,'Domingo' => true]),
+                    'opening_status' => true,
+                    'user_id' => 1,
+                    'terminos' => true,
+                    'politicas' => true,
+                    'images' => [
+                        'cover' => ['src' => 'portada/portada-jardin-Botanico-alejandro.png', 'dest' => 'portadas/portada-jardin-Botanico-alejandro.png'],
+                        'Weather_img' => ['src' => 'clima/clima-jardin-alejandro.png', 'dest' => 'clima/clima-jardin-alejandro.png'],
+                        'features_img' => ['src' => 'caracteristicas/caracteristicas-jardin-alejandro.png', 'dest' => 'caracteristicas/caracteristicas-jardin-alejandro.png'],
+                        'flora_img' => ['src' => 'flora/flora-jardin-alejandro.png', 'dest' => 'flora/flora-jardin-alejandro.png'],
+                        'estructure_img' => ['src' => 'estructura/estructura-jardin-alejandro.png', 'dest' => 'infraestructura/estructura-jardin-alejandro.png'],
+                    ],
+                ],
+
+
         ];
 
         foreach ($sitios as $s) {
