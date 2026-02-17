@@ -206,11 +206,11 @@ class TurusticPlaceSeeder extends Seeder
                 'terminos' => true,
                 'politicas' => true,
                 'images' => [
-                    'cover' => ['src' => 'portada/cover-chorros-don-lolo.jpg', 'dest' => 'portadas/cover-chorros-don-lolo.jpg'],
-                    'Weather_img' => ['src' => 'clima/clima-chorros-don-lolo.jpg', 'dest' => 'clima/clima-chorros-don-lolo.jpg'],
-                    'features_img' => ['src' => 'caracteristicas/caracteristicas-chorros-don-lolo.jpg', 'dest' => 'caracteristicas/caracteristicas-chorros-don-lolo.jpg'],
-                    'flora_img' => ['src' => 'flora/flora-chorros-don-lolo.jpg', 'dest' => 'flora/flora-chorros-don-lolo.jpg'],
-                    'estructure_img' => ['src' => 'estructura/estructura-chorros-don-lolo.jpg', 'dest' => 'infraestructura/estructura-chorros-don-lolo.jpg'],
+                    'cover' => ['src' => 'portada/cover-donlolo.jpg', 'dest' => 'portada/cover-donlolo.jpg'],
+                    'Weather_img' => ['src' => 'clima/climadonlolo.jpg', 'dest' => 'clima/clima-donlolo.jpg'],
+                    'features_img' => ['src' => 'caracteristicas/caracteristicas-donlolo.jpg', 'dest' => 'caracteristicas/caracteristicas-donlolo.jpg'],
+                    'flora_img' => ['src' => 'flora/flora-donlolo.jpg', 'dest' => 'flora/flora-donlolo.jpg'],
+                    'estructure_img' => ['src' => 'estructura/estructura-donlolo.jpg', 'dest' => 'estructura/estructura-donlolo.jpg'],
                 ],
             ],
             [
@@ -232,7 +232,7 @@ class TurusticPlaceSeeder extends Seeder
                 'terminos' => true,
                 'politicas' => true,
                 'images' => [
-                    'cover' => ['src' => 'portada/cover-consota.jpg', 'dest' => 'portadas/cover-consota.jpg'],
+                    'cover' => ['src' => 'portada/portada-consota.jpg', 'dest' => 'portada/portada-consota.jpg'],
                     'Weather_img' => ['src' => 'clima/clima-consota.jpg', 'dest' => 'clima/clima-consota.jpg'],
                     'features_img' => ['src' => 'caracteristicas/caracteristicas-consota.jpg', 'dest' => 'caracteristicas/caracteristicas-consota.jpg'],
                     'flora_img' => ['src' => 'flora/flora-consota.jpg', 'dest' => 'flora/flora-consota.jpg'],
@@ -258,11 +258,11 @@ class TurusticPlaceSeeder extends Seeder
                 'terminos' => true,
                 'politicas' => true,
                 'images' => [
-                    'cover' => ['src' => 'portada/cover-jardin-utp.jpg', 'dest' => 'portadas/cover-jardin-utp.jpg'],
-                    'Weather_img' => ['src' => 'clima/clima-jardin-utp.jpg', 'dest' => 'clima/clima-jardin-utp.jpg'],
-                    'features_img' => ['src' => 'caracteristicas/caracteristicas-jardin-utp.jpg', 'dest' => 'caracteristicas/caracteristicas-jardin-utp.jpg'],
-                    'flora_img' => ['src' => 'flora/flora-jardin-utp.jpg', 'dest' => 'flora/flora-jardin-utp.jpg'],
-                    'estructure_img' => ['src' => 'estructura/estructura-jardin-utp.jpg', 'dest' => 'infraestructura/estructura-jardin-utp.jpg'],
+                    'cover' => ['src' => 'portada/portada-UTP.jpg', 'dest' => 'portada/portada-UTP.jpg'],
+                    'Weather_img' => ['src' => 'clima/clima-utp.jpg', 'dest' => 'clima/clima-utp.jpg'],
+                    'features_img' => ['src' => 'caracteristicas/caracteristicas-utp.jpg', 'dest' => 'caracteristicas/caracteristicas-utp.jpg'],
+                    'flora_img' => ['src' => 'flora/flora-utp.jpg', 'dest' => 'flora/flora-utp.jpg'],
+                    'estructure_img' => ['src' => 'estructura/estructura-utp.jpg', 'dest' => 'estructura/estructura-utp.jpg'],
                 ],
             ],
             [
@@ -284,7 +284,7 @@ class TurusticPlaceSeeder extends Seeder
                 'terminos' => true,
                 'politicas' => true,
                 'images' => [
-                    'cover' => ['src' => 'portada/cover-tatama.jpg', 'dest' => 'portadas/cover-tatama.jpg'],
+                    'cover' => ['src' => 'portada/portada-tatama.jpg', 'dest' => 'portadas/portada-tatama.jpg'],
                     'Weather_img' => ['src' => 'clima/clima-tatama.jpg', 'dest' => 'clima/clima-tatama.jpg'],
                     'features_img' => ['src' => 'caracteristicas/caracteristicas-tatama.jpg', 'dest' => 'caracteristicas/caracteristicas-tatama.jpg'],
                     'flora_img' => ['src' => 'flora/flora-tatama.jpg', 'dest' => 'flora/flora-tatama.jpg'],
@@ -312,7 +312,7 @@ class TurusticPlaceSeeder extends Seeder
                 'images' => [
                     'cover' => ['src' => 'portada/cover-pueblo-rico.jpg', 'dest' => 'portadas/cover-pueblo-rico.jpg'],
                     'Weather_img' => ['src' => 'clima/clima-pueblo-rico.jpg', 'dest' => 'clima/clima-pueblo-rico.jpg'],
-                    'features_img' => ['src' => 'caracteristicas/caracteristicas-pueblo-rico.jpg', 'dest' => 'caracteristicas/caracteristicas-pueblo-rico.jpg'],
+                    'features_img' => ['src' => 'caracteristicas/pueblorico-caracteristicas.jpg', 'dest' => 'caracteristicas/pueblorico-caracteristicas.jpg'],
                     'flora_img' => ['src' => 'flora/flora-pueblo-rico.jpg', 'dest' => 'flora/flora-pueblo-rico.jpg'],
                     'estructure_img' => ['src' => 'estructura/estructura-pueblo-rico.jpg', 'dest' => 'infraestructura/estructura-pueblo-rico.jpg'],
                 ],
@@ -336,11 +336,11 @@ class TurusticPlaceSeeder extends Seeder
                 'terminos' => true,
                 'politicas' => true,
                 'images' => [
-                    'cover' => ['src' => 'portada/cover-los-nevados.jpg', 'dest' => 'portadas/cover-los-nevados.jpg'],
-                    'Weather_img' => ['src' => 'clima/clima-los-nevados.jpg', 'dest' => 'clima/clima-los-nevados.jpg'],
-                    'features_img' => ['src' => 'caracteristicas/caracteristicas-los-nevados.jpg', 'dest' => 'caracteristicas/caracteristicas-los-nevados.jpg'],
-                    'flora_img' => ['src' => 'flora/flora-los-nevados.jpg', 'dest' => 'flora/flora-los-nevados.jpg'],
-                    'estructure_img' => ['src' => 'estructura/estructura-los-nevados.jpg', 'dest' => 'infraestructura/estructura-los-nevados.jpg'],
+                    'cover' => ['src' => 'portada/portada-nevados.jpg', 'dest' => 'portada/portada-nevados.jpg'],
+                    'Weather_img' => ['src' => 'clima/clima-nevado.jpg', 'dest' => 'clima/clima-nevado.jpg'],
+                    'features_img' => ['src' => 'caracteristicas/caracteristicas-nevado.jpg', 'dest' => 'caracteristicas/caracteristicas-nevado.jpg'],
+                    'flora_img' => ['src' => 'flora/flora-nevados.jpg', 'dest' => 'flora/flora-nevados.jpg'],
+                    'estructure_img' => ['src' => 'estructura/estructura-nevado.jpg', 'dest' => 'estructura/estructura-nevado.jpg'],
                 ],
             ],
                 // Sitios solicitados: Marsella, Reserva Barbas Bremen, Los Guayacanes, Gran Reserva Wabanta
@@ -473,7 +473,43 @@ class TurusticPlaceSeeder extends Seeder
                         'features_img' => ['src' => 'caracteristicas/caracteristicas-jardin-alejandro.png', 'dest' => 'caracteristicas/caracteristicas-jardin-alejandro.png'],
                         'flora_img' => ['src' => 'flora/flora-jardin-alejandro.png', 'dest' => 'flora/flora-jardin-alejandro.png'],
                         'estructure_img' => ['src' => 'estructura/estructura-jardin-alejandro.png', 'dest' => 'infraestructura/estructura-jardin-alejandro.png'],
-                    ],
+                     ],
+
+
+'name' => 'Parque Regional Natural La Marcada',
+'slogan' => 'Un refugio natural entre montañas y ríos',
+'description' => 'Área protegida de carácter regional ubicada en el departamento de Risaralda, reconocida por sus bosques andinos, fuentes hídricas y alta biodiversidad. Es un espacio clave para la conservación ambiental, la educación ecológica y el ecoturismo responsable, con paisajes naturales ideales para caminatas y contacto directo con la naturaleza.',
+'localization' => 'Municipio de Dosquebradas, Risaralda',
+'lat' => 4.82634476,
+'lng' => -75.60483372,
+'Weather' => 'Clima templado a fresco propio del bosque andino; temperaturas entre 16 y 22 C; alta humedad y lluvias frecuentes',
+'features' => 'Senderos ecologicos; cascadas y quebradas; observacion de flora y fauna; espacios para educacion ambiental; zonas de descanso natural',
+'flora' => 'Bosque andino con arboles nativos, helechos, musgos, epifitas y diversidad de especies vegetales propias de ecosistemas humedos',
+'estructure' => 'Senderos señalizados, areas de acceso controlado, puntos de interpretacion ambiental y zonas naturales de recreacion pasiva',
+'tips' => 'Llevar calzado comodo e impermeable; usar protector solar y repelente; respetar las normas del area protegida; no dejar residuos',
+'contact_info' => null,
+'open_days' => json_encode([
+    'Lunes' => true,
+    'Martes' => true,
+    'Miercoles' => true,
+    'Jueves' => true,
+    'Viernes' => true,
+    'Sabado' => true,
+    'Domingo' => true
+]),
+'opening_status' => true,
+'user_id' => 1,
+'terminos' => true,
+'politicas' => true,
+'images' => [
+    'cover' => ['src' => 'portada/portada-marcada.jpg', 'dest' => 'portadas/portada-marcada.jpg'],
+    'Weather_img' => ['src' => 'clima/clima-marcada.jpg', 'dest' => 'clima/clima-marcada.jpg'],
+    'features_img' => ['src' => 'caracteristicas/caracteristicas-marcada.jpg', 'dest' => 'caracteristicas/caracteristicas-marcada.jpg'],
+    'flora_img' => ['src' => 'flora/flora-marcada.jpg', 'dest' => 'flora/flora-marcada.jpg'],
+    'estructure_img' => ['src' => 'estructura/estructura-marcada.jpg', 'dest' => 'estructura/estructura-marcada.jpg'],
+],
+
+                    
                 ],
 
 
