@@ -20,6 +20,13 @@ class ReviewApiController extends Controller
         $antiSpamMinutes = 5; // Cambia este valor según tu política
         $now = now();
 
+        // Restricción: operador no puede calificar/reseñar sus propios sitios
+        $user = $request->user();
+        $place = \App\Models\TuristicPlace::find($placeId);
+        if ($user && $user->role === 'operator' && $place && $place->user_id == $user->id) {
+            return response()->json(['message' => 'No puedes calificar o dejar reseña en tus propios sitios'], 403);
+        }
+
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'comment' => [

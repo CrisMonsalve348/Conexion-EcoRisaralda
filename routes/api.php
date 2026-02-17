@@ -86,6 +86,36 @@ Route::get('/files/{type}/{filename}', function ($type, $filename) {
     return response()->file($path);
 })->where('filename', '.*');
 
+// Rutas públicas de eventos (para todos, logueados o no)
+Route::get('/events/upcoming', function (Request $request) {
+    $expiredEvents = PlaceEvent::where('starts_at', '<', now())->get();
+    foreach ($expiredEvents as $expiredEvent) {
+        if ($expiredEvent->image) {
+            Storage::disk('public')->delete($expiredEvent->image);
+        }
+        $expiredEvent->delete();
+    }
+    $limit = (int) $request->query('limit', 5);
+    $limit = $limit > 0 ? $limit : 5;
+
+    $events = PlaceEvent::with('place:id,name')
+        ->where('starts_at', '>=', now())
+        ->where('approval_status', 'approved')
+        ->orderBy('starts_at', 'asc')
+        ->limit($limit * 2) // Traer más para filtrar
+        ->get()
+        ->filter(function ($event) {
+            // Solo mostrar eventos cuyo sitio existe y está aprobado
+            return $event->place && (!isset($event->place->approval_status) || $event->place->approval_status === 'approved');
+        })
+        ->values()
+        ->take($limit);
+
+    return response()->json([
+        'events' => $events,
+    ]);
+});
+
 // Estas rutas necesitan sesión pero omiten CSRF para el primer contacto del cliente SPA
 Route::middleware('web')->group(function () {
     // Notificaciones de usuario (turista)
@@ -594,27 +624,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             ]);
         });
 
-        Route::get('/events/upcoming', function (Request $request) {
-            $expiredEvents = PlaceEvent::where('starts_at', '<', now())->get();
-            foreach ($expiredEvents as $expiredEvent) {
-                if ($expiredEvent->image) {
-                    Storage::disk('public')->delete($expiredEvent->image);
-                }
-                $expiredEvent->delete();
-            }
-            $limit = (int) $request->query('limit', 5);
-            $limit = $limit > 0 ? $limit : 5;
 
-            $events = PlaceEvent::with('place:id,name')
-                ->where('starts_at', '>=', now())
-                ->orderBy('starts_at', 'asc')
-                ->limit($limit)
-                ->get();
-
-            return response()->json([
-                'events' => $events,
-            ]);
-        });
 
             // Obtener evento por ID
             Route::get('/events/{id}', function (Request $request, $id) {
