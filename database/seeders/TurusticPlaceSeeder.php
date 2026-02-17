@@ -546,6 +546,40 @@ class TurusticPlaceSeeder extends Seeder
                 ],
             ],
 
+            [
+                'name' => 'Ecolodge EntreNubes',
+                'slogan' => 'Entre nubes y biodiversidad',
+                'description' => 'Ecolodge rural ubicado en finca cafetera y bosque, con hospedaje sostenible, senderos y vistas hacia el Cerro Tatamá. Ideal para desconexión, avistamiento de aves, caminatas ecológicas y experiencias inmersivas en uno de los principales hotspots de biodiversidad del Eje Cafetero occidental.',
+                'localization' => 'Finca La Palma, vereda La Palma, cara nororiental del Parque Nacional Natural Tatamá, Pueblo Rico – Risaralda. Aproximadamente a 10-20 km del casco urbano de Pueblo Rico, con acceso por vía principal y caminos rurales. A 2-3 horas desde Pereira.',
+                'lat' => 5.222,
+                'lng' => -76.031,
+                'Weather' => 'Clima fresco de alta montaña (1.800-2.200 msnm), temperatura promedio entre 14 y 20 °C, niebla frecuente, lluvias constantes y ambiente húmedo boscoso. Noches frías, se recomienda ropa en capas.',
+                'features' => 'Hospedaje ecológico, senderos naturales, conexión directa con el Parque Nacional Natural Tatamá, avistamiento de aves y fauna, ambiente tranquilo y sostenible, caminatas guiadas y experiencias de birdwatching.',
+                'flora' => 'Bosque nuboso andino con árboles nativos, epífitas, orquídeas, helechos y vegetación exuberante. Alta biodiversidad con aves endémicas y migratorias, mariposas, insectos y pequeños mamíferos.',
+                'estructure' => 'Cabañas o habitaciones rústicas integradas al paisaje, zonas comunes, senderos básicos, posible comedor o área de comidas. Infraestructura sencilla con enfoque en sostenibilidad y bajo impacto ambiental.',
+                'tips' => 'Reservar con anticipación, especialmente fines de semana. Llevar impermeable, botas para senderos húmedos, binoculares, repelente y ropa abrigada. Mejor visitar temprano para mayor actividad de aves.',
+                'contact_info' => 'Facebook: @entrenubesecolodge | WhatsApp: +57 319 532 3767',
+                'open_days' => json_encode([
+                    'Lunes' => true,
+                    'Martes' => true,
+                    'Miercoles' => true,
+                    'Jueves' => true,
+                    'Viernes' => true,
+                    'Sabado' => true,
+                    'Domingo' => true
+                ]),
+                'opening_status' => true,
+                'user_id' => 1,
+                'terminos' => true,
+                'politicas' => true,
+                'images' => [
+                    'cover' => ['src' => 'portada/portada-entrenubes.png', 'dest' => 'portadas/portada-entrenubes.png'],
+                    'Weather_img' => ['src' => 'clima/clima-entrenubes.png', 'dest' => 'clima/clima-entrenubes.png'],
+                    'features_img' => ['src' => 'caracteristicas/caracteristicas-entrenubes.png', 'dest' => 'caracteristicas/caracteristicas-entrenubes.png'],
+                    'flora_img' => ['src' => 'flora/flora-entrenubes.png', 'dest' => 'flora/flora-entrenubes.png'],
+                    'estructure_img' => ['src' => 'estructura/estructura-entrenubes.png', 'dest' => 'infraestructura/estructura-entrenubes.png'],
+                ],
+            ],
 
 
 
