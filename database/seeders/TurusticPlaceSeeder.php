@@ -581,6 +581,41 @@ class TurusticPlaceSeeder extends Seeder
                 ],
             ],
 
+            [
+                'name' => 'Minkalab Ecogranja Orgánica',
+                'slogan' => 'Un espacio para el Buen Vivir y la vida como cultivo',
+                'description' => 'Ecogranja orgánica, reserva natural privada y centro bio-cultural con cafetal y bosque orgánico, hospedaje ecológico y actividades de agroecología, bioconstrucción, retiros espirituales y aprendizaje intercultural. Comprometida con la conservación, la permacultura y el Buen Vivir desde hace más de 12 años.',
+                'localization' => 'Vereda Obito (sector rural), Santa Rosa de Cabal, Risaralda. En las montañas occidentales del Eje Cafetero, cerca de los principales termales del municipio. Acceso por vías rurales a 20-40 minutos del centro de Santa Rosa y aproximadamente 1 hora desde Pereira.',
+                'lat' => 4.865,
+                'lng' => -75.585,
+                'Weather' => 'Clima templado-fresco de montaña (1.800-2.200 msnm), temperatura promedio entre 14 y 20 °C, con niebla frecuente, alta humedad y lluvias moderadas propias del bosque nuboso andino. Noches frías y ambiente verde refrescante.',
+                'features' => 'Finca orgánica con cafetal y bosque nativo, coffee tours, talleres de agroecología y bioconstrucción (guadua y barro), retiros espirituales como temazcal y yoga, eventos interculturales y enfoque en sostenibilidad y comunidad.',
+                'flora' => 'Cafetal orgánico, bosque nativo, plantas medicinales, guadua, árboles endémicos y cultivos agroecológicos. Presencia de aves andinas, mariposas, insectos beneficiosos y pequeños mamíferos en un entorno de biodiversidad preservada.',
+                'estructure' => 'Eco-hostal con habitaciones y cabañas rústicas, cocina compartida, áreas sociales, senderos naturales y espacios para talleres y retiros. Infraestructura ecológica integrada al paisaje con bajo impacto ambiental.',
+                'tips' => 'Reservar con anticipación para hospedaje o talleres. Llevar ropa en capas, impermeable, botas para senderos húmedos y repelente. Respetar normas de sostenibilidad y cuidado del entorno.',
+                'contact_info' => 'Web: minkalab.org | Email: info@minkalab.org | WhatsApp: +57 320 415 7666 | Instagram: @minkalabcolombia | Facebook: @MinkaLab',
+                'open_days' => json_encode([
+                    'Lunes' => true,
+                    'Martes' => true,
+                    'Miercoles' => true,
+                    'Jueves' => true,
+                    'Viernes' => true,
+                    'Sabado' => true,
+                    'Domingo' => true
+                ]),
+                'opening_status' => true,
+                'user_id' => 1,
+                'terminos' => true,
+                'politicas' => true,
+                'images' => [
+                    'cover' => ['src' => 'portada/portada-minkalab.png', 'dest' => 'portadas/portada-minkalab.png'],
+                    'Weather_img' => ['src' => 'clima/clima-minkalab.png', 'dest' => 'clima/clima-minkalab.png'],
+                    'features_img' => ['src' => 'caracteristicas/caracteristicas-minkalab.png', 'dest' => 'caracteristicas/caracteristicas-minkalab.png'],
+                    'flora_img' => ['src' => 'flora/flora-minkalab.png', 'dest' => 'flora/flora-minkalab.png'],
+                    'estructure_img' => ['src' => 'estructura/estructura-minkalab.png', 'dest' => 'infraestructura/estructura-minkalab.png'],
+                ],
+            ],
+
 
 
         ];
