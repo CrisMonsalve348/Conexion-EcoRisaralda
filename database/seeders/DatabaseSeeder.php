@@ -76,5 +76,6 @@ class DatabaseSeeder extends Seeder
         // Luego ejecutar los seeders que dependen de usuarios
         $this->call(PreferenceSeeder::class);
         $this->call(TurusticPlaceSeeder::class);
+        $this->call(PlaceLabel::class);
     }
 }
