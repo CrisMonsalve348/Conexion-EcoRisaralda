@@ -476,6 +476,42 @@ class TurusticPlaceSeeder extends Seeder
                     ],
                 ],
 
+                [
+                'name' => 'Cascada La Estrella',
+                'slogan' => 'Dos caídas majestuosas en el corazón de Mistrató',
+                'description' => 'Cascada con dos caídas continuas de 28 y 33 metros en un ecosistema nativo, ideal para rapel, canyoning, baño en pozos y observación de flora y fauna. Un spot de aventura y ecoturismo accesible y auténtico.',
+                'localization' => 'Vereda La Estrella, a menos de 1 km del parque principal de Mistrató (entrada al sendero aproximadamente a 450 m del Parque Bolívar), sobre la vía hacia Belén de Umbría. Muy cerca del centro (5-10 minutos caminando o en carro), a 2-3 horas desde Pereira.',
+                'lat' => 5.296,
+                'lng' => -75.882,
+                'Weather' => 'Clima templado-húmedo de montaña (1.500-2.000 msnm), temperatura promedio entre 18 y 22 °C, fresco con brisa, niebla frecuente y lluvias posibles en épocas húmedas. Ambiente boscoso refrescante.',
+                'features' => 'Dos caídas de agua consecutivas, sendero ecológico señalizado por jóvenes locales, pozos naturales para refrescarse, práctica de rapel y canyoning, avistamiento de naturaleza y enfoque comunitario.',
+                'flora' => 'Especies nativas del Chocó Biogeográfico andino como helechos, epífitas y plantas tropicales exuberantes. Presencia de aves locales y endémicas, mariposas, insectos y pequeños mamíferos del bosque húmedo.',
+                'estructure' => 'Sendero ecológico básico mantenido por la comunidad con señalización sencilla. No cuenta con baños ni parqueadero formal. Acceso por camino rural; se recomienda guía local.',
+                'tips' => 'Ir con guía local para actividades de rapel. Llevar zapatos antideslizantes, ropa para mojar, repelente y toalla. Mejor visitar en días secos y evitar lluvias fuertes.',
+                'contact_info' => 'Redes sociales: @alcaldiamistrato',
+                'open_days' => json_encode([
+                    'Lunes' => true,
+                    'Martes' => true,
+                    'Miercoles' => true,
+                    'Jueves' => true,
+                    'Viernes' => true,
+                    'Sabado' => true,
+                    'Domingo' => true
+                ]),
+                'opening_status' => true,
+                'user_id' => 1,
+                'terminos' => true,
+                'politicas' => true,
+                'images' => [
+                    'cover' => ['src' => 'portada/portada-cascada-estrella.png', 'dest' => 'portadas/portada-cascada-estrella.png'],
+                    'Weather_img' => ['src' => 'clima/clima-cascada-estrella.png', 'dest' => 'clima/clima-cascada-estrella.png'],
+                    'features_img' => ['src' => 'caracteristicas/caracteristicas-cascada-estrella.png', 'dest' => 'caracteristicas/caracteristicas-cascada-estrella.png'],
+                    'flora_img' => ['src' => 'flora/fauna-cascada-estrella.png', 'dest' => 'flora/fauna-cascada-estrella.png'],
+                    'estructure_img' => ['src' => 'estructura/estructura-cascada-estrella.png', 'dest' => 'infraestructura/estructura-cascada-estrella.png'],
+                ],
+            ],
+
+
 
         ];
 
