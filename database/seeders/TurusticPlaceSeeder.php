@@ -511,6 +511,42 @@ class TurusticPlaceSeeder extends Seeder
                 ],
             ],
 
+            [
+                'name' => 'Bioparque Mariposario Bonita Farm',
+                'slogan' => 'Ven y vive una aventura con mariposas y aves',
+                'description' => 'Bioparque y mariposario ubicado en finca cafetera convertida en reserva natural, con enfoque en educación ambiental, reproducción de mariposas y avistamiento de aves. Cuenta con mariposario con arena blanca para caminar descalzo, laboratorio de metamorfosis y senderos ecológicos en un entorno verde y biodiverso.',
+                'localization' => 'Vía La Romelia-El Pollo (ingreso hacia El Mirador de las Camelias), Dosquebradas, Risaralda. A 10-15 minutos del centro de Pereira o Dosquebradas, con fácil acceso por carretera principal, rodeado de montañas y paisaje cafetero.',
+                'lat' => 4.822,
+                'lng' => -75.674,
+                'Weather' => 'Clima templado de montaña (1.400-1.600 msnm), temperatura promedio entre 18 y 24 °C, ambiente fresco con brisa, alta humedad y posibles lluvias ligeras. Ideal para observación de insectos y aves.',
+                'features' => 'Mariposario principal con arena blanca para caminar descalzo, laboratorio para observar orugas y crisálidas, senderos ecológicos, avistamiento de aves (más de 166 especies registradas), liberación de mariposas, safaris diurnos y nocturnos, visitas guiadas y enfoque en conservación ambiental.',
+                'flora' => 'Centenares de mariposas (especies locales y reproducidas), más de 166 especies de aves en libertad, insectos y pequeños mamíferos. Vegetación nativa de finca cafetera con plantas hospederas para mariposas, árboles y flores del ecosistema andino húmedo.',
+                'estructure' => 'Mariposario techado con arena blanca, laboratorio educativo, senderos naturales, áreas de observación y liberación, zonas de descanso y ambiente rústico-ecológico. Visitas guiadas incluidas. Precio aproximado 75.000 COP por persona (mínimo 5 personas en algunos casos).',
+                'tips' => 'Reservar con anticipación. Llevar zapatos que puedas quitar, repelente, binoculares y cámara. Visitar en la mañana o tarde para mejor avistamiento. Respetar normas y no tocar animales.',
+                'contact_info' => 'Instagram: @mariposariobonitafarm | WhatsApp: +57 310 520 6268 | Tel: +57 330 7790 | Web: bonitafarm.com.co',
+                'open_days' => json_encode([
+                    'Lunes' => true,
+                    'Martes' => true,
+                    'Miercoles' => true,
+                    'Jueves' => true,
+                    'Viernes' => true,
+                    'Sabado' => true,
+                    'Domingo' => true
+                ]),
+                'opening_status' => true,
+                'user_id' => 1,
+                'terminos' => true,
+                'politicas' => true,
+                'images' => [
+                    'cover' => ['src' => 'portada/portada-bonita-farm.png', 'dest' => 'portadas/portada-bonita-farm.png'],
+                    'Weather_img' => ['src' => 'clima/clima-bonita-farm.png', 'dest' => 'clima/clima-bonita-farm.png'],
+                    'features_img' => ['src' => 'caracteristicas/caracteristicas-bonita-farm.png', 'dest' => 'caracteristicas/caracteristicas-bonita-farm.png'],
+                    'flora_img' => ['src' => 'flora/flora-bonita-farm.png', 'dest' => 'flora/flora-bonita-farm.png'],
+                    'estructure_img' => ['src' => 'estructura/estructura-bonita-farm.png', 'dest' => 'infraestructura/estructura-bonita-farm.png'],
+                ],
+            ],
+
+
 
 
         ];
