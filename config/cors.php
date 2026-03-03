@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * CORS config for SPA + Sanctum (cookie-based auth).
+ *
+ * IMPORTANT: keep origins in environment variables for deploys.
+ */
+
 return [
     'paths' => [
         'api/*',
@@ -11,10 +17,17 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => [
-        'http://localhost:5173',
-        'http://127.0.0.1:5173',
-    ],
+    'allowed_origins' => (function (): array {
+        $fromEnv = array_values(array_filter(array_map('trim', explode(',', (string) env('CORS_ALLOWED_ORIGINS', '')))));
+        if (! empty($fromEnv)) {
+            return $fromEnv;
+        }
+
+        return array_values(array_filter([
+            env('FRONTEND_URL'),
+            env('FRONTEND_URL_ALT'),
+        ]));
+    })(),
 
     'allowed_origins_patterns' => [],
 

@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use App\Models\preference;
 
-class preferenceSeeder extends Seeder
+class PreferenceSeeder extends Seeder
 {
     /**
      * Run the database seeds.

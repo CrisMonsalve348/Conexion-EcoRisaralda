@@ -73,9 +73,11 @@ class DatabaseSeeder extends Seeder
 
         // Crear admin explícitamente
         $this->call(AdminSeeder::class);
-        // Luego ejecutar los seeders que dependen de usuarios
+        // Ejecutar los seeders de preferencias
         $this->call(PreferenceSeeder::class);
+        // Ejecutar los seeders de lugares turísticos
         $this->call(TurusticPlaceSeeder::class);
+        // Ejecutar los seeders de etiquetas de lugares
         $this->call(PlaceLabel::class);
     }
 }
