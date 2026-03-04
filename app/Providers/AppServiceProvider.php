@@ -72,5 +72,10 @@ class AppServiceProvider extends ServiceProvider
                 ->line('Si no creaste una cuenta, ignora este correo.')
                 ->salutation('Gracias, Equipo Conexion EcoRisaralda');
         });
+
+        // Forzar HTTPS en producción
+        if (config('app.env') === 'production') {
+            URL::forceScheme('https');
+        }
     }
 }
