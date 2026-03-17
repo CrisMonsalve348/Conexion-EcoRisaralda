@@ -306,6 +306,17 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             return response()->json(['message' => 'Sesión cerrada']);
         });
 
+        // Obtener usuario actual (alias para /profile)
+        Route::get('/user', function (Request $request) {
+            $user = $request->user();
+            $userData = $user->toArray();
+            if ($user->image) {
+                $imagePath = str_replace('\\', '/', $user->image);
+                $userData['avatar_url'] = url('/api/files/' . $imagePath);
+            }
+            return response()->json($userData);
+        });
+
         // Perfil: obtener perfil actual
         Route::get('/profile', function (Request $request) {
             $user = $request->user();
@@ -429,6 +440,12 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             ]);
 
             $user = $request->user();
+            
+            // Eliminar imagen anterior si existe
+            if ($user->image && Storage::disk('public')->exists($user->image)) {
+                Storage::disk('public')->delete($user->image);
+            }
+            
             $path = $request->file('avatar')->store('avatars', 'public');
 
             // Guardamos en la columna image
