@@ -75,34 +75,45 @@ Route::get('/preferences', function () {
 
 // Servir archivos desde storage (avatares, imágenes, etc)
 Route::get('/files/{type}/{filename}', function ($type, $filename) {
-    // Primero buscar en storage/app/public/ (para imágenes subidas)
-    $path = storage_path("app/public/{$type}/{$filename}");
+    // 1. Buscar en storage/app/public/ (para imágenes subidas por sistema)
+    $storagePath = "{$type}/{$filename}";
     
-    // Si no existe, intentar variaciones en seeders
-    if (!file_exists($path)) {
-        // Buscar en public/seeders/images/places/ con el tipo exacto
-        $path = public_path("seeders/images/places/{$type}/{$filename}");
+    if (Storage::disk('public')->exists($storagePath)) {
+        return response()->file(storage_path("app/public/{$storagePath}"));
     }
     
-    // Si no existe, intentar el singular (si es plural)
-    if (!file_exists($path) && substr($type, -1) === 's') {
+    // 2. Buscar en public/ directamente (avatares, imágenes subidas por usuarios)
+    $publicPath = public_path("{$type}/{$filename}");
+    if (file_exists($publicPath)) {
+        return response()->file($publicPath);
+    }
+    
+    // 3. Buscar en seeders con el tipo exacto
+    $seedPath = public_path("seeders/images/places/{$type}/{$filename}");
+    if (file_exists($seedPath)) {
+        return response()->file($seedPath);
+    }
+    
+    // 4. Si es plural, intentar el singular
+    if (substr($type, -1) === 's') {
         $typeSingular = substr($type, 0, -1);
-        $path = public_path("seeders/images/places/{$typeSingular}/{$filename}");
+        $seedPath = public_path("seeders/images/places/{$typeSingular}/{$filename}");
+        if (file_exists($seedPath)) {
+            return response()->file($seedPath);
+        }
     }
     
-    // Si no existe, intentar el plural (si es singular)
-    if (!file_exists($path) && substr($type, -1) !== 's') {
+    // 5. Si es singular, intentar el plural
+    if (substr($type, -1) !== 's') {
         $typePlural = $type . 's';
-        $path = public_path("seeders/images/places/{$typePlural}/{$filename}");
+        $seedPath = public_path("seeders/images/places/{$typePlural}/{$filename}");
+        if (file_exists($seedPath)) {
+            return response()->file($seedPath);
+        }
     }
     
-    // Validar que el archivo existe
-    if (!file_exists($path)) {
-        return response()->json(['message' => 'Archivo no encontrado'], 404);
-    }
-    
-    // Retornar el archivo
-    return response()->file($path);
+    // Archivo no encontrado
+    return response()->json(['message' => 'Archivo no encontrado: ' . $type . '/' . $filename], 404);
 })->where('filename', '.*');
 
 // Rutas públicas de eventos (para todos, logueados o no)
@@ -442,11 +453,28 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             $user = $request->user();
             
             // Eliminar imagen anterior si existe
-            if ($user->image && Storage::disk('public')->exists($user->image)) {
-                Storage::disk('public')->delete($user->image);
+            if ($user->image) {
+                // Intentar eliminar del storage
+                if (Storage::disk('public')->exists($user->image)) {
+                    Storage::disk('public')->delete($user->image);
+                }
+                // Intentar eliminar de public/
+                $publicPath = public_path($user->image);
+                if (file_exists($publicPath)) {
+                    unlink($publicPath);
+                }
             }
             
-            $path = $request->file('avatar')->store('avatars', 'public');
+            // Crear carpeta avatars si no existe
+            $avatarDir = public_path('avatars');
+            if (!is_dir($avatarDir)) {
+                mkdir($avatarDir, 0755, true);
+            }
+            
+            // Guardar en public/avatars/ directamente (más simple, sin dependencia de storage)
+            $filename = time() . '_' . auth()->id() . '.' . $request->file('avatar')->getClientOriginalExtension();
+            $request->file('avatar')->move($avatarDir, $filename);
+            $path = 'avatars/' . $filename;
 
             // Guardamos en la columna image
             $user->image = $path;
@@ -454,12 +482,11 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
 
             // Preparar respuesta con avatar_url incluido
             $userData = $user->toArray();
-            $imagePath = str_replace('\\', '/', $path);
-            $userData['avatar_url'] = url('/api/files/' . $imagePath);
+            $userData['avatar_url'] = url('/api/files/' . $path);
 
             return response()->json([
                 'message' => 'Foto actualizada',
-                'avatar_url' => url('/api/files/' . $imagePath),
+                'avatar_url' => url('/api/files/' . $path),
                 'user' => $userData,
             ]);
         });
