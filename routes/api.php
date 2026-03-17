@@ -78,9 +78,22 @@ Route::get('/files/{type}/{filename}', function ($type, $filename) {
     // Primero buscar en storage/app/public/ (para imágenes subidas)
     $path = storage_path("app/public/{$type}/{$filename}");
     
-    // Si no existe, buscar en public/seeders/images/places/ (imágenes del seeder)
+    // Si no existe, intentar variaciones en seeders
     if (!file_exists($path)) {
+        // Buscar en public/seeders/images/places/ con el tipo exacto
         $path = public_path("seeders/images/places/{$type}/{$filename}");
+    }
+    
+    // Si no existe, intentar el singular (si es plural)
+    if (!file_exists($path) && substr($type, -1) === 's') {
+        $typeSingular = substr($type, 0, -1);
+        $path = public_path("seeders/images/places/{$typeSingular}/{$filename}");
+    }
+    
+    // Si no existe, intentar el plural (si es singular)
+    if (!file_exists($path) && substr($type, -1) !== 's') {
+        $typePlural = $type . 's';
+        $path = public_path("seeders/images/places/{$typePlural}/{$filename}");
     }
     
     // Validar que el archivo existe
