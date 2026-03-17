@@ -451,44 +451,52 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             ]);
 
             $user = $request->user();
-            
-            // Eliminar imagen anterior si existe
-            if ($user->image) {
-                // Intentar eliminar del storage
-                if (Storage::disk('public')->exists($user->image)) {
-                    Storage::disk('public')->delete($user->image);
-                }
-                // Intentar eliminar de public/
-                $publicPath = public_path($user->image);
-                if (file_exists($publicPath)) {
-                    unlink($publicPath);
-                }
+            if (!$user) {
+                return response()->json(['message' => 'No autenticado'], 401);
             }
             
-            // Crear carpeta avatars si no existe
-            $avatarDir = public_path('avatars');
-            if (!is_dir($avatarDir)) {
-                mkdir($avatarDir, 0755, true);
+            try {
+                // Eliminar imagen anterior si existe
+                if ($user->image) {
+                    // Intentar eliminar del storage
+                    if (Storage::disk('public')->exists($user->image)) {
+                        Storage::disk('public')->delete($user->image);
+                    }
+                    // Intentar eliminar de public/
+                    $publicPath = public_path($user->image);
+                    if (file_exists($publicPath)) {
+                        @unlink($publicPath);
+                    }
+                }
+                
+                // Crear carpeta avatars si no existe
+                $avatarDir = public_path('avatars');
+                if (!is_dir($avatarDir)) {
+                    @mkdir($avatarDir, 0755, true);
+                }
+                
+                // Generar nombre único para el archivo
+                $ext = $request->file('avatar')->getClientOriginalExtension();
+                $filename = 'avatar_' . $user->id . '_' . time() . '.' . $ext;
+                
+                // Guardar archivo en public/avatars/
+                $request->file('avatar')->move($avatarDir, $filename);
+                $path = 'avatars/' . $filename;
+
+                // Actualizar usuario
+                $user->image = $path;
+                $user->save();
+
+                return response()->json([
+                    'message' => 'Foto actualizada',
+                    'avatar_url' => url('/api/files/' . $path),
+                    'user' => $user,
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'message' => 'Error al subir archivo: ' . $e->getMessage()
+                ], 500);
             }
-            
-            // Guardar en public/avatars/ directamente (más simple, sin dependencia de storage)
-            $filename = time() . '_' . auth()->id() . '.' . $request->file('avatar')->getClientOriginalExtension();
-            $request->file('avatar')->move($avatarDir, $filename);
-            $path = 'avatars/' . $filename;
-
-            // Guardamos en la columna image
-            $user->image = $path;
-            $user->save();
-
-            // Preparar respuesta con avatar_url incluido
-            $userData = $user->toArray();
-            $userData['avatar_url'] = url('/api/files/' . $path);
-
-            return response()->json([
-                'message' => 'Foto actualizada',
-                'avatar_url' => url('/api/files/' . $path),
-                'user' => $userData,
-            ]);
         });
 
         // Perfil: eliminar foto (restaurar avatar por defecto)
