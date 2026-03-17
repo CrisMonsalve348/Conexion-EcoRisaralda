@@ -75,7 +75,13 @@ Route::get('/preferences', function () {
 
 // Servir archivos desde storage (avatares, imágenes, etc)
 Route::get('/files/{type}/{filename}', function ($type, $filename) {
+    // Primero buscar en storage/app/public/ (para imágenes subidas)
     $path = storage_path("app/public/{$type}/{$filename}");
+    
+    // Si no existe, buscar en public/seeders/images/places/ (imágenes del seeder)
+    if (!file_exists($path)) {
+        $path = public_path("seeders/images/places/{$type}/{$filename}");
+    }
     
     // Validar que el archivo existe
     if (!file_exists($path)) {
