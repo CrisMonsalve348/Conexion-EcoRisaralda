@@ -723,7 +723,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                     'description' => 'nullable|string|max:1000',
                     'starts_at' => 'required|date',
                     'ends_at' => 'nullable|date',
-                    'image' => 'nullable|image|max:4096',
+                    'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,svg,webp|max:4096',
                 ]);
                 $event->title = $data['title'];
                 $event->description = $data['description'] ?? '';
@@ -767,7 +767,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                         'description' => 'nullable|string|max:1000',
                         'starts_at' => 'required|date',
                         'ends_at' => 'nullable|date',
-                        'image' => 'required|image|max:4096',
+                        'image' => 'required|image|mimes:jpg,jpeg,png,gif,svg,webp|max:4096',
                     ]);
                     $event = new PlaceEvent();
                     $event->place_id = $place->id;
