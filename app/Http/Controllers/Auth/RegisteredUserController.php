@@ -38,7 +38,7 @@ class RegisteredUserController extends Controller
             'date_of_birth' => ['required', 'date'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg,webp', 'max:2048'],
         ]);
           $imagePath = $request->hasFile('image')
     ? $request->file('image')->store('users', 'public')

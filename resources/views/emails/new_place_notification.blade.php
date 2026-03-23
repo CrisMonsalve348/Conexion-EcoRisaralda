@@ -10,87 +10,99 @@ $matched = is_array($matchedPreferences ?? null) ? $matchedPreferences : [];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 40px 20px; background-color: #ffffff; }
-        .container { max-width: 500px; margin: 0 auto; background-color: #ffffff; }
-        .header { text-align: center; margin-bottom: 32px; }
-        .logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
-        .logo-icon { width: 32px; height: 32px; }
-        .logo-text { font-size: 18px; font-weight: 700; color: #1e293b; letter-spacing: -0.3px; text-align: left; line-height: 1.2; }
-        .logo-sub { font-size: 13px; color: #16a34a; font-weight: 600; display: block; }
-        .divider { width: 40px; height: 2px; background-color: #e2e8f0; margin: 24px auto 0; }
-        
-        .body h2 { margin: 0 0 16px; color: #1e293b; font-size: 20px; font-weight: 700; text-align: center; }
-        .body > p:first-of-type { color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 32px; text-align: center; }
-        
-        .cover-image { width: 100%; height: auto; display: block; border-radius: 8px; margin-bottom: 24px; }
-        .place-details { text-align: center; margin-bottom: 32px; }
-        .place-details h3 { margin: 0 0 8px; color: #1e293b; font-size: 18px; font-weight: 700; }
-        .slogan { margin: 0 0 16px; color: #16a34a; font-size: 14px; font-weight: 500; font-style: italic; }
-        .desc { margin: 0 0 24px; color: #475569; font-size: 14px; line-height: 1.6; }
-        
-        .categories { margin: 24px 0; padding: 24px 0; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
-        .badge { display: inline-block; background-color: #f8fafc; color: #475569; padding: 6px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; border: 1px solid #e2e8f0; }
-        
-        .location { margin-top: 24px; color: #475569; font-size: 14px; }
-        .location strong { color: #1e293b; display: block; margin-bottom: 4px; }
-        
-        .button-wrapper { text-align: center; margin: 32px 0; }
-        .button { display: inline-block; background-color: #16a34a; color: #ffffff; text-decoration: none; border-radius: 8px; padding: 12px 28px; font-weight: 600; font-size: 14px; letter-spacing: 0.2px; transition: background-color 0.2s; }
-        .button:hover { background-color: #15803d; }
-        
-        .footer { margin-top: 32px; padding-top: 24px; border-top: 1px solid #f1f5f9; text-align: center; }
-        .footer p { margin: 0; color: #94a3b8; font-size: 12px; line-height: 1.5; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Albert Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background-color: #f8fafc; }
+        .container { max-width: 650px; margin: 0 auto; background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); }
+        .logo-section { background-color: #ffffff; padding: 32px; text-align: center; border-bottom: 3px solid #10b981; }
+        .logo-text { color: #10b981; font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+        .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 60px 32px; text-align: center; }
+        .header h1 { margin: 0; color: #ffffff; font-size: 36px; font-weight: 700; line-height: 1.2; }
+        .body { padding: 48px 32px; }
+        .greeting { color: #1e293b; font-size: 15px; line-height: 1.6; margin: 0 0 24px 0; }
+        .intro-text { color: #475569; font-size: 15px; line-height: 1.7; margin: 0 0 28px 0; }
+        .place-image { width: 100%; max-width: 100%; border-radius: 8px; margin: 0 0 28px 0; }
+        .place-info { background-color: #ffffff; border-left: 5px solid #10b981; padding: 24px; margin: 28px 0; border-radius: 8px; }
+        .place-name { color: #1e293b; font-size: 24px; font-weight: 700; margin: 0 0 8px 0; }
+        .place-slogan { color: #10b981; font-size: 15px; font-weight: 600; font-style: italic; margin: 0 0 16px 0; }
+        .place-description { color: #475569; font-size: 15px; line-height: 1.7; margin: 0 0 20px 0; }
+        .categories { margin: 20px 0; }
+        .category-label { color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 12px 0; display: block; }
+        .category-badge { display: inline-block; background-color: #dbeafe; color: #0369a1; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 500; margin: 0 6px 6px 0; }
+        .location-info { margin-top: 16px; color: #475569; font-size: 14px; line-height: 1.6; }
+        .location-label { color: #10b981; font-weight: 600; }
+        .benefits-section { margin: 32px 0; }
+        .benefits-title { color: #1e293b; font-size: 16px; font-weight: 700; margin: 0 0 16px 0; }
+        .benefits-list { list-style: none; }
+        .benefits-list li { color: #475569; font-size: 14px; margin: 0 0 10px 0; padding-left: 24px; position: relative; }
+        .benefits-list li:before { content: "✓"; position: absolute; left: 0; color: #10b981; font-weight: 700; }
+        .cta-button { display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; border-radius: 8px; padding: 14px 40px; font-weight: 600; font-size: 15px; margin: 28px 0; }
+        .footer-section { padding: 40px 32px; text-align: center; }
+        .footer-text { color: #64748b; font-size: 14px; line-height: 1.6; margin: 0 0 16px 0; }
+        .footer-link { color: #10b981; text-decoration: underline; }
+        .footer-bottom { color: #94a3b8; font-size: 12px; line-height: 1.6; margin: 24px 0 0 0; padding-top: 24px; border-top: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
 <div class="container">
+    <div class="logo-section">
+        <p class="logo-text">Conexion EcoRisaralda</p>
+    </div>
+
     <div class="header">
-        <a href="{{ $frontendUrl }}" class="logo">
-            <img src="{{ $logoUrl }}" alt="Logo" class="logo-icon" />
-            <div class="logo-text">Conexión <span class="logo-sub">EcoRisaralda</span></div>
-        </a>
-        <div class="divider"></div>
+        <h1>Descubrimiento personalizado</h1>
     </div>
 
     <div class="body">
-        <h2>Descubrimiento para Ti</h2>
-        <p>Encontramos un lugar que coincide con tus intereses.</p>
+        <p class="greeting">Hola,</p>
+
+        <p class="intro-text">Basándonos en tus preferencias, hemos identificado un lugar perfecto para ti. Creemos que te encantará explorarlo.</p>
 
         @if($place->cover)
-        <img class="cover-image" src="{{ url('/api/files/' . $place->cover) }}" alt="{{ $place->name }}" />
+        <img src="{{ asset('storage/' . $place->cover) }}" alt="{{ $place->name }}" class="place-image" />
         @endif
 
-        <div class="place-details">
-            <h3>{{ $place->name }}</h3>
-
+        <div class="place-info">
+            <p class="place-name">{{ $place->name }}</p>
+            
             @if($place->slogan)
-            <p class="slogan">"{{ $place->slogan }}"</p>
+            <p class="place-slogan">"{{ $place->slogan }}"</p>
             @endif
 
-            <p class="desc">{{ Illuminate\Support\Str::limit($place->description, 200) }}</p>
+            <p class="place-description">{{ Illuminate\Support\Str::limit($place->description, 300) }}</p>
 
             @if(count($matched) > 0)
             <div class="categories">
+                <span class="category-label">Categorías</span>
                 @foreach($matched as $category)
-                <span class="badge">{{ $category }}</span>
+                <span class="category-badge">{{ $category }}</span>
                 @endforeach
             </div>
             @endif
 
-            <div class="location">
-                <strong>Ubicación</strong> 
-                {{ $place->localization }}
+            <div class="location-info">
+                <span class="location-label">Ubicación:</span> {{ $place->localization }}
             </div>
         </div>
 
-        <div class="button-wrapper">
-            <a href="{{ $placeUrl }}" class="button">Explorar este sitio</a>
+        <div class="benefits-section">
+            <p class="benefits-title">Este sitio ofrece</p>
+            <ul class="benefits-list">
+                <li>Experiencias auténticas en la naturaleza</li>
+                <li>Información verificada y reseñas de usuarios</li>
+                <li>Oportunidades de aventura y relajación</li>
+            </ul>
         </div>
+
+        <center>
+            <a href="{{ $placeUrl }}" class="cta-button">Explorar sitio completo</a>
+        </center>
     </div>
 
-    <div class="footer">
-        <p>Recibiste este correo porque tienes notificaciones activas.</p>
-        <p style="margin-top: 8px;">© {{ date('Y') }} Conexión EcoRisaralda</p>
+    <div class="footer-section">
+        <p class="footer-text">Recibiste este correo porque tienes activadas las notificaciones de descubrimientos.</p>
+        <p class="footer-link"><a href="#" style="color: #10b981; text-decoration: underline;">Administrar preferencias</a></p>
+        <p class="footer-bottom">© 2026 Conexion EcoRisaralda. Todos los derechos reservados.<br>
+        Risaralda, Colombia</p>
     </div>
 </div>
 </body>
