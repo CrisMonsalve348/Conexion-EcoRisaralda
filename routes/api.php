@@ -266,6 +266,24 @@ Route::middleware('web')->group(function () {
         ], 401);
     });
 
+    Route::post('/email/verification-notification', function (Request $request) {
+        $request->validate(['email' => 'required|email']);
+        $user = \App\Models\User::where('email', $request->email)->first();
+
+        if (!$user) {
+            // Retorna un éxito genérico para evitar enumeración de cuentas
+            return response()->json(['message' => 'Enlace de verificación enviado']);
+        }
+
+        if ($user->hasVerifiedEmail()) {
+            return response()->json(['message' => 'El correo ya está verificado']);
+        }
+
+        $user->sendEmailVerificationNotification();
+
+        return response()->json(['message' => 'Enlace de verificación enviado']);
+    })->middleware('throttle:6,1');
+
     Route::post('/forgot-password', function (Request $request) {
         if (Auth::guard('web')->check() || Auth::guard('sanctum')->check()) {
             return response()->json(['message' => 'Ya has iniciado sesión.'], 403);
@@ -535,16 +553,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             ]);
         });
 
-        // Reenviar verificación de email
-        Route::post('/email/verification-notification', function (Request $request) {
-            if ($request->user()->hasVerifiedEmail()) {
-                return response()->json(['message' => 'El correo ya está verificado']);
-            }
 
-            $request->user()->sendEmailVerificationNotification();
-
-            return response()->json(['message' => 'Enlace de verificación enviado']);
-        })->middleware('throttle:6,1');
 
         Route::get('/user', function (Request $request) {
             $user = $request->user();
