@@ -25,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Forzar idioma español en toda la app
+        \Illuminate\Support\Facades\App::setLocale('es');
+
         // Fix for older MySQL versions with key length limit
         Schema::defaultStringLength(191);
 
