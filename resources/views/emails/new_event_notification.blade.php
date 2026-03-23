@@ -9,46 +9,93 @@ $placeUrl = $frontendUrl . '/turista/sitio/' . $place->id . '#evento-' . $event-
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 40px 20px; background-color: #ffffff; }
-        .container { max-width: 500px; margin: 0 auto; background-color: #ffffff; }
-        .header { text-align: center; margin-bottom: 32px; }
-        .logo { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
-        .logo-icon { width: 32px; height: 32px; }
-        .logo-text { font-size: 18px; font-weight: 700; color: #1e293b; letter-spacing: -0.3px; text-align: left; line-height: 1.2; }
-        .logo-sub { font-size: 13px; color: #16a34a; font-weight: 600; display: block; }
-        .divider { width: 40px; height: 2px; background-color: #e2e8f0; margin: 24px auto 0; }
-        .body h2 { margin: 0 0 16px; color: #1e293b; font-size: 20px; font-weight: 700; text-align: center; }
-        .body > p:first-of-type { color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 32px; text-align: center; }
-        
-        .event-details { border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; padding: 24px 0; margin-bottom: 24px; text-align: center; }
-        .place-name { margin: 0 0 8px; color: #16a34a; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-        .event-details h3 { margin: 0 0 12px; color: #1e293b; font-size: 18px; font-weight: 700; }
-        .desc { margin: 0 0 20px; color: #475569; font-size: 14px; line-height: 1.6; }
-        
-        .info-row { margin-bottom: 8px; font-size: 14px; }
-        .info-row:last-child { margin-bottom: 0; }
-        .info-label { color: #94a3b8; font-weight: 500; }
-        .info-value { color: #1e293b; font-weight: 500; }
-        
-        .button-wrapper { text-align: center; margin: 32px 0; }
-        .button { display: inline-block; background-color: #16a34a; color: #ffffff; text-decoration: none; border-radius: 8px; padding: 12px 28px; font-weight: 600; font-size: 14px; letter-spacing: 0.2px; transition: background-color 0.2s; }
-        .footer { margin-top: 32px; padding-top: 24px; border-top: 1px solid #f1f5f9; text-align: center; }
-        .footer p { margin: 0; color: #94a3b8; font-size: 12px; line-height: 1.5; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Albert Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background-color: #f8fafc; }
+        .container { max-width: 650px; margin: 0 auto; background: linear-gradient(135deg, #f0fdf4 0%, #ecfdf5 100%); }
+        .logo-section { background-color: #ffffff; padding: 32px; text-align: center; border-bottom: 3px solid #10b981; }
+        .logo-text { color: #10b981; font-size: 16px; font-weight: 700; letter-spacing: 1px; }
+        .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); padding: 60px 32px; text-align: center; }
+        .header h1 { margin: 0; color: #ffffff; font-size: 36px; font-weight: 700; line-height: 1.2; }
+        .body { padding: 48px 32px; }
+        .greeting { color: #1e293b; font-size: 15px; line-height: 1.6; margin: 0 0 24px 0; }
+        .intro-text { color: #475569; font-size: 15px; line-height: 1.7; margin: 0 0 28px 0; }
+        .event-section { background-color: #ffffff; border-left: 5px solid #10b981; padding: 24px; margin: 28px 0; border-radius: 8px; }
+        .event-title { color: #1e293b; font-size: 20px; font-weight: 700; margin: 0 0 8px 0; }
+        .event-site { color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; margin: 0 0 16px 0; }
+        .event-description { color: #475569; font-size: 15px; line-height: 1.6; margin: 0 0 20px 0; }
+        .event-details { color: #475569; font-size: 14px; line-height: 1.8; }
+        .event-details p { margin: 0 0 8px 0; }
+        strong { color: #10b981; font-weight: 600; }
+        .benefits-section { margin: 32px 0; }
+        .benefits-title { color: #1e293b; font-size: 16px; font-weight: 700; margin: 0 0 16px 0; }
+        .benefits-list { list-style: none; }
+        .benefits-list li { color: #475569; font-size: 15px; margin: 0 0 12px 0; padding-left: 24px; position: relative; }
+        .benefits-list li:before { content: "✓"; position: absolute; left: 0; color: #10b981; font-weight: 700; }
+        .cta-button { display: inline-block; background-color: #10b981; color: #ffffff; text-decoration: none; border-radius: 8px; padding: 14px 40px; font-weight: 600; font-size: 15px; margin: 28px 0; }
+        .footer-section { padding: 40px 32px; text-align: center; }
+        .footer-text { color: #64748b; font-size: 14px; line-height: 1.6; margin: 0 0 16px 0; }
+        .footer-link { color: #10b981; text-decoration: underline; }
+        .footer-bottom { color: #94a3b8; font-size: 12px; line-height: 1.6; margin: 24px 0 0 0; padding-top: 24px; border-top: 1px solid #e2e8f0; }
     </style>
 </head>
 <body>
 <div class="container">
+    <div class="logo-section">
+        <p class="logo-text">Conexion EcoRisaralda</p>
+    </div>
+
     <div class="header">
-        <a href="{{ $frontendUrl }}" class="logo">
-            <img src="{{ $logoUrl }}" alt="Logo" class="logo-icon" />
-            <div class="logo-text">Conexión <span class="logo-sub">EcoRisaralda</span></div>
-        </a>
-        <div class="divider"></div>
+        <h1>Nuevo evento disponible</h1>
     </div>
 
     <div class="body">
-        <h2>Nuevo Evento</h2>
-        <p>Hola {{ $user->name }}, hemos encontrado un evento que te puede interesar.</p>
+        <p class="greeting">Hola {{ $user->name }},</p>
+
+        <p class="intro-text">Te comunicamos que se ha publicado un nuevo evento en uno de tus sitios favoritos. Este podría ser de tu interés.</p>
+
+        <div class="event-section">
+            <p class="event-site">Sitio: {{ $place->name }}</p>
+            <p class="event-title">{{ $event->title }}</p>
+            
+            @if($event->description)
+            <p class="event-description">{{ $event->description }}</p>
+            @endif
+
+            <div class="event-details">
+                <p><strong>Inicio:</strong> {{ $event->starts_at->format('d \\d\\e M \\d\\e Y \\a \\l\\a\\s H:i') }}</p>
+                @if($event->ends_at)
+                <p><strong>Fin:</strong> {{ $event->ends_at->format('d \\d\\e M \\d\\e Y \\a \\l\\a\\s H:i') }}</p>
+                @endif
+            </div>
+        </div>
+
+        <div class="benefits-section">
+            <p class="benefits-title">¿Por qué deberías estar atento a este evento?</p>
+            <ul class="benefits-list">
+                <li>Experiencias únicas en la naturaleza</li>
+                <li>Actividades verificadas y seguras</li>
+                <li>Información detallada y reseñas de otros usuarios</li>
+            </ul>
+        </div>
+
+        <center>
+            <a href="{{ config('app.frontend_url', config('app.url')) }}/turista/sitio/{{ $place->id }}#evento-{{ $event->id }}" class="cta-button">
+                Ver evento completo
+            </a>
+        </center>
+
+        <p class="intro-text">No te pierdas esta oportunidad de vivir una aventura en la provincia de Risaralda.</p>
+    </div>
+
+    <div class="footer-section">
+        <p class="footer-text">Recibiste este correo porque tienes activadas las notificaciones en Conexion EcoRisaralda.</p>
+        <p class="footer-link"><a href="#" style="color: #10b981; text-decoration: underline;">Administrar preferencias de notificaciones</a></p>
+        <p class="footer-bottom">© 2026 Conexion EcoRisaralda. Todos los derechos reservados.<br>
+        Risaralda, Colombia</p>
+    </div>
+</div>
+</body>
+</html>
 
         <div class="event-details">
             <p class="place-name">{{ $place->name }}</p>
