@@ -1,9 +1,9 @@
 @php
-$frontend = rtrim(config('app.frontend_url', config('app.url')), '/');
-$placeUrl = $frontend . '/turista/sitio/' . $place->id;
+$frontendUrl = rtrim(config('app.frontend_url', config('app.url')), '/');
+$logoUrl = $frontendUrl . '/images/Pagina_inicio/nature-svgrepo-com.svg';
+$placeUrl = $frontendUrl . '/turista/sitio/' . $place->id;
 $matched = is_array($matchedPreferences ?? null) ? $matchedPreferences : [];
 @endphp
-
 <!DOCTYPE html>
 <html>
 <head>

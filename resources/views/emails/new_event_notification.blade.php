@@ -1,3 +1,8 @@
+@php
+$frontendUrl = rtrim(config('app.frontend_url', config('app.url')), '/');
+$logoUrl = $frontendUrl . '/images/Pagina_inicio/nature-svgrepo-com.svg';
+$placeUrl = $frontendUrl . '/turista/sitio/' . $place->id . '#evento-' . $event->id;
+@endphp
 <!DOCTYPE html>
 <html>
 <head>
@@ -92,33 +97,34 @@
 </body>
 </html>
 
-        <div class="card">
-            <p class="label">Sitio: {{ $place->name }}</p>
+        <div class="event-details">
+            <p class="place-name">{{ $place->name }}</p>
             <h3>{{ $event->title }}</h3>
-            
+
             @if($event->description)
-            <p>{{ $event->description }}</p>
+            <p class="desc">{{ $event->description }}</p>
             @endif
-            
-            <div class="info">
-                <p><strong>Inicio:</strong> {{ $event->starts_at->format('d \\d\\e M \\d\\e Y \\a \\l\\a\\s H:i') }}</p>
-                @if($event->ends_at)
-                <p><strong>Fin:</strong> {{ $event->ends_at->format('d \\d\\e M \\d\\e Y \\a \\l\\a\\s H:i') }}</p>
-                @endif
+
+            <div class="info-row">
+                <span class="info-label">Inicio:</span>
+                <span class="info-value">{{ $event->starts_at->format('d/m/Y \a \l\a\s H:i') }}</span>
             </div>
+            @if($event->ends_at)
+            <div class="info-row">
+                <span class="info-label">Fin:</span>
+                <span class="info-value">{{ $event->ends_at->format('d/m/Y \a \l\a\s H:i') }}</span>
+            </div>
+            @endif
         </div>
 
         <div class="button-wrapper">
-            <a href="{{ config('app.frontend_url', config('app.url')) }}/turista/sitio/{{ $place->id }}#evento-{{ $event->id }}" class="button">
-                Ver evento completo
-            </a>
+            <a href="{{ $placeUrl }}" class="button">Ver evento completo</a>
         </div>
-
-        <p class="footer-note">Recibiste este correo porque tienes activadas las notificaciones en Conexion EcoRisaralda.</p>
     </div>
 
     <div class="footer">
-        <p>© 2026 Conexion EcoRisaralda. Todos los derechos reservados.</p>
+        <p>Recibiste este correo porque tienes notificaciones activas.</p>
+        <p style="margin-top: 8px;">© {{ date('Y') }} Conexión EcoRisaralda</p>
     </div>
 </div>
 </body>

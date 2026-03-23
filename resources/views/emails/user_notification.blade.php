@@ -1,3 +1,7 @@
+@php
+$frontendUrl = rtrim(config('app.frontend_url', config('app.url')), '/');
+$logoUrl = $frontendUrl . '/images/Pagina_inicio/nature-svgrepo-com.svg';
+@endphp
 <!DOCTYPE html>
 <html>
 <head>
