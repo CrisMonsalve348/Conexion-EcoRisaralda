@@ -166,7 +166,7 @@ Route::middleware('web')->group(function () {
         
         $data = $request->validate([
             'name' => 'required|string|min:2|max:50',
-            'last_name' => 'nullable|string|min:2|max:50',
+            'last_name' => 'required|string|min:2|max:50',
             'email' => [
                 'required',
                 'email',
@@ -195,6 +195,7 @@ Route::middleware('web')->group(function () {
             'password.regex' => 'La contraseña debe incluir al menos una mayúscula, una minúscula y un dígito',
             'name.min' => 'El nombre debe tener al menos 2 caracteres',
             'name.max' => 'El nombre no debe tener más de 50 caracteres',
+            'last_name.required' => 'El apellido es obligatorio',
             'last_name.min' => 'El apellido debe tener al menos 2 caracteres',
             'last_name.max' => 'El apellido no debe tener más de 50 caracteres',
         ]);
@@ -205,7 +206,7 @@ Route::middleware('web')->group(function () {
 
         $user = User::create([
             'name' => $data['name'],
-            'last_name' => $data['last_name'] ?? null,
+            'last_name' => $data['last_name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'role' => $role,
