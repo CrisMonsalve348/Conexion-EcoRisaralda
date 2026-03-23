@@ -180,7 +180,7 @@ Route::middleware('web')->group(function () {
                 'required',
                 'string',
                 'min:8',
-                'max:15',
+                'max:64',
                 'regex:/[a-z]/',      // al menos una minúscula
                 'regex:/[A-Z]/',      // al menos una mayúscula
                 'regex:/[0-9]/',      // al menos un dígito
@@ -190,8 +190,8 @@ Route::middleware('web')->group(function () {
             'birth_date' => 'nullable|date|before:-16 years',
         ], [
             'birth_date.before' => 'Debes ser mayor de 16 años para registrarte',
-            'password.min' => 'La contraseña debe tener entre 8 y 15 caracteres',
-            'password.max' => 'La contraseña debe tener entre 8 y 15 caracteres',
+            'password.min' => 'La contraseña debe tener entre 8 y 64 caracteres',
+            'password.max' => 'La contraseña debe tener entre 8 y 64 caracteres',
             'password.regex' => 'La contraseña debe incluir al menos una mayúscula, una minúscula y un dígito',
             'name.min' => 'El nombre debe tener al menos 2 caracteres',
             'name.max' => 'El nombre no debe tener más de 50 caracteres',
@@ -465,7 +465,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
             try {
                 // Validar primero
                 $validated = $request->validate([
-                    'avatar' => 'required|image|mimes:jpeg,png,jpg,webp,gif|max:2048',
+                    'avatar' => 'required|image|mimes:jpeg,png,jpg,webp,gif,heic,heif|max:2048',
                 ]);
 
                 $user = $request->user();
