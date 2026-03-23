@@ -476,10 +476,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                 // Eliminar imagen anterior
                 if ($user->image && $user->image !== 'null') {
                     try {
-                        $publicPath = public_path($user->image);
-                        if (file_exists($publicPath)) {
-                            @unlink($publicPath);
-                        }
+                        Storage::disk('public')->delete($user->image);
                     } catch (\Exception $e) {
                         // Ignorar error al eliminar
                     }
