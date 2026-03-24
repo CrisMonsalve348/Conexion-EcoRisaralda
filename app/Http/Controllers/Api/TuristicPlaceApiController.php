@@ -145,11 +145,11 @@ class TuristicPlaceApiController extends Controller
             'contacto' => 'nullable|string|max:200',
             'dias_abiertos' => 'nullable',
             'estado_apertura' => 'nullable|in:open,closed_temporarily,open_with_restrictions',
-            'portada' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
-            'clima_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
-            'caracteristicas_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
-            'flora_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
-            'infraestructura_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'portada' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'clima_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'caracteristicas_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'flora_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'infraestructura_img' => 'required|image|mimes:jpg,jpeg,png,webp|max:5120',
         ], [
             'nombre.required' => 'El nombre del sitio es obligatorio.',
             'nombre.min' => 'El nombre del sitio debe tener al menos 5 caracteres.',
@@ -185,23 +185,23 @@ class TuristicPlaceApiController extends Controller
             'portada.required' => 'La imagen de portada es obligatoria.',
             'portada.image' => 'El archivo de portada debe ser una imagen.',
             'portada.mimes' => 'La imagen de portada debe ser de tipo: jpg, jpeg, png o webp.',
-            'portada.max' => 'La imagen de portada no debe pesar más de 4MB.',
+            'portada.max' => 'La imagen de portada no debe pesar más de 5MB.',
             'clima_img.required' => 'La imagen del clima es obligatoria.',
             'clima_img.image' => 'El archivo del clima debe ser una imagen.',
             'clima_img.mimes' => 'La imagen del clima debe ser de tipo: jpg, jpeg, png o webp.',
-            'clima_img.max' => 'La imagen del clima no debe pesar más de 4MB.',
+            'clima_img.max' => 'La imagen del clima no debe pesar más de 5MB.',
             'caracteristicas_img.required' => 'La imagen de características es obligatoria.',
             'caracteristicas_img.image' => 'El archivo de características debe ser una imagen.',
             'caracteristicas_img.mimes' => 'La imagen de características debe ser de tipo: jpg, jpeg, png o webp.',
-            'caracteristicas_img.max' => 'La imagen de características no debe pesar más de 4MB.',
+            'caracteristicas_img.max' => 'La imagen de características no debe pesar más de 5MB.',
             'flora_img.required' => 'La imagen de flora y fauna es obligatoria.',
             'flora_img.image' => 'El archivo de flora y fauna debe ser una imagen.',
             'flora_img.mimes' => 'La imagen de flora y fauna debe ser de tipo: jpg, jpeg, png o webp.',
-            'flora_img.max' => 'La imagen de flora y fauna no debe pesar más de 4MB.',
+            'flora_img.max' => 'La imagen de flora y fauna no debe pesar más de 5MB.',
             'infraestructura_img.required' => 'La imagen de infraestructura es obligatoria.',
             'infraestructura_img.image' => 'El archivo de infraestructura debe ser una imagen.',
             'infraestructura_img.mimes' => 'La imagen de infraestructura debe ser de tipo: jpg, jpeg, png o webp.',
-            'infraestructura_img.max' => 'La imagen de infraestructura no debe pesar más de 4MB.',
+            'infraestructura_img.max' => 'La imagen de infraestructura no debe pesar más de 5MB.',
         ]);
 
         $openDays = null;
@@ -216,11 +216,11 @@ class TuristicPlaceApiController extends Controller
         }
 
         // Store images
-        $portada_path = $request->file('portada')->store('portadas', 'public');
-        $clima_path = $request->file('clima_img')->store('clima', 'public');
-        $caracteristicas_path = $request->file('caracteristicas_img')->store('caracteristicas', 'public');
-        $flora_path = $request->file('flora_img')->store('flora', 'public');
-        $infraestructura_path = $request->file('infraestructura_img')->store('infraestructura', 'public');
+        $portada_path = $this->processAndStoreImage($request->file('portada'), 'portadas');
+        $clima_path = $this->processAndStoreImage($request->file('clima_img'), 'clima');
+        $caracteristicas_path = $this->processAndStoreImage($request->file('caracteristicas_img'), 'caracteristicas');
+        $flora_path = $this->processAndStoreImage($request->file('flora_img'), 'flora');
+        $infraestructura_path = $this->processAndStoreImage($request->file('infraestructura_img'), 'infraestructura');
 
         // Create place
         $place = TuristicPlace::create([
@@ -306,11 +306,11 @@ class TuristicPlaceApiController extends Controller
             'dias_abiertos' => 'nullable',
             'estado_apertura' => 'nullable|in:open,closed_temporarily,open_with_restrictions',
             'opening_status' => 'nullable|in:open,closed_temporarily,open_with_restrictions',
-            'portada' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
-            'clima_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
-            'caracteristicas_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
-            'flora_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
-            'infraestructura_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:4096',
+            'portada' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'clima_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'caracteristicas_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'flora_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'infraestructura_img' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ], [
             'nombre.required' => 'El nombre del sitio es obligatorio.',
             'nombre.min' => 'El nombre del sitio debe tener al menos 5 caracteres.',
@@ -345,19 +345,19 @@ class TuristicPlaceApiController extends Controller
             'recomendacion.max' => 'Las recomendaciones no deben tener más de 600 caracteres.',
             'portada.image' => 'El archivo de portada debe ser una imagen.',
             'portada.mimes' => 'La imagen de portada debe ser de tipo: jpg, jpeg, png o webp.',
-            'portada.max' => 'La imagen de portada no debe pesar más de 4MB.',
+            'portada.max' => 'La imagen de portada no debe pesar más de 5MB.',
             'clima_img.image' => 'El archivo del clima debe ser una imagen.',
             'clima_img.mimes' => 'La imagen del clima debe ser de tipo: jpg, jpeg, png o webp.',
-            'clima_img.max' => 'La imagen del clima no debe pesar más de 4MB.',
+            'clima_img.max' => 'La imagen del clima no debe pesar más de 5MB.',
             'caracteristicas_img.image' => 'El archivo de características debe ser una imagen.',
             'caracteristicas_img.mimes' => 'La imagen de características debe ser de tipo: jpg, jpeg, png o webp.',
-            'caracteristicas_img.max' => 'La imagen de características no debe pesar más de 4MB.',
+            'caracteristicas_img.max' => 'La imagen de características no debe pesar más de 5MB.',
             'flora_img.image' => 'El archivo de flora y fauna debe ser una imagen.',
             'flora_img.mimes' => 'La imagen de flora y fauna debe ser de tipo: jpg, jpeg, png o webp.',
-            'flora_img.max' => 'La imagen de flora y fauna no debe pesar más de 4MB.',
+            'flora_img.max' => 'La imagen de flora y fauna no debe pesar más de 5MB.',
             'infraestructura_img.image' => 'El archivo de infraestructura debe ser una imagen.',
             'infraestructura_img.mimes' => 'La imagen de infraestructura debe ser de tipo: jpg, jpeg, png o webp.',
-            'infraestructura_img.max' => 'La imagen de infraestructura no debe pesar más de 4MB.',
+            'infraestructura_img.max' => 'La imagen de infraestructura no debe pesar más de 5MB.',
         ]);
 
         $openDays = null;
@@ -438,23 +438,23 @@ class TuristicPlaceApiController extends Controller
         // Update images if provided
         if ($request->hasFile('portada')) {
             if ($place->cover) Storage::disk('public')->delete($place->cover);
-            $place->cover = $request->file('portada')->store('portadas', 'public');
+            $place->cover = $this->processAndStoreImage($request->file('portada'), 'portadas');
         }
         if ($request->hasFile('clima_img')) {
             if ($place->Weather_img) Storage::disk('public')->delete($place->Weather_img);
-            $place->Weather_img = $request->file('clima_img')->store('clima', 'public');
+            $place->Weather_img = $this->processAndStoreImage($request->file('clima_img'), 'clima');
         }
         if ($request->hasFile('caracteristicas_img')) {
             if ($place->features_img) Storage::disk('public')->delete($place->features_img);
-            $place->features_img = $request->file('caracteristicas_img')->store('caracteristicas', 'public');
+            $place->features_img = $this->processAndStoreImage($request->file('caracteristicas_img'), 'caracteristicas');
         }
         if ($request->hasFile('flora_img')) {
             if ($place->flora_img) Storage::disk('public')->delete($place->flora_img);
-            $place->flora_img = $request->file('flora_img')->store('flora', 'public');
+            $place->flora_img = $this->processAndStoreImage($request->file('flora_img'), 'flora');
         }
         if ($request->hasFile('infraestructura_img')) {
             if ($place->estructure_img) Storage::disk('public')->delete($place->estructure_img);
-            $place->estructure_img = $request->file('infraestructura_img')->store('infraestructura', 'public');
+            $place->estructure_img = $this->processAndStoreImage($request->file('infraestructura_img'), 'infraestructura');
         }
 
         if ($request->hasFile('portada')
@@ -541,5 +541,19 @@ class TuristicPlaceApiController extends Controller
         }
 
         return response()->json($places);
+    }
+    /**
+     * Helper to process image with Intervention Image and store as WebP
+     */
+    private function processAndStoreImage($file, $pathPrefix)
+    {
+        if (!$file) return null;
+        $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+        $image = $manager->read($file);
+        $encoded = $image->toWebp(80);
+        $filename = uniqid() . '.webp';
+        $fullPath = $pathPrefix . '/' . $filename;
+        \Illuminate\Support\Facades\Storage::disk('public')->put($fullPath, $encoded->toString());
+        return $fullPath;
     }
 }

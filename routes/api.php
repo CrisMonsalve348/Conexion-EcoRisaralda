@@ -746,7 +746,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                     'description' => 'nullable|string|max:1000',
                     'starts_at' => 'required|date',
                     'ends_at' => 'nullable|date',
-                    'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,svg,webp|max:4096',
+                    'image' => 'nullable|image|mimes:jpg,jpeg,png,gif,svg,webp|max:5120',
                 ]);
                 $event->title = $data['title'];
                 $event->description = $data['description'] ?? '';
@@ -757,7 +757,14 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                     if ($event->image) {
                         Storage::disk('public')->delete($event->image);
                     }
-                    $event->image = $request->file('image')->store('eventos', 'public');
+                    $file = $request->file('image');
+                    $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                    $image = $manager->read($file);
+                    $encoded = $image->toWebp(80);
+                    $filename = uniqid() . '.webp';
+                    $fullPath = 'eventos/' . $filename;
+                    Storage::disk('public')->put($fullPath, $encoded->toString());
+                    $event->image = $fullPath;
                 }
                 $event->save();
                 return response()->json(['event' => $event, 'message' => 'Evento actualizado exitosamente']);
@@ -790,7 +797,7 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                         'description' => 'nullable|string|max:1000',
                         'starts_at' => 'required|date',
                         'ends_at' => 'nullable|date',
-                        'image' => 'required|image|mimes:jpg,jpeg,png,gif,svg,webp|max:4096',
+                        'image' => 'required|image|mimes:jpg,jpeg,png,gif,svg,webp|max:5120',
                     ]);
                     $event = new PlaceEvent();
                     $event->place_id = $place->id;
@@ -799,7 +806,16 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                     $event->starts_at = $data['starts_at'];
                     $event->ends_at = $data['ends_at'] ?? null;
                     $event->approval_status = 'pending';
-                    $event->image = $request->file('image')->store('eventos', 'public');
+                    
+                    $file = $request->file('image');
+                    $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                    $image = $manager->read($file);
+                    $encoded = $image->toWebp(80);
+                    $filename = uniqid() . '.webp';
+                    $fullPath = 'eventos/' . $filename;
+                    Storage::disk('public')->put($fullPath, $encoded->toString());
+                    $event->image = $fullPath;
+                    
                     $event->save();
                     return response()->json(['event' => $event, 'message' => 'Evento creado exitosamente']);
                 });

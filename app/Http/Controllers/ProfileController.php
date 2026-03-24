@@ -25,30 +25,37 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-public function update(ProfileUpdateRequest $request): RedirectResponse
-{
-    $user = $request->user();
+    public function update(ProfileUpdateRequest $request): RedirectResponse
+    {
+        $user = $request->user();
 
-    $user->fill($request->validated());
+        $user->fill($request->validated());
 
-    if ($user->isDirty('email')) {
-        $user->email_verified_at = null;
-    }
-
-    if ($request->hasFile('image')) {
-
-        if ($user->image && $user->image !== 'null') {
-            Storage::disk('public')->delete($user->image);
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        $path = $request->file('image')->store('profile_images', 'public');
-        $user->image = $path;
+        if ($request->hasFile('image')) {
+
+            if ($user->image && $user->image !== 'null') {
+                Storage::disk('public')->delete($user->image);
+            }
+
+            $file = $request->file('image');
+            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+            $image = $manager->read($file);
+            $encoded = $image->toWebp(80);
+            $filename = uniqid() . '.webp';
+            $path = 'profile_images/' . $filename;
+            Storage::disk('public')->put($path, $encoded->toString());
+            
+            $user->image = $path;
+        }
+
+        $user->save();
+
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
-
-    $user->save();
-
-    return Redirect::route('profile.edit')->with('status', 'profile-updated');
-}
     /**
      * Delete the user's account.
      */
