@@ -54,8 +54,7 @@
             "@php artisan test"
         ],
         "post-autoload-dump": [
-            "sed -i 's/client_max_body_size 1m;/client_max_body_size 25M;/gI' /assets/nginx.conf 2>/dev/null || true",
-            "sed -i 's/client_max_body_size 100m;/client_max_body_size 25M;/gI' /assets/nginx.conf 2>/dev/null || true",
+            "sed -i 's/http {/http {\\n    client_max_body_size 25M;/g' /assets/nginx.conf 2>/dev/null || true",
             "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
             "@php artisan package:discover --ansi"
         ],
