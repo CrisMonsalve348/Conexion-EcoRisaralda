@@ -31,7 +31,7 @@ Route::get('/preferencias', [preferenceController::class, 'mostrardatosdeprefere
     ->name('preferencias');
 Route::post('/preferencias', [preferenceController::class, 'validarpreferencias'])
     ->middleware(['auth', 'verified'])
-    ->name('preferencias');
+    ->name('preferencias.guardar');
 
 //crear sitio ecoturistico
 Route::get('/Crear_sitio', [TuristicPlaceController::class, 'crear'])
@@ -64,7 +64,7 @@ Route::put('/Editar_sitio/{id}', [TuristicPlaceController::class, 'sitioactualiz
 //visualizar sitio ecoturistico
 Route::get('/Sitio/{id}', [TuristicPlaceController::class, 'ver'])->name('sitio_ecoturistico');
 //publicar comentario o reseña
-Route::post('/Sitio/{id}', [ReviewsController::class, 'publicarreseña'])->name('sitio_ecoturistico');
+Route::post('/Sitio/{id}', [ReviewsController::class, 'publicarreseña'])->name('sitio_ecoturistico.comentar');
 
 //eliminar reseña
 Route::delete('/Sitio/{id}', [ReviewsController::class, 'eliminarreseña'])->name('eliminar_reseña');
@@ -85,6 +85,6 @@ Route::get('/Coleccion', [TuristicPlaceController::class, 'coleccion'])
 //panel de control admin
 Route::get('/panel_control', [AdminFunctionController::class, 'index'])
     ->middleware(['auth', 'role:admin'])
-    ->name('Modificar_sitio');
+    ->name('admin.panel_control');
 
 require __DIR__.'/auth.php';
