@@ -172,34 +172,87 @@ proyecto/
    
 `npm install`
 
-### Configuración del entorno
+### Configuración del entorno (.env)
    
 6. Crea el archivo `.env`:
 - Copia el contenido de `.env.example`
 - Pégalo en un nuevo archivo llamado `.env`
   
-7. Genera la clave de la aplicación:
-   
-``php artisan key:generate``
+**Variables de entorno del Backend**
 
-### Configuración de la base de datos
-
-El proyecto utiliza base de datos (MySQL).
-
-1. Crea una base de datos en MySQL, por ejemplo:
-   
-`conexion_ecorisaralda`
-
-2. Configura el archivo `.env`:
-```
-APP_NAME=ConexionEcoRisaralda
+**Aplicación**
+````
+APP_NAME=Laravel
 APP_ENV=local
 APP_KEY=
 APP_DEBUG=true
 APP_URL=http://localhost
-
+ASSET_URL=http://localhost
 FRONTEND_URL=http://localhost:5173
+FRONTEND_URL_ALT=http://127.0.0.1:5173
+````
+---------------------------------------------------------------------
+| Variable          |	Descripción                                  |
+|-------------------|------------------------------------------------|
+| APP_NAME          |	Nombre del proyecto                          |
+| APP_ENV           |	Entorno (local, production)                  |
+| APP_KEY           |	Clave de seguridad (se genera con artisan)   |
+| APP_DEBUG         |	Muestra errores en desarrollo                |
+| APP_URL           |	URL del backend                              |
+| ASSET_URL         |	URL de recursos                              |
+| FRONTEND_URL      |	URL principal del frontend                   |
+| FRONTEND_URL_ALT  |	URL alternativa                              |
+----------------------------------------------------------------------
 
+**Localización**
+````
+APP_LOCALE=en
+APP_FALLBACK_LOCALE=en
+APP_FAKER_LOCALE=en_US
+````
+
+---------------------------------------------------------
+| Variable              |	Descripción                  |
+|-----------------------|--------------------------------|
+| APP_LOCALE            |	Idioma principal             |
+| APP_FALLBACK_LOCALE   |	Idioma alternativo           |
+| APP_FAKER_LOCALE      |	Idioma para datos de prueba  |
+---------------------------------------------------------
+
+**Mantenimiento**
+
+``APP_MAINTENANCE_DRIVER=file``
+------------------------------------------------------------
+| Variable	             |  Descripción                     |
+|------------------------|----------------------------------|
+| APP_MAINTENANCE_DRIVER |	Controla el modo mantenimiento  |
+------------------------------------------------------------
+
+**Seguridad**
+
+``BCRYPT_ROUNDS=12``
+--------------------------------------------
+| Variable       |	Descripción            |
+|----------------|-------------------------|
+| BCRYPT_ROUNDS  |	Nivel de encriptación  |
+--------------------------------------------
+
+**Logs**
+````
+LOG_CHANNEL=stack
+LOG_STACK=single
+LOG_LEVEL=debug
+````
+---------------------------------------------
+| Variable     |	Descripción             |
+|--------------|------------------------------
+| LOG_CHANNEL  |	Canal de logs            |
+| LOG_STACK    |	Tipo de almacenamiento   |
+| LOG_LEVEL    |	Nivel de detalle         |
+----------------------------------------------
+
+**Base de datos**
+````
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
@@ -207,39 +260,174 @@ DB_DATABASE=conexion_ecorisaralda
 DB_USERNAME=root
 DB_PASSWORD=
 ````
+-----------------------------------------------------
+| Variable        | 	Descripción                 |
+|-----------------|---------------------------------|
+| DB_CONNECTION   |	Tipo de BD (mysql, sqlite)      |
+| DB_HOST         |	Servidor                        |
+| DB_PORT         |	Puerto                          |
+| DB_DATABASE     |	Nombre de BD                    |
+| DB_USERNAME     |	Usuario                         |
+| DB_PASSWORD     |	Contraseña                      |
+-----------------------------------------------------
 
-3. Ejecuta las migraciones y seeders:
-   
-`php artisan migrate:fresh --seed`
+**Sesiones**
+````
+SESSION_DRIVER=database
+SESSION_LIFETIME=120
+SESSION_ENCRYPT=false
+SESSION_PATH=/
+SESSION_DOMAIN=null
+SESSION_SECURE_COOKIE=true
+````
+----------------------------------------------------
+| Variable               |	Descripción            |
+|------------------------|-------------------------|
+| SESSION_DRIVER         |	Tipo de sesión         |
+| SESSION_LIFETIME       |	Duración               |
+| SESSION_ENCRYPT        |	Encriptación           |
+| SESSION_PATH           |	Ruta                   |
+| SESSION_DOMAIN         |	Dominio                |
+| SESSION_SECURE_COOKIE  |	Seguridad de cookies   |
+----------------------------------------------------
 
-### Ejecutar el servidor backend
-`php artisan serve`
+ **Sistema**
+ ````
+BROADCAST_CONNECTION=log
+FILESYSTEM_DISK=local
+QUEUE_CONNECTION=database
+CACHE_STORE=database
+````
+-----------------------------------------
+| Variable	            | Descripción    |
+|-----------------------|----------------|
+| BROADCAST_CONNECTION  |	Eventos      |
+| FILESYSTEM_DISK       |	Archivos     |
+| QUEUE_CONNECTION      |	Cola         |
+| CACHE_STORE           |	Caché        |
+------------------------------------------
+
+**Redis / Memcached**
+
+````
+MEMCACHED_HOST=127.0.0.1
+
+REDIS_CLIENT=phpredis
+REDIS_HOST=127.0.0.1
+REDIS_PASSWORD=null
+REDIS_PORT=6379
+
+````
+-----------------------------------------
+| Variable       |	Descripción         |
+|----------------|----------------------|
+| REDIS_HOST     |	Servidor Redis      |
+| REDIS_PORT     |	Puerto              |
+| MEMCACHED_HOST |	Servidor Memcached  |
+-----------------------------------------
+
+**Correo**
+````
+MAIL_MAILER=log
+MAIL_HOST=127.0.0.1
+MAIL_PORT=2525
+MAIL_USERNAME=null
+MAIL_PASSWORD=null
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
+````
+------------------------------------------
+| Variable          |	Descripción      |
+|-------------------|--------------------|
+| MAIL_MAILER       |	Método de envío  |
+| MAIL_HOST         |	Servidor         |
+| MAIL_PORT         |	Puerto           |
+| MAIL_USERNAME     |	Usuario          |
+| MAIL_PASSWORD     |	Contraseña       |
+| MAIL_FROM_ADDRESS |	Correo remitente |
+| MAIL_FROM_NAME    |	Nombre remitente |
+------------------------------------------
+
+**AWS (Opcional)**
+````
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_DEFAULT_REGION=us-east-1
+AWS_BUCKET=
+````
+--------------------------------------------
+| Variable              |	Descripción    |
+|-----------------------|------------------|
+| AWS_ACCESS_KEY_ID     |	Clave AWS      |
+| AWS_SECRET_ACCESS_KEY |	Clave secreta  |
+| AWS_BUCKET            |	Almacenamiento |
+--------------------------------------------
+
+**Vite**
+
+``VITE_APP_NAME="${APP_NAME}"``
+------------------------------------------
+| Variable       |	Descripción          |
+|----------------|-----------------------|
+| VITE_APP_NAME  |	Nombre para frontend |
+------------------------------------------
+
+**Generar clave de la app**
+
+``php artisan key:generate``
+
+**Configuración de la base de datos**
+
+Crea una base de datos en MySQL, por ejemplo:
+
+``conexion_ecorisaralda``
+
+Ejecuta migraciones:
+
+``php artisan migrate:fresh --seed``
+
+### Ejecutar el backend**
+
+``php artisan serve``
+
 
 ### Instalación del Frontend
-1. Abre otra terminal y ubícate en la carpeta:
-   
-`cd frontend`
 
-2. Clona el repositorio:
-   
-`git clone https://github.com/chrisdacel/FrontEndEcoturismo.git`
+Ubícate en la carpeta:
 
-3. Entra a la carpeta del frontend:
-   
-`cd FrontEndEcoturismo`
+``cd frontend``
 
-4. Instala las dependencias:
-   
-`npm install`
+Clona el repositorio:
+
+``git clone https://github.com/chrisdacel/FrontEndEcoturismo.git``
+
+Entra al proyecto:
+
+``cd FrontEndEcoturismo``
+
+Instala dependencias:
+
+``npm install``
+
+### Configuración del Frontend (.env)
+
+Crea un archivo .env en el frontend:
+
+``VITE_API_URL=http://localhost:8000/api``
+
+------------------------------------
+| Variable     |	Descripción     |
+|--------------|--------------------|
+| VITE_API_URL |	URL del backend |
+-------------------------------------
 
 ### Ejecutar el frontend
-`npm run dev`
+``npm run dev``
 
-## Acceso al sistema
+**Acceso al sistema**
 
-Una vez ejecutado todo correctamente, accede desde tu navegador:
+``http://localhost:5173/``
 
-`http://localhost:5173/`
 
 ## Requisitos
 - PHP >= 8.x
@@ -247,6 +435,74 @@ Una vez ejecutado todo correctamente, accede desde tu navegador:
 - Node.js
 - MySQL
 - XAMPP o entorno similar
+
+## Configuración CORS
+El sistema Conexión EcoRisaralda implementa configuración CORS (Cross-Origin Resource Sharing) en el backend desarrollado con Laravel.
+
+Esto permite la comunicación segura entre el frontend (React) y el backend (API REST), incluso cuando están en diferentes dominios.
+
+**Proposito**
+
+CORS permite definir qué dominios pueden acceder al backend, evitando accesos no autorizados.
+
+En este proyecto se utiliza junto con Laravel Sanctum para autenticación basada en cookies.
+
+**Configuración principal**
+
+Rutas protegidas
+````
+'paths' => [
+    'api/*',
+    'sanctum/csrf-cookie',
+    'login',
+    'logout',
+    'user',
+],
+````
+Define los endpoints donde se aplican las reglas CORS.
+
+**Orígenes permitidos**
+````
+'allowed_origins' => [
+    env('FRONTEND_URL'),
+    env('FRONTEND_URL_ALT'),
+],
+````
+
+Permite el acceso desde el frontend.
+
+También puede configurarse con múltiples dominios usando:
+
+``CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173``
+
+**Métodos HTTP**
+``'allowed_methods' => ['*'],``
+
+Permite todos los métodos (GET, POST, PUT, DELETE).
+
+**Headers**
+
+``'allowed_headers' => ['*'],``
+
+Permite todos los encabezados HTTP.
+
+**Credenciales**
+
+``'supports_credentials' => true,``
+
+Permite enviar cookies y sesiones (necesario para Sanctum).
+
+**Cache**
+
+``'max_age' => 0,``
+
+No guarda en caché las solicitudes preflight.
+
+Esta configuración permite:
+
+- Comunicación segura entre frontend y backend
+- Autenticación con Laravel Sanctum
+- Compatibilidad entre entornos (local y producción)
 
 
 ## API REST - Documentación
@@ -626,6 +882,7 @@ No requieren login:
 - ``/api/recommendations``
 - ``/api/register``
 - ``/api/login``
+
 
 ## Autores
 
