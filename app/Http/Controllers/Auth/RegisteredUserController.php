@@ -59,6 +59,6 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('preferencias', absolute: false));
+        return redirect(route('preferencias_index', absolute: false));
     }
 }

@@ -28,7 +28,7 @@ Route::middleware('auth')->group(function () {
 
 Route::get('/preferencias', [preferenceController::class, 'mostrardatosdepreferencias'])
     ->middleware(['auth', 'verified'])
-    ->name('preferencias');
+    ->name('preferencias_index');
 Route::post('/preferencias', [preferenceController::class, 'validarpreferencias'])
     ->middleware(['auth', 'verified'])
     ->name('preferencias.guardar');
