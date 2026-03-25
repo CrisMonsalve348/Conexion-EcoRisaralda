@@ -530,7 +530,7 @@ Para facilitar la validación del sistema, se disponen los siguientes usuarios d
 --------------------------------------------------------------------
 | Rol       | Correo                    | Contraseña               |
 |-----------|---------------------------|--------------------------|
-| Admin     | admin@ecorisaralda.com    | admin@ecorisaralda.com   |
+| Admin     | admin@ecorisaralda.com    | ecorisaralda123          |
 | Operador  | test@example.com          | password123              |
 | Turista   | test2@example.com         | password123              |
 --------------------------------------------------------------------
