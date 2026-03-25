@@ -23,6 +23,7 @@ Desarrollar un sistema web que permita gestionar y promover el ecoturismo en Ris
 **Backend:**
 - PHP 8.2.12
 - Framework Laravel 12
+- ORM: Eloquent
   
 **Frontend:**
 - JavaScript
@@ -38,6 +39,8 @@ Desarrollar un sistema web que permita gestionar y promover el ecoturismo en Ris
 **Control de versiones:**
 - GitHub
 - Git
+
+
 
 ## Roles del sistema
 La plataforma EcoRisaralda ofrece diversas funcionalidades orientadas a mejorar la experiencia del usuario y la gestión del ecoturismo en la región.
