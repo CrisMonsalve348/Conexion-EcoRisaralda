@@ -222,6 +222,7 @@ APP_FAKER_LOCALE=en_US
 **Mantenimiento**
 
 ``APP_MAINTENANCE_DRIVER=file``
+
 ------------------------------------------------------------
 | Variable	             |  Descripción                     |
 |------------------------|----------------------------------|
@@ -231,6 +232,7 @@ APP_FAKER_LOCALE=en_US
 **Seguridad**
 
 ``BCRYPT_ROUNDS=12``
+
 --------------------------------------------
 | Variable       |	Descripción            |
 |----------------|-------------------------|
@@ -428,7 +430,6 @@ Crea un archivo .env en el frontend:
 
 ``http://localhost:5173/``
 
-
 ## Requisitos
 - PHP >= 8.x
 - Composer
@@ -504,6 +505,25 @@ Esta configuración permite:
 - Autenticación con Laravel Sanctum
 - Compatibilidad entre entornos (local y producción)
 
+
+## Ejecutar pruebas
+**Frontend (React)**
+
+``npm test``
+
+**Backend (Laravel)**
+
+``php artisan test``
+
+Estas pruebas incluyen validaciones de componentes, lógica de negocio y comunicación entre el cliente y el servidor.
+
+### Tipos de pruebas implementadas
+
+- Pruebas unitarias  
+- Pruebas de integración  
+- Pruebas de componentes  
+
+Para más información, consultar la sección de **Pruebas** en la documentación del proyecto.
 
 ## API REST - Documentación
 ### URL Base
