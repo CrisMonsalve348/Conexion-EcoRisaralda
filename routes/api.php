@@ -1003,6 +1003,14 @@ Route::middleware(['web', 'auth:sanctum'])->group(function () {
                 return response()->json(['event' => $event, 'message' => 'Evento rechazado']);
             });
 
+            // Volver a pendiente
+            Route::post('/events/{id}/pending', function ($id) {
+                $event = \App\Models\PlaceEvent::findOrFail($id);
+                $event->approval_status = 'pending';
+                $event->save();
+                return response()->json(['event' => $event, 'message' => 'Evento marcado como pendiente']);
+            });
+
             // Eliminar evento (admin)
             Route::delete('/events/{id}', function ($id) {
                 $event = \App\Models\PlaceEvent::findOrFail($id);

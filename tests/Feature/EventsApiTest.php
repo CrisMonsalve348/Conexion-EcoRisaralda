@@ -105,4 +105,72 @@ class EventsApiTest extends TestCase
         $response->assertStatus(200)
             ->assertJson(['message' => 'Evento eliminado exitosamente']);
     }
+
+    public function test_admin_can_approve_pending_event(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $operator = User::factory()->operator()->create();
+        $place = TuristicPlace::factory()->create(['user_id' => $operator->id]);
+        $event = PlaceEvent::factory()->pending()->create(['place_id' => $place->id]);
+
+        $response = $this->postJson("/api/admin/events/{$event->id}/approve", [], $this->authHeaders($admin));
+
+        $response->assertStatus(200)
+            ->assertJson(['message' => 'Evento aprobado exitosamente']);
+        $this->assertDatabaseHas('place_events', ['id' => $event->id, 'approval_status' => 'approved']);
+    }
+
+    public function test_admin_can_reject_pending_event(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $operator = User::factory()->operator()->create();
+        $place = TuristicPlace::factory()->create(['user_id' => $operator->id]);
+        $event = PlaceEvent::factory()->pending()->create(['place_id' => $place->id]);
+
+        $response = $this->postJson("/api/admin/events/{$event->id}/reject", [], $this->authHeaders($admin));
+
+        $response->assertStatus(200)
+            ->assertJson(['message' => 'Evento rechazado']);
+        $this->assertDatabaseHas('place_events', ['id' => $event->id, 'approval_status' => 'rejected']);
+    }
+
+    public function test_admin_can_set_approved_event_back_to_pending(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $operator = User::factory()->operator()->create();
+        $place = TuristicPlace::factory()->create(['user_id' => $operator->id]);
+        $event = PlaceEvent::factory()->create(['place_id' => $place->id, 'approval_status' => 'approved']);
+
+        $response = $this->postJson("/api/admin/events/{$event->id}/pending", [], $this->authHeaders($admin));
+
+        $response->assertStatus(200)
+            ->assertJson(['message' => 'Evento marcado como pendiente']);
+        $this->assertDatabaseHas('place_events', ['id' => $event->id, 'approval_status' => 'pending']);
+    }
+
+    public function test_admin_can_change_rejected_to_approved(): void
+    {
+        $admin = User::factory()->admin()->create();
+        $operator = User::factory()->operator()->create();
+        $place = TuristicPlace::factory()->create(['user_id' => $operator->id]);
+        $event = PlaceEvent::factory()->create(['place_id' => $place->id, 'approval_status' => 'rejected']);
+
+        $response = $this->postJson("/api/admin/events/{$event->id}/approve", [], $this->authHeaders($admin));
+
+        $response->assertStatus(200)
+            ->assertJson(['message' => 'Evento aprobado exitosamente']);
+        $this->assertDatabaseHas('place_events', ['id' => $event->id, 'approval_status' => 'approved']);
+    }
+
+    public function test_non_admin_cannot_approve_event(): void
+    {
+        $user = User::factory()->create();
+        $operator = User::factory()->operator()->create();
+        $place = TuristicPlace::factory()->create(['user_id' => $operator->id]);
+        $event = PlaceEvent::factory()->pending()->create(['place_id' => $place->id]);
+
+        $response = $this->postJson("/api/admin/events/{$event->id}/approve", [], $this->authHeaders($user));
+
+        $response->assertStatus(302);
+    }
 }
