@@ -41,7 +41,6 @@ Desarrollar un sistema web que permita gestionar y promover el ecoturismo en Ris
 - Git
 
 
-
 ## Roles del sistema
 La plataforma EcoRisaralda ofrece diversas funcionalidades orientadas a mejorar la experiencia del usuario y la gestión del ecoturismo en la región.
 
@@ -524,6 +523,17 @@ Estas pruebas incluyen validaciones de componentes, lógica de negocio y comunic
 - Pruebas de componentes  
 
 Para más información, consultar la sección de **Pruebas** en la documentación del proyecto.
+
+## Usuarios de prueba
+
+Para facilitar la validación del sistema, se disponen los siguientes usuarios de prueba:
+--------------------------------------------------------------------
+| Rol       | Correo                    | Contraseña               |
+|-----------|---------------------------|--------------------------|
+| Admin     | admin@ecorisaralda.com    | admin@ecorisaralda.com   |
+| Operador  | test@example.com          | password123              |
+| Turista   | test2@example.com         | password123              |
+--------------------------------------------------------------------
 
 ## API REST - Documentación
 ### URL Base
