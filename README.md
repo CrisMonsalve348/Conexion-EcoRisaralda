@@ -191,14 +191,22 @@ El proyecto utiliza base de datos (MySQL).
 `conexion_ecorisaralda`
 
 2. Configura el archivo `.env`:
-```   
+```
+APP_NAME=ConexionEcoRisaralda
+APP_ENV=local
+APP_KEY=
+APP_DEBUG=true
+APP_URL=http://localhost
+
+FRONTEND_URL=http://localhost:5173
+
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_DATABASE=conexion_ecorisaralda
 DB_USERNAME=root
 DB_PASSWORD=
-```
+````
 
 3. Ejecuta las migraciones y seeders:
    
