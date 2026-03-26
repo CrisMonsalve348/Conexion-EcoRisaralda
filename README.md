@@ -627,6 +627,7 @@ POST `/api/register`
 Crea un usuario.
 
 **Recuperar contraseña**
+
 ----------------------------------------
 | Método	| Endpoint                 |
 |-----------|--------------------------|
@@ -821,6 +822,7 @@ POST ``/api/places/{id}/events``
 GET ``/api/admin/dashboard``
 
 **Gestionar usuarios**
+
 --------------------------------------------
 | Método	 | Endpoint                    |
 |------------|-----------------------------|
@@ -832,6 +834,7 @@ GET ``/api/admin/dashboard``
 --------------------------------------------
 
 **Gestionar sitios**
+
 -------------------------------------
 | Método  |	Endpoint                 |
 |---------|--------------------------|
@@ -841,6 +844,7 @@ GET ``/api/admin/dashboard``
 --------------------------------------
 
 **Moderar reseñas**
+
 -----------------------------------------------------
 | Método  |	Endpoint                                |
 |---------|-----------------------------------------|
@@ -850,6 +854,7 @@ GET ``/api/admin/dashboard``
 ------------------------------------------------------
 
 **Aprobar operadores**
+
 --------------------------------------------------
 | Método  |	Endpoint                             |
 |---------|--------------------------------------|
@@ -864,6 +869,7 @@ GET ``/api/admin/dashboard``
 GET ``/api/operator/stats``
 
 **Moderar reseñas propias**
+
 ------------------------------------------------------
 | Método  |	Endpoint                                 |
 |---------|------------------------------------------|
@@ -874,6 +880,7 @@ GET ``/api/operator/stats``
 
 ### PREFERENCIAS Y RECOMENDACIONES
 **Preferencias usuario**
+
 --------------------------------------
 | Método  |	Endpoint                  |
 |---------|---------------------------|
@@ -892,6 +899,7 @@ GET ``/api/health``
 Verifica que la API esté activa.
 
 ### CÓDIGOS HTTP
+
 --------------------------------
 | Código  |	Significado        |
 |---------|--------------------|
