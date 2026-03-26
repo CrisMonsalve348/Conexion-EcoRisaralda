@@ -528,6 +528,7 @@ Para más información, consultar la sección de **Pruebas** en la documentació
 ## Usuarios de prueba
 
 Para facilitar la validación del sistema, se disponen los siguientes usuarios de prueba:
+
 --------------------------------------------------------------------
 | Rol       | Correo                    | Contraseña               |
 |-----------|---------------------------|--------------------------|
