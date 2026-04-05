@@ -388,7 +388,7 @@ Ejecuta migraciones:
 
 ``php artisan migrate:fresh --seed``
 
-### Ejecutar el backend**
+### Ejecutar el backend
 
 ``php artisan serve``
 
